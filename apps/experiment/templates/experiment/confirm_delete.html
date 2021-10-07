@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+
+{% block title %}Delete {{ typename }}{% endblock %}
+
+{% block content %}
+    <div>
+        <div>
+            <h3>Are you sure?</h3>
+            <p>You're about to delete {{ object }}. Please confirm.</p>
+            <form method="post">
+                {% csrf_token %}
+                {% buttons %}
+                    <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
+                    <button type="submit" class="btn btn-secondary">Confirm</button>
+                {% endbuttons %}
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

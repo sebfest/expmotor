@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+
+{% block title %}Experiment {{ experiment.name }}{% endblock %}
+
+{% block content %}
+
+    {% bootstrap_messages %}
+
+    <table class="table table-hover">
+        <thead class="thead-light">
+        <tr>
+            <th>Manager</th>
+            <th>E-mail</th>
+            <th>Cellphone</th>
+            <th>Active</th>
+            <th>Slots</th>
+            <th>Registrations</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ experiment.manager | title }}</td>
+            <td>{{ experiment.email }}</td>
+            <td>{{ experiment.phone }}</td>
+            <td>{{ experiment.is_active }}</td>
+            <td>{{ experiment.slots }}</td>
+            <td>{{ experiment.registrations }}</td>
+            <td><a class="btn btn-secondary btn-sm"
+                   href={% url 'experiment:experiment_update' pk=experiment.pk %}>Edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <h2>Sessions</h2>
+    {% if experiment.sessions.all %}
+        <table class="table table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th>Session date</th>
+                <th>Session time</th>
+                <th>Max subjects</th>
+                <th>Registered subjects</th>
+                <th>Active</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for session in experiment.sessions.all %}
+                <tr>
+                    <td>{{ session.date|date:'Y-m-d' }}</td>
+                    <td>{{ session.time|time:"H:i" }}</td>
+                    <td>{{ session.max_subjects }}</td>
+                    <td>{{ session.registrations }}</td>
+                    <td>{{ session.is_active }}</td>
+                    <td><a class="btn btn-secondary btn-sm"
+                           href={% url 'experiment:session_detail' pk_eks=experiment.pk pk=session.pk %}>Participants</a>
+                    </td>
+                    <td><a class="btn btn-secondary btn-sm"
+                           href={% url 'experiment:session_update' pk_eks=experiment.pk pk=session.pk %}>Edit</a>
+                    </td>
+                    <td><a class="btn btn-secondary btn-sm"
+                           href={% url 'experiment:session_delete' pk_eks=experiment.pk pk=session.pk %}>Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        There are no sessions in this experiment.
+    {% endif %}
+    <p>
+    <a class="btn btn-secondary" href={% url 'experiment:experiment_list' %}>Back to menu</a>
+    <a class="btn btn-secondary" href={% url 'experiment:session_add_multiple' pk=experiment.pk %}>Add new session</a>
+    <a class="btn btn-secondary" href={% url 'experiment:participant_list' pk=experiment.pk %}>List all participants</a>
+{% endblock %}
+

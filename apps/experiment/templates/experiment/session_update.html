@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+
+{% block title %}Update session for experiment {{ session.experiment.name }} {% endblock %}
+
+{% block extrahead %} {{ form.media }} {% endblock %}
+
+{% block content %}
+
+    {% bootstrap_messages %}
+
+    <form class="form" action="{% url 'experiment:session_update' pk_eks=session.experiment.pk pk=session.pk %}" method="post">
+        {% csrf_token %}
+        {% bootstrap_form_errors form type="all" layout='inline' %}
+        {% bootstrap_form form form_group_class='form-group' show_help=True show_label=True set_required=True size='medium' layout="horizontal" %}
+         <div>
+            {% bootstrap_button "Update" button_type="submit" button_class="btn-secondary" %}
+        </div>
+    </form>
+
+{% endblock %}

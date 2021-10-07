@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+
+{% block title %}Create session for {{ experiment.name }}{% endblock %}
+
+{% block extrahead %} {{ form.media }} {% endblock %}
+
+{% block content %}
+
+    {% bootstrap_messages %}
+
+     <form id="form-container" action="{% url 'experiment:session_add_multiple' pk=experiment.pk %}" method="post">
+        {% csrf_token %}
+        {{form.management_form}}
+        {% bootstrap_formset_errors form layout='inline' %}
+        {% for f in form %}
+            <div class="session-form">
+                <h4 id="form-counter">Session {{ forloop.counter }}</h4>
+                <br>
+                {% bootstrap_field f.date show_help=True show_label=False set_required=True size='medium' layout="horizontal" %}
+                {% bootstrap_field f.time show_help=True show_label=False set_required=True size='medium' layout="horizontal" %}
+                {% bootstrap_field f.place show_help=True show_label=False set_required=True size='medium' layout="horizontal" %}
+                {% bootstrap_field f.max_subjects show_help=True show_label=False set_required=True size='medium' layout="horizontal" %}
+            </div>
+            <br>
+        {% endfor %}
+         {% bootstrap_button "Add Another Session"  id="add-form" button_class="btn-secondary" %}
+         {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+    </form>
+
+     <script>
+        let sessionForm = document.querySelectorAll(".session-form")
+        let container = document.querySelector("#form-container")
+        let addButton = document.querySelector("#add-form")
+        let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+
+        let formNum = sessionForm.length-1
+        addButton.addEventListener('click', addForm)
+
+        function addForm(e){
+            e.preventDefault()
+
+            let newForm = sessionForm[0].cloneNode(true)
+            let formRegex = RegExp(`form-(\\d){1}-`,'g')
+            let counterRegex = RegExp(`Session 1`,'g')
+
+            formNum++
+            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+            newForm.innerHTML = newForm.innerHTML.replace(counterRegex, `Session ${formNum+1}`)
+            container.insertBefore(newForm, addButton)
+            totalForms.setAttribute('value', `${formNum+1}`)
+        }
+    </script>
+
+{% endblock %}

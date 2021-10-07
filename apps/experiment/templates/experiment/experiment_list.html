@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}Experiments{% endblock %}
+
+{% block content %}
+
+    {% bootstrap_messages %}
+
+    {% if experiments %}
+        <table class="table table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th>Name</th>
+                <th>Sessions</th>
+                <th>Slots</th>
+                <th>Registrations</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for experiment in experiments %}
+                <tr>
+                    <td>{{ experiment.name }} </td>
+                    <td>{{ experiment.sessions.all.count }}</td>
+                    <td>{{ experiment.slots }}</td>
+                    <td>{{ experiment.registrations }}</td>
+                    <td><a class="btn btn-secondary btn-sm"
+                           href={% url 'experiment:experiment_detail' pk=experiment.pk %}>Manage</a></td>
+                    <td><a class="btn btn-secondary btn-sm"
+                           href={% url 'experiment:experiment_delete' pk=experiment.pk %}>Delete</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>There are no experiments.</p>
+    {% endif %}
+
+    <br>
+    <a class="btn btn-secondary" href={% url 'experiment:experiment_add' %}>Add experiment</a>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Account Activated" %}{% endblock %}
+
+{% block content %}
+    <div class="alert alert-success">
+        {% trans "Your account is activated." %}
+        {% if not user.is_authenticated %}
+            You can now <a style="color:inherit; text-decoration: underline" href="{% url 'auth_login' %}">log in.</a>
+        {% endif %}
+    </div>
+{% endblock %}

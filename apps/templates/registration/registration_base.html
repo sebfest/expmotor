@@ -1,0 +1,30 @@
+{% extends 'blog/base.html' %}
+
+{% load staticfiles %}
+
+{% load bootstrap3 %}
+
+{% block body_block %}
+    <!-- Page Header -->
+    <header class="intro-header" style="background: rgba(37, 53, 65, 1)">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="page-heading">
+                        <h1>Account</h1>
+                        <hr class="small">
+                        <span class="subheading"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                {% block content %} Account content {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

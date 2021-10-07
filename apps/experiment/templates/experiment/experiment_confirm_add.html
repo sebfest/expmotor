@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Result{% endblock %}
+
+{% block content %}
+
+    <h1>{{ experiment.name }}</h1>
+    <p>Your request has been processed.</p>
+
+    <form action="{% url 'experiment:experiment_list' %}" method="get">
+        {% csrf_token %}
+        <input type="submit" value="Return to main menu"/>
+    </form>
+
+{% endblock %}
