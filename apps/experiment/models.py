@@ -88,7 +88,8 @@ class Experiment(AbstractBaseModel):
         agg_sum = Experiment.objects.all()\
             .filter(pk=self.pk)\
             .aggregate(slots=Sum('sessions__max_subjects'))
-        return format_html('{number}', number=agg_sum.get('slots', 0))
+        print('here')
+        return agg_sum.get('slots') or 0
 
     @property
     def registrations(self) -> str:
@@ -96,7 +97,13 @@ class Experiment(AbstractBaseModel):
         agg_count = Experiment.objects.all()\
             .filter(pk=self.pk)\
             .aggregate(registrations=Count('sessions__participants'))
-        return format_html('{number}', number=agg_count.get('registrations', 0))
+        return agg_count.get('registrations') or 0
+
+    @property
+    def complete(self):
+        if self.slots:
+            return (self.registrations / self.slots) * 100.0
+        return 0.0
 
 
 class Session(AbstractBaseModel):
@@ -144,6 +151,12 @@ class Session(AbstractBaseModel):
         return format_html('{number}', number=self.participants.filter(is_active=True).count())
 
     @property
+    def complete(self):
+        if self.max_subjects > 0:
+            return (self.participants.filter(is_active=True).count() / self.max_subjects) * 100.0
+        return 0
+
+    @property
     def is_full(self) -> bool:
         """Checks whether session is full."""
         return self.participants.filter(is_active=True).count() >= self.max_subjects
@@ -171,18 +184,14 @@ class Participant(AbstractBaseModel):
         help_text='An email will be sent to this address for validation purposes, you must click on a link in this '
                   'email before registration is complete.'
     )
-    phone = models.CharField(
-        verbose_name=_('phone'),
-        max_length=15,
-        help_text="Your phone number.",
-    )
     confirmed_email = models.BooleanField(
         default=False,
         help_text='Set to "True" when e-mail is confirmed.'
     )
-    activation_code = models.CharField(
-        help_text='Unique id for identification',
-        max_length=10
+    phone = models.CharField(
+        verbose_name=_('phone'),
+        max_length=15,
+        help_text="Your phone number.",
     )
 
     def __str__(self) -> str:

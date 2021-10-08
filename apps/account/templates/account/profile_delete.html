@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% load bootstrap4 %}
+{% load i18n %}
 
-{% block title %}Delete {{ typename }}{% endblock %}
+{% load bootstrap4 %}
 
 {% block content %}
 
     <div>
         <div>
             <h3>Are you sure?</h3>
-            <p>You're about to delete {{ object }}. Please confirm.</p>
+            <p>You're about to delete your account. Please confirm.</p>
             <form method="post">
                 {% csrf_token %}
                 {% buttons %}

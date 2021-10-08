@@ -1,0 +1,32 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" href={% url 'experiment:experiment_list' %}><h3>Expmotor</h3></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarResponsive" aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarResponsive">
+            <div class="navbar-nav ms-auto py-4 py-lg-0">
+                <div class="nav-item dropdown active">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4 dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                       role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Account
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        {% if request.user.is_authenticated %}
+                            <a class="dropdown-item" href="{% url 'account:logout' %}">Logout</a>
+                            <a class="dropdown-item" href="{% url 'account:profile_detail' pk=request.user.pk %}">Profile</a>
+                        {% else %}
+                            <a class="dropdown-item" href="{% url 'account:login' %}">Login</a>
+                            <a class="dropdown-item" href="{% url 'account:register' %}">Register</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

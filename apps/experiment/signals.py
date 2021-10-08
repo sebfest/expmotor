@@ -45,11 +45,9 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
 @receiver(post_save, sender=Participant)
 def send_registration_notification_email(sender: Type[Participant], instance: Participant, created: bool, **kwargs) -> None:
     """Send confirmation email after successful creation."""
-    # TODO: Get template from model instance
-    from .constants import defaults
 
     if created:
-        template = Template(defaults['confirmation_request_email'])
+        template = Template(instance.session.experiment.confirmation_request)
         context_variables = {
             'uid': urlsafe_base64_encode(force_bytes(instance.pk)),
             'token': account_activation_token.make_token(instance),
@@ -58,7 +56,7 @@ def send_registration_notification_email(sender: Type[Participant], instance: Pa
         title = '[Expmotor] Please confirm your email'
 
     elif not created and instance.confirmed_email:
-        template = Template(defaults['final_instructions_email'])
+        template = Template(instance.session.experiment.final_instructions)
         context_variables = {
             'session': instance.session,
             'manager': instance.session.experiment.manager,

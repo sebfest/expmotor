@@ -30,11 +30,6 @@ urlpatterns = [
         name='experiment_delete'
     ),
     path(
-        'experiment/<int:pk>/session/add/',
-        views.SingleSessionCreateView.as_view(),
-        name='session_add_single'
-    ),
-    path(
         'experiment/<int:pk>/session/add_multiple/',
         views.MultipleSessionCreateView.as_view(),
         name='session_add_multiple'

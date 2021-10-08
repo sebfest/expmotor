@@ -2,13 +2,11 @@
 
 {% load bootstrap4 %}
 
-{% block title %}Create experiment{% endblock %}
+{% block title %}Update your profile{% endblock %}
 
 {% block content %}
 
-    {% bootstrap_messages %}
-
-    <form class="form" action="{% url 'experiment:experiment_add' %}" method="post">
+    <form class="form" method="post">
         {% csrf_token %}
         {% bootstrap_form_errors form type="all" layout='inline' %}
         {% bootstrap_form form form_group_class='form-group' show_help=True show_label=True set_required=True size='medium' layout="horizontal" %}

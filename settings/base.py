@@ -13,8 +13,10 @@ def get_env_variable(var_name):
         raise ImproperlyConfigured(error_msg)
 
 
-SECRET_KEY = get_env_variable('DB_SECRET_KEY')
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+SECRET_KEY = get_env_variable('DB_SECRET_KEY')
+POSTGRES_PW = get_env_variable('POSTGRES_PW')
 
 INSTALLED_APPS = [
     'experiment.apps.ExperimentConfig',
@@ -64,7 +66,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'expmotor',
         'USER': 'admin',
-        'PASSWORD': get_env_variable('POSTGRES_PW'),
+        'PASSWORD': '[Ns"]d3Im\Z8Cf+|',
         'HOST': 'localhost',
         'PORT': '',
     }

@@ -55,6 +55,8 @@ class ExperimentUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessa
         'manager',
         'email',
         'phone',
+        'confirmation_request',
+        'final_instructions',
     ]
 
     def test_func(self):
@@ -93,33 +95,8 @@ class SessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return True if self.request.user == self.get_object().owner else False
 
 
-class SingleSessionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    model = Session
-    template_name = 'experiment/session_create.html'
-    success_message = "Session successfully created"
-    fields = [
-        'date',
-        'time',
-        'place',
-        'max_subjects',
-        'is_active',
-    ]
-
-    def form_valid(self, form):
-        """Add experiment to valid session form."""
-        experiment = get_object_or_404(Experiment, pk=self.kwargs['pk'])
-        form.instance.experiment = experiment
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        """Add experiment instance to context"""
-        context = super().get_context_data(**kwargs)
-        context['experiment'] = get_object_or_404(Experiment, pk=self.kwargs['pk'])
-        return context
-
-
 class MultipleSessionCreateView(LoginRequiredMixin, SuccessMessageMixin, FormView):
-    form_class = formset_factory(SessionCreateForm, min_num=1)
+    form_class = formset_factory(SessionCreateForm, validate_min=1)
     template_name = 'experiment/session_create_multiple.html'
     success_message = "Session successfully created"
     experiment_object = None
