@@ -44,8 +44,7 @@ ROOT_URLCONF = 'settings.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'apps/templates']
-        ,
+        'DIRS': [BASE_DIR / 'apps/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -62,8 +61,12 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'expmotor',
+        'USER': 'admin',
+        'PASSWORD': get_env_variable('POSTGRES_PW'),
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
