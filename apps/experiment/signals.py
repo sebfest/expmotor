@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, FrozenSet
 
 from django.core.mail import EmailMessage
 from django.db.models.signals import post_save
@@ -15,7 +15,7 @@ from experiment.tokens import account_activation_token
 @receiver(post_save, sender=Experiment)
 def send_new_experiment_notification_email(sender: Type[Experiment], instance: Experiment,
                                            created: bool, **kwargs) -> None:
-    """Send confirmation email after successful creation."""
+    """Send confirmation email after successful experiment creation."""
     if created:
         context_variables = {
             'exp_name': instance.name,
@@ -33,9 +33,9 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
 
 
 @receiver(post_save, sender=Participant)
-def send_registration_notification_email(sender: Type[Participant], instance: Participant,
-                                         created: bool, update_fields, **kwargs) -> None:
-    """Send confirmation email after successful creation."""
+def send_email_confirmation_request(sender: Type[Participant], instance: Participant,
+                                    created: bool, update_fields: FrozenSet, **kwargs) -> None:
+    """Send request to conform email after successful creation."""
 
     if created:
         template = Template(instance.session.experiment.confirmation_request)
@@ -44,25 +44,35 @@ def send_registration_notification_email(sender: Type[Participant], instance: Pa
             'token': account_activation_token.make_token(instance),
         }
         context = Context(context_variables)
-        title = '[Expmotor] Please confirm your email'
 
-    elif not created and 'confirmed_email' in update_fields:
+        email = EmailMessage(
+            subject='[Expmotor] Please confirm your email',
+            body=template.render(context),
+            from_email="noreply@thomas.nhh.no",
+            to=[instance.email],
+            bcc=[],
+        )
+        email.send()
+
+
+@receiver(post_save, sender=Participant)
+def send_registration_info(sender: Type[Participant], instance: Participant,
+                           created: bool, update_fields: FrozenSet, **kwargs) -> None:
+    """Send email with registration info after email confirmation."""
+
+    if not created and update_fields and 'confirmed_email' in update_fields:
         template = Template(instance.session.experiment.final_instructions)
         context_variables = {
             'session': instance.session,
             'manager': instance.session.experiment.manager,
         }
         context = Context(context_variables)
-        title = '[Expmotor] Confirmation of experiment participation',
 
-    else:
-        return
-
-    email = EmailMessage(
-        subject=title,
-        body=template.render(context),
-        from_email="noreply@thomas.nhh.no",
-        to=[instance.email],
-        bcc=[],
-    )
-    email.send()
+        email = EmailMessage(
+            subject='[Expmotor] Confirmation of experiment participation',
+            body=template.render(context),
+            from_email="noreply@thomas.nhh.no",
+            to=[instance.email],
+            bcc=[],
+        )
+        email.send()
