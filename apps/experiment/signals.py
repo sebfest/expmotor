@@ -1,19 +1,20 @@
 from typing import Type
 
 from django.core.mail import EmailMessage
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template import Template, Context
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.template import Template, Context
 
 from experiment.models import Experiment, Participant
 from experiment.tokens import account_activation_token
 
 
 @receiver(post_save, sender=Experiment)
-def send_new_experiment_notification_email(sender: Type[Experiment], instance: Experiment, created: bool, **kwargs) -> None:
+def send_new_experiment_notification_email(sender: Type[Experiment], instance: Experiment,
+                                           created: bool, **kwargs) -> None:
     """Send confirmation email after successful creation."""
     if created:
         context_variables = {
@@ -30,20 +31,10 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
         )
         email.send()
 
-# TODO: Check if email has been activated and only field change.
-# @receiver(pre_save, sender=Participant)
-# def do_something_if_changed(sender: Type[Participant], instance: Participant, **kwargs) -> None:
-#     try:
-#         obj = sender.objects.get(pk=instance.pk)
-#     except sender.DoesNotExist:
-#         pass # Object is new, so field hasn't technically changed, but you may want to do something else here.
-#     else:
-#         if not obj.some_field == instance.some_field: # Field has changed
-#             ...
-
 
 @receiver(post_save, sender=Participant)
-def send_registration_notification_email(sender: Type[Participant], instance: Participant, created: bool, **kwargs) -> None:
+def send_registration_notification_email(sender: Type[Participant], instance: Participant,
+                                         created: bool, update_fields, **kwargs) -> None:
     """Send confirmation email after successful creation."""
 
     if created:
@@ -55,7 +46,7 @@ def send_registration_notification_email(sender: Type[Participant], instance: Pa
         context = Context(context_variables)
         title = '[Expmotor] Please confirm your email'
 
-    elif not created and instance.confirmed_email:
+    elif not created and 'confirmed_email' in update_fields:
         template = Template(instance.session.experiment.final_instructions)
         context_variables = {
             'session': instance.session,
@@ -75,5 +66,3 @@ def send_registration_notification_email(sender: Type[Participant], instance: Pa
         bcc=[],
     )
     email.send()
-
-

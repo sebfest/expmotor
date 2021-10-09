@@ -274,18 +274,26 @@ class RegistrationActivateView(View):
     success_message = "Your email has been confirmed. An email will be sent you shortly, confirming the details of " \
                       "which session you are in."
 
-    def get(self, request, *args, **kwargs):
+    def get_participant(self):
+        """Get particpant from encoded uid"""
         uid_decoded = force_text(urlsafe_base64_decode(self.kwargs.get('uidb64')))
-        participant = Participant.objects.get(pk=uid_decoded)
+        try:
+            participant = Participant.objects.get(pk=uid_decoded)
+        except Participant.DoesNotExist:
+            participant = None
+            messages.error(self.request, self.participant_missing_message)
+        return participant
+
+    def get(self, request, *args, **kwargs):
+        """Find participant and update confirmed_email field."""
+        participant = self.get_participant()
         valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
 
         if not valid_token:
             messages.error(self.request, self.token_invalid_message)
-        elif participant is None:
-            messages.error(self.request, self.participant_missing_message)
         elif participant is not None and valid_token:
             participant.confirmed_email = True
-            participant.save()
+            participant.save(update_fields=['confirmed_email'])
             messages.success(self.request, self.success_message)
         else:
             messages.error(self.request, 'Error')
