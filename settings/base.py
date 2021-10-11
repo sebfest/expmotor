@@ -99,11 +99,11 @@ STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# LOGIN_URL = '/login'
-# LOGIN_REDIRECT_URL = '/'
-# LOGOUT_REDIRECT_URL = '/login'
 
 # Django registration_old-redux
+ADMINS = [
+    ('sebastian', 'sebastian.fest@gmail.com'),
+]
 REGISTRATION_OPEN = True
 INCLUDE_REGISTER_URL = True  # Use custom registration_old?
 INCLUDE_AUTH_URLS = True
