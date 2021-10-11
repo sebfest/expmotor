@@ -2,7 +2,7 @@
 
 {% load bootstrap4 %}
 
-{% block title %}Create session for {{ experiment.name }}{% endblock %}
+{% block heading %}Create session for {{ experiment.name }}{% endblock %}
 
 {% block extrahead %} {{ form.media }} {% endblock %}
 
@@ -10,9 +10,9 @@
 
     {% bootstrap_messages %}
 
-     <form id="form-container" action="{% url 'experiment:session_add_multiple' pk=experiment.pk %}" method="post">
+    <form id="form-container" action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
         {% csrf_token %}
-        {{form.management_form}}
+        {{ form.management_form }}
         {% bootstrap_formset_errors form layout='inline' %}
         {% for f in form %}
             <div class="session-form">
@@ -25,32 +25,57 @@
             </div>
             <br>
         {% endfor %}
-         {% bootstrap_button "Add Another Session"  id="add-form" button_class="btn-secondary" %}
-         {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+        {% bootstrap_button "Add Another Session" id="add-form" button_class="btn-secondary" %}
+        {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+        <a class="btn btn-primary add-more-btn">Add</a>
     </form>
+{##}
+{#    <script>#}
+{#        let sessionForm = document.querySelectorAll(".session-form")#}
+{#        let container = document.querySelector("#form-container")#}
+{#        let addButton = document.querySelector("#add-form")#}
+{#        let totalForms = document.querySelector("#id_form-TOTAL_FORMS")#}
+{##}
+{#        let formNum = sessionForm.length - 1#}
+{#        addButton.addEventListener('click', addForm)#}
+{##}
+{#        function addForm(e) {#}
+{#            e.preventDefault()#}
+{##}
+{#            let newForm = sessionForm[0].cloneNode(true)#}
+{#            let formRegex = RegExp(`form-(\\d){1}-`, 'g')#}
+{#            let counterRegex = RegExp(`Session 1`, 'g')#}
+{##}
+{#            formNum++#}
+{#            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)#}
+{#            newForm.innerHTML = newForm.innerHTML.replace(counterRegex, `Session ${formNum + 1}`)#}
+{#            container.insertBefore(newForm, addButton)#}
+{#            totalForms.setAttribute('value', `${formNum + 1}`)#}
+{#        }#}
+{#    </script>#}
 
-     <script>
-        let sessionForm = document.querySelectorAll(".session-form")
-        let container = document.querySelector("#form-container")
-        let addButton = document.querySelector("#add-form")
-        let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+    <script>
 
-        let formNum = sessionForm.length-1
-        addButton.addEventListener('click', addForm)
+        let sessionForm = $('.session-form')
+        let container = $('#form-container')
+        let addButton = $('.add-more-btn')
+        let totalForms = $('#id_form-TOTAL_FORMS')
+        let formNum = sessionForm.length - 1
 
-        function addForm(e){
-            e.preventDefault()
-
-            let newForm = sessionForm[0].cloneNode(true)
-            let formRegex = RegExp(`form-(\\d){1}-`,'g')
-            let counterRegex = RegExp(`Session 1`,'g')
+        addButton.click(function () {
 
             formNum++
-            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
-            newForm.innerHTML = newForm.innerHTML.replace(counterRegex, `Session ${formNum+1}`)
-            container.insertBefore(newForm, addButton)
-            totalForms.setAttribute('value', `${formNum+1}`)
-        }
+            totalForms.attr('value', `${formNum + 1}`)
+
+            let formRegex = RegExp(`form-(\\d){1}-`, 'g')
+            let newForm = sessionForm.clone(true).insertBefore(addButton)
+            newForm.find('#id_form-0-date').datepickerdata()
+            {#let newContent = newForm.html().replace(formRegex, `form-${formNum}-`)#}
+            {#newForm.html(newContent)#}
+            {##}
+            {#newForm.insertBefore(addButton)#}
+        });
+
     </script>
 
 {% endblock %}

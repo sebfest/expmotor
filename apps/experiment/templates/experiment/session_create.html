@@ -2,7 +2,9 @@
 
 {% load bootstrap4 %}
 
-{% block title %}Create session for {{ experiment.name }}{% endblock %}
+{% block heading %}Create session for {{ experiment.name }}{% endblock %}
+
+{% block extrahead %} {{ form.media }} {% endblock %}
 
 {% block content %}
 
@@ -11,7 +13,7 @@
     <form class="form" action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
         {% csrf_token %}
         {% bootstrap_form_errors form type="all" layout='inline' %}
-        {% bootstrap_form form form_group_class='form-group' show_help=True show_label=True set_required=True size='medium' layout="horizontal" %}
+        {% bootstrap_form form form_group_class='form-group' show_help=True show_label=False set_required=True size='medium' layout="horizontal" %}
         <div class="d-flex">
             {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
         </div>

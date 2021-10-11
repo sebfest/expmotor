@@ -58,7 +58,7 @@ def send_email_confirmation_request(sender: Type[Participant], instance: Partici
 @receiver(post_save, sender=Participant)
 def send_registration_info(sender: Type[Participant], instance: Participant,
                            created: bool, update_fields: FrozenSet, **kwargs) -> None:
-    """Send email with registration info after email confirmation."""
+    """Send email with registration_old info after email confirmation."""
 
     if not created and update_fields and 'confirmed_email' in update_fields:
         template = Template(instance.session.experiment.final_instructions)

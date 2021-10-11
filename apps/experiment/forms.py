@@ -70,9 +70,18 @@ class SessionForm(forms.ModelForm):
             self.fields['max_subjects'].widget.attrs['min'] = validator.limit_value
 
     def get_validator(self):
+        """Return validator to not allow fewer slots than registered subjects"""
         min_value = self.instance.participants.filter(is_active=True).count()
         message = f'The maximum number of participants must be larger than {min_value}'
         return MinValueValidator(limit_value=min_value, message=message)
+
+    # def clean(self):
+    #     start_date = self.cleaned_data['start_date']
+    #     end_date = self.cleaned_data['end_date']
+    #
+    #     if end_date <= start_date:
+    #         raise forms.ValidationError("End date must be later than start date")
+    #     return super(YourFormClass, self).clean()
 
     class Meta:
         model = Session

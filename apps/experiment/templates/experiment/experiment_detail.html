@@ -2,7 +2,7 @@
 
 {% load bootstrap4 %}
 
-{% block title %}Experiment {{ experiment.name }}{% endblock %}
+{% block heading %}Experiment {{ experiment.name }}{% endblock %}
 
 {% block content %}
 
@@ -101,7 +101,7 @@
     {% endif %}
     <div class="btn-group" role="group">
         <a class="btn btn-secondary mr-1" role="button" href={% url 'experiment:experiment_list' %}>Back to menu</a>
-        <a class="btn btn-secondary mr-1" role="button" href={% url 'experiment:session_add_multiple' pk=experiment.pk %}>Add new session</a>
+        <a class="btn btn-secondary mr-1" role="button" href={% url 'experiment:session_add' pk=experiment.pk %}>Add new session</a>
         <a class="btn btn-secondary mr-1" role="button" href={% url 'experiment:participant_list' pk=experiment.pk %}>List all participants</a>
     </div>
 {% endblock %}

@@ -1,10 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, get_user
+from django.contrib.auth import login, get_user
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, TemplateView
 
@@ -24,28 +23,16 @@ class AccessMixin(LoginRequiredMixin, UserPassesTestMixin):
         return requested_user.id == logged_in_user.id
 
 
-class MyLoginView(LoginView):
-    redirect_authenticated_user = False
-    next = reverse_lazy('experiment:experiment_list')
-    template_name = 'account/login.html'
-
-
-class MyLogoutView(LogoutView):
-    template_name = 'account/logout.html'
-
-
 class MySignUpView(SuccessMessageMixin, CreateView):
     form_class = UserRegisterForm
-    template_name = 'account/registration.html'
+    template_name = 'account/signup.html'
     success_message = "Your profile was created successfully"
+    success_url = reverse_lazy('experiment:experiment_list')
 
     def form_valid(self, form):
-        form.save()
-        username = form.cleaned_data.get('username')
-        raw_password = form.cleaned_data.get('password1')
-        user = authenticate(username=username, password=raw_password)
-        login(self.request, user)
-        return reverse_lazy('experiment:experiment_list')
+        valid = super().form_valid(form)
+        login(self.request, self.object)
+        return valid
 
 
 class MyProfileDetailView(AccessMixin, DetailView):
@@ -69,7 +56,7 @@ class MyProfileUpdateView(AccessMixin, SuccessMessageMixin, UpdateView):
 class MyProfileDeleteView(AccessMixin, DeleteView):
     model = User
     template_name = 'account/profile_delete.html'
-    success_url = reverse_lazy('profile_delete_success')
+    success_url = reverse_lazy('account:profile_delete_success')
     success_message = 'Your profile has been deleted!'
     raise_exception = True
 

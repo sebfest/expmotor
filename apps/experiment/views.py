@@ -95,6 +95,25 @@ class SessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return True if self.request.user == self.get_object().owner else False
 
 
+class SingleSessionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Session
+    form_class = SessionCreateForm
+    template_name = 'experiment/session_create.html'
+    success_message = "Session successfully created"
+
+    def form_valid(self, form):
+        """Add experiment to valid session form."""
+        experiment = get_object_or_404(Experiment, pk=self.kwargs['pk'])
+        form.instance.experiment = experiment
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        """Add experiment instance to context"""
+        context = super().get_context_data(**kwargs)
+        context['experiment'] = get_object_or_404(Experiment, pk=self.kwargs['pk'])
+        return context
+
+
 class MultipleSessionCreateView(LoginRequiredMixin, SuccessMessageMixin, FormView):
     form_class = formset_factory(SessionCreateForm, validate_min=1)
     template_name = 'experiment/session_create_multiple.html'
@@ -246,7 +265,7 @@ class ParticipantDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
 class RegistrationView(SuccessMessageMixin, CreateView):
     form_class = ParticipantRegistrationForm
     template_name = 'experiment/registration_create.html'
-    success_message = "An email will be sent you shortly. Click on the link in that email to complete the registration"
+    success_message = "An email will be sent you shortly. Click on the link in that email to complete the registration_old"
 
     def get_form_kwargs(self):
         experiment = get_object_or_404(Experiment, pk=self.kwargs.get('pk'))
@@ -270,7 +289,7 @@ class RegistrationPreConfirmView(TemplateView):
 
 class RegistrationActivateView(View):
     token_invalid_message = "Your link is broken."
-    participant_missing_message = "Your registration does not exist"
+    participant_missing_message = "Your registration_old does not exist"
     success_message = "Your email has been confirmed. An email will be sent you shortly, confirming the details of " \
                       "which session you are in."
 

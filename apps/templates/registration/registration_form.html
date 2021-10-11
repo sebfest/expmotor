@@ -2,21 +2,19 @@
 
 {% load i18n %}
 
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 {% block title %}{% trans "Register for an account" %}{% endblock %}
 
 {% block content %}
-    <p>Register for an account:</p>
-    <form method="post" action="">
+
+    <form class="form" method="post">
         {% csrf_token %}
         {% bootstrap_form_errors form type="all" layout='inline' %}
-        {% bootstrap_form form show_help=False show_label=False layout="horizontal" field_class="form-group col-xs-12 floating-label-form-group controls" form_group_class="row control-group" set_required=True %}
-        <br>
-        <div class="row">
-            <div class="form-group col-xs-12">
-                {% bootstrap_button "Register" button_type="submit" button_class="btn btn-default" name="submit" value="Submit" %}
-            </div>
+        {% bootstrap_form form form_group_class='form-group' show_help=True show_label=True set_required=True size='medium' layout="horizontal" %}
+        <div class="d-flex">
+            {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
         </div>
     </form>
+
 {% endblock %}

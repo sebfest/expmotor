@@ -1,5 +1,5 @@
 from django.core.mail import EmailMessage
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum, Count
 from django.template import Template
@@ -43,7 +43,7 @@ class Experiment(AbstractBaseModel):
     )
     # TODO: Insert in template
     registration_help = models.TextField(
-        verbose_name=_('registration mail'),
+        verbose_name=_('registration_old mail'),
         default=defaults['registration_help'],
         help_text="This text will meet participants when registering for participation."
     )
@@ -76,7 +76,7 @@ class Experiment(AbstractBaseModel):
         """Owner of object"""
         return self.manager
 
-    # TODO: install SITE, generate registration link
+    # TODO: install SITE, generate registration_old link
     # def get_full_absolute_url(self):
     #     domain = Site.objects.get_current().domain
     #     url = self.get_absolute_url()
@@ -130,6 +130,12 @@ class Session(AbstractBaseModel):
     max_subjects = models.PositiveIntegerField(
         verbose_name=_('maximum number of subjects.'),
         help_text='The maximal number of participants that can register.',
+        validators=[
+            MinValueValidator(
+                limit_value=1,
+                message="You must provide space for at least one subject."
+            )
+        ],
     )
 
     def __str__(self) -> str:
@@ -141,25 +147,24 @@ class Session(AbstractBaseModel):
         return reverse('experiment:session_detail', kwargs={'pk_eks': self.experiment.pk, 'pk': self.pk})
 
     @property
-    def owner(self):
+    def owner(self) -> AUTH_USER_MODEL:
         """Owner of object"""
         return self.experiment.manager
 
     @property
-    def registrations(self) -> str:
+    def registrations(self) -> int:
         """Number of participants registered."""
-        return format_html('{number}', number=self.participants.filter(is_active=True).count())
+        return self.participants.filter(is_active=True).count()
 
     @property
-    def complete(self):
-        if self.max_subjects > 0:
-            return (self.participants.filter(is_active=True).count() / self.max_subjects) * 100.0
-        return 0
+    def complete(self) -> float:
+        """Share of participants registered."""
+        return (self.registrations / self.max_subjects) * 100.0
 
     @property
     def is_full(self) -> bool:
         """Checks whether session is full."""
-        return self.participants.filter(is_active=True).count() >= self.max_subjects
+        return self.registrations >= self.max_subjects
 
 
 class Participant(AbstractBaseModel):
@@ -182,7 +187,7 @@ class Participant(AbstractBaseModel):
     email = models.EmailField(
         verbose_name=_('email'),
         help_text='An email will be sent to this address for validation purposes, you must click on a link in this '
-                  'email before registration is complete.'
+                  'email before registration_old is complete.'
     )
     confirmed_email = models.BooleanField(
         default=False,
