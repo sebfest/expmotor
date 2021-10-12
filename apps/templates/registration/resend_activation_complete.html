@@ -1,14 +1,15 @@
 {% extends "registration/registration_base.html" %}
+
 {% load i18n %}
 
 {% block title %}{% trans "Account Activation Resent" %}{% endblock %}
 
 {% block content %}
-<p>
-  {% blocktrans %}
-  We have sent an email to {{ email }} with further instructions.
-  {% endblocktrans %}
-</p>
+   <div class="alert alert-info" role="alert">
+        {% blocktrans %}
+            We have sent an email to {{ email }} with further instructions.
+        {% endblocktrans %}
+   </div>
 {% endblock %}
 
 

@@ -1,10 +1,15 @@
 {% extends "registration/registration_base.html" %}
+
 {% load i18n %}
 
 {% block title %}{% trans "Activation Failure" %}{% endblock %}
 
 {% block content %}
-<p>{% trans "Account activation failed." %}</p>
+
+    <div class="alert alert-danger" role="alert">
+        {% trans "Account activation failed." %}
+    </div>
+
 {% endblock %}
 
 

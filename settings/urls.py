@@ -6,10 +6,10 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path('', include('experiment.urls')),
-    path('', include('account.urls')),
     path('accounts/', include('registration.backends.admin_approval.urls')),
+    path('accounts/', include('account.urls')),
     path('admin/', admin.site.urls),
+    path('', include('experiment.urls')),
 ]
 
 if os.getenv('PRODUCTION'):

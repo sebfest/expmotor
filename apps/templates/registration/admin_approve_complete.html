@@ -1,12 +1,15 @@
 {% extends "registration/registration_base.html" %}
+
 {% load i18n %}
 
 {% block title %}{% trans "Account Approved" %}{% endblock %}
 
 {% block content %}
-<p>
-    {% trans "The user's account is now approved." %}
-</p>
+
+    <div class="alert alert-success" role="alert">
+        {% blocktrans %} {{ user }}'s account is now approved. {% endblocktrans %}
+    </div>
+
 {% endblock %}
 
 

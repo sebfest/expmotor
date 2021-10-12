@@ -6,6 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, TemplateView
+from registration.backends.admin_approval.views import RegistrationView
 
 from account.forms import UserRegisterForm
 
@@ -23,16 +24,9 @@ class AccessMixin(LoginRequiredMixin, UserPassesTestMixin):
         return requested_user.id == logged_in_user.id
 
 
-class MySignUpView(SuccessMessageMixin, CreateView):
+class MySignUpView(RegistrationView):
     form_class = UserRegisterForm
     template_name = 'account/signup.html'
-    success_message = "Your profile was created successfully"
-    success_url = reverse_lazy('experiment:experiment_list')
-
-    def form_valid(self, form):
-        valid = super().form_valid(form)
-        login(self.request, self.object)
-        return valid
 
 
 class MyProfileDetailView(AccessMixin, DetailView):
@@ -50,7 +44,7 @@ class MyProfileUpdateView(AccessMixin, SuccessMessageMixin, UpdateView):
     raise_exception = True
 
     def get_success_url(self):
-        return reverse('account:profile', kwargs={'pk': self.kwargs.get('pk')})
+        return reverse('account:profile_detail', kwargs={'pk': self.kwargs.get('pk')})
 
 
 class MyProfileDeleteView(AccessMixin, DeleteView):

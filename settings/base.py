@@ -105,7 +105,7 @@ ADMINS = [
     ('sebastian', 'sebastian.fest@gmail.com'),
 ]
 REGISTRATION_OPEN = True
-INCLUDE_REGISTER_URL = True  # Use custom registration_old?
+INCLUDE_REGISTER_URL = False  # Use custom registration_old?
 INCLUDE_AUTH_URLS = True
 ACCOUNT_ACTIVATION_DAYS = 3
 LOGIN_URL = '/accounts/login'
