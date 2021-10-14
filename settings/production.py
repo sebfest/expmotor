@@ -1,7 +1,7 @@
 from settings.base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['expmotor.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['expmotor.herokuapp.com',]
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
