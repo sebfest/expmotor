@@ -67,7 +67,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'expmotor',
         'USER': 'admin',
-        'PASSWORD': '[Ns"]d3Im\Z8Cf+|',
+        'PASSWORD': POSTGRES_PW,
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -99,17 +99,13 @@ STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Django registration_old-redux
-ADMINS = [
-    ('sebastian', 'sebastian.fest@gmail.com'),
-]
+ADMINS = [('sebastian', 'sebastian.fest@nhh.no')]
 REGISTRATION_OPEN = True
-INCLUDE_REGISTER_URL = False  # Use custom registration_old?
+INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
 ACCOUNT_ACTIVATION_DAYS = 3
 LOGIN_URL = '/accounts/login'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/'
-REGISTRATION_DEFAULT_FROM_EMAIL = 'expmotor@thomas.no'
+REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
 

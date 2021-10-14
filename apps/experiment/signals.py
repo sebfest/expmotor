@@ -8,8 +8,8 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from experiment.models import Experiment, Participant
-from experiment.tokens import account_activation_token
+from .models import Experiment, Participant
+from .tokens import account_activation_token
 
 
 @receiver(post_save, sender=Experiment)
@@ -25,7 +25,7 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
         email = EmailMessage(
             subject=f'[Expmotor] Experiment created ({instance.name})',
             body=render_to_string('experiment/experiment_created_confirmation.txt', context_dict),
-            from_email="noreply@thomas.nhh.no",
+            from_email='thechoicelab@nhh.no',
             to=[instance.email],
         )
         email.send()
@@ -47,7 +47,7 @@ def send_email_confirmation_request(sender: Type[Participant], instance: Partici
         email = EmailMessage(
             subject='[Expmotor] Please confirm your email',
             body=template.render(context),
-            from_email="noreply@thomas.nhh.no",
+            from_email='thechoicelab@nhh.no',
             to=[instance.email],
         )
         email.send()
@@ -69,7 +69,7 @@ def send_registration_info(sender: Type[Participant], instance: Participant,
         email = EmailMessage(
             subject='[Expmotor] Confirmation of experiment participation',
             body=template.render(context),
-            from_email="noreply@thomas.nhh.no",
+            from_email='thechoicelab@nhh.no',
             to=[instance.email],
         )
         email.send()

@@ -1,7 +1,7 @@
 import six
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
-from experiment.models import Participant
+from .models import Participant
 
 
 class AccountActivationTokenGenerator(PasswordResetTokenGenerator):

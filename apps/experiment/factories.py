@@ -7,7 +7,7 @@ from factory import LazyAttribute, SubFactory, Faker, RelatedFactoryList, Iterat
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyDateTime
 
-from experiment.models import Experiment, Session, Participant
+from .models import Experiment, Session, Participant
 from settings import local
 
 

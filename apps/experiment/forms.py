@@ -3,7 +3,7 @@ from django import forms
 from django.core.validators import MinValueValidator
 from django.db.models import F, Count, Q
 
-from experiment.models import Participant, Session
+from .models import Participant, Session
 
 
 class ParticipantUpdateForm(forms.ModelForm):

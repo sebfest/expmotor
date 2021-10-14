@@ -7,8 +7,8 @@ import django
 django.setup()
 
 
-from experiment.models import Experiment
-from experiment.factories import ExperimentFactory, SessionFactory
+from .models import Experiment
+from .factories import ExperimentFactory
 from django.contrib.auth.models import User
 
 

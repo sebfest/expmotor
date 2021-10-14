@@ -6,13 +6,22 @@ import sys
 from dotenv import load_dotenv
 
 load_dotenv()
-DEBUG = (os.environ.get('PRODUCTION') in {None, '', '0'})
 
 
 def main():
     """Run administrative tasks."""
 
-    if DEBUG:
+    paths = [
+        os.getcwd(),
+        os.path.join(os.getcwd(), 'apps'),
+    ]
+
+    for index, path in enumerate(paths):
+        if path not in sys.path:
+            sys.path.insert(index, path)
+
+    debug = (os.environ.get('DEBUG') not in {None, '', '0'})
+    if debug:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local')
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.production')

@@ -4,8 +4,8 @@ from django.db.models import Sum, Count
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from experiment.basemodels import AbstractBaseModel
-from experiment.constants import defaults
+from .basemodels import AbstractBaseModel
+from .constants import defaults
 from settings.local import AUTH_USER_MODEL
 
 

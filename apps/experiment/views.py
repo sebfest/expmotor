@@ -10,9 +10,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.views.generic import DetailView, ListView, UpdateView, CreateView, DeleteView, FormView, TemplateView
 
-from experiment.forms import ParticipantUpdateForm, ParticipantRegistrationForm, SessionCreateForm, SessionUpdateForm
-from experiment.models import Experiment, Session, Participant
-from experiment.tokens import account_activation_token
+from .forms import ParticipantUpdateForm, ParticipantRegistrationForm, SessionCreateForm, SessionUpdateForm
+from .models import Experiment, Session, Participant
+from .tokens import account_activation_token
 
 
 class ExperimentListView(LoginRequiredMixin, ListView):
