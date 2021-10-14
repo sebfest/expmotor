@@ -14,7 +14,6 @@ def get_env_variable(var_name):
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = get_env_variable('DB_SECRET_KEY')
-POSTGRES_PW = get_env_variable('POSTGRES_PW')
 
 INSTALLED_APPS = [
     'experiment.apps.ExperimentConfig',
@@ -60,17 +59,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'settings.wsgi.application'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'expmotor',
-        'USER': 'admin',
-        'PASSWORD': POSTGRES_PW,
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
