@@ -1,15 +1,12 @@
-from django.core.mail import EmailMessage
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum, Count
-from django.template import Template
 from django.urls import reverse
-from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from settings.local import AUTH_USER_MODEL
 from experiment.basemodels import AbstractBaseModel
 from experiment.constants import defaults
+from settings.local import AUTH_USER_MODEL
 
 
 class Experiment(AbstractBaseModel):
@@ -41,7 +38,6 @@ class Experiment(AbstractBaseModel):
             )
         ]
     )
-    # TODO: Insert in template
     registration_help = models.TextField(
         verbose_name=_('registration_old mail'),
         default=defaults['registration_help'],
@@ -83,27 +79,25 @@ class Experiment(AbstractBaseModel):
     #     return f'https://{domain}{url}'
 
     @property
-    def slots(self) -> str:
+    def slots(self) -> int:
         """Number of available slots."""
-        agg_sum = Experiment.objects.all()\
-            .filter(pk=self.pk)\
+        agg_sum = Experiment.objects.all() \
+            .filter(pk=self.pk) \
             .aggregate(slots=Sum('sessions__max_subjects'))
-        print('here')
         return agg_sum.get('slots') or 0
 
     @property
-    def registrations(self) -> str:
+    def registrations(self) -> int:
         """Number of registrations."""
-        agg_count = Experiment.objects.all()\
-            .filter(pk=self.pk)\
+        agg_count = Experiment.objects.all() \
+            .filter(pk=self.pk) \
             .aggregate(registrations=Count('sessions__participants'))
         return agg_count.get('registrations') or 0
 
     @property
     def complete(self):
-        if self.slots:
-            return (self.registrations / self.slots) * 100.0
-        return 0.0
+        """Registration rate."""
+        return (self.registrations / self.slots) * 100.0 if self.slots else 0.0
 
 
 class Session(AbstractBaseModel):
