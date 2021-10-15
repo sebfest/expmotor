@@ -75,7 +75,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-DATABASES = {}
+DATABASES = {
+    'default': {},
+}
 AUTH_USER_MODEL = 'auth.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
