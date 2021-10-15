@@ -3,10 +3,10 @@ import dj_database_url
 from settings.base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['expmotor.herokuapp.com',]
+ALLOWED_HOSTS = ['expmotor.herokuapp.com', '*']
 
 # database configuration
-db_from_env = dj_database_url.config()
+db_from_env = dj_database_url.config(default='postgres://...')
 DATABASES['default'].update(db_from_env)
 
 # Email configuration
