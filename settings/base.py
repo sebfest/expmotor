@@ -75,24 +75,30 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DATABASES = {}
 AUTH_USER_MODEL = 'auth.User'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 ADMINS = [('sebastian', 'sebastian.fest@nhh.no')]
 REGISTRATION_OPEN = True
+REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
 ACCOUNT_ACTIVATION_DAYS = 3
 LOGIN_URL = '/accounts/login'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/'
-REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
 
