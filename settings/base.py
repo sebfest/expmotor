@@ -75,9 +75,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+POSTGRES_PW = get_env_variable('POSTGRES_PW')
 DATABASES = {
-    'default': {},
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'expmotor',
+        'USER': 'admin',
+        'PASSWORD': POSTGRES_PW,
+        'HOST': 'localhost',
+        'PORT': '',
+    }
 }
+
 AUTH_USER_MODEL = 'auth.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

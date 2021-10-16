@@ -6,8 +6,10 @@ DEBUG = False
 ALLOWED_HOSTS = ['expmotor.herokuapp.com', '*']
 
 # database configuration
-db_from_env = dj_database_url.config(default='postgres://...')
-DATABASES['default'].update(db_from_env)
+url = dj_database_url.config(default='postgres://...')
+print(url)
+DATABASES['default'].update(url)
+print(DATABASES)
 
 # Email configuration
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

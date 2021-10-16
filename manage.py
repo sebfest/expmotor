@@ -22,8 +22,10 @@ def main():
 
     debug = (os.environ.get('DEBUG') not in {None, '', '0'})
     if debug:
+        print('Debug mode: on')
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local')
     else:
+        print('Debug mode: off')
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.production')
 
     try:
