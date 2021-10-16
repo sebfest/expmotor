@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models import Sum, Count
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.sites.models import Site
+
 
 from .basemodels import AbstractBaseModel
 from .constants import defaults
@@ -67,16 +69,15 @@ class Experiment(AbstractBaseModel):
         """URL to object."""
         return reverse('experiment:experiment_detail', kwargs={'pk': self.pk})
 
+    def get_full_absolute_url(self):
+        domain = Site.objects.get_current().domain
+        url = self.get_absolute_url()
+        return f'https://{domain}{url}'
+
     @property
     def owner(self):
         """Owner of object"""
         return self.manager
-
-    # TODO: install SITE, generate registration_old link
-    # def get_full_absolute_url(self):
-    #     domain = Site.objects.get_current().domain
-    #     url = self.get_absolute_url()
-    #     return f'https://{domain}{url}'
 
     @property
     def slots(self) -> int:

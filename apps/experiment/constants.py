@@ -15,7 +15,7 @@ This is an auto-generated email.
     'final_instructions_email': """
 We confirm your participation in the experiment.
     
-You are registered for participation on {{ session.date }}, {{ session.time }} at {{ session.place }}.
+You are registered for participation on {{ date }}, {{ time }} at {{ place }}.
 
 The research group is grateful for your contribution,
 and it is important to us that you take part. 

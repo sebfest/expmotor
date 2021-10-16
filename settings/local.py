@@ -13,3 +13,16 @@ INSTALLED_APPS += ['debug_toolbar']
 
 # Debug toolbar middleware
 MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+
+# Database
+POSTGRES_PW = get_env_variable('POSTGRES_PW')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'expmotor',
+        'USER': 'admin',
+        'PASSWORD': POSTGRES_PW,
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}

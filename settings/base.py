@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'bootstrap4',
     'bootstrap_datepicker_plus',
 ]
@@ -112,5 +113,8 @@ REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
 ACCOUNT_ACTIVATION_DAYS = 3
+
+SITE_ID = 1
+
 
 
