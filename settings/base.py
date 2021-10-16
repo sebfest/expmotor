@@ -104,12 +104,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 ADMINS = [('sebastian', 'sebastian.fest@nhh.no')]
+LOGIN_URL = '/accounts/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login'
 REGISTRATION_OPEN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
 ACCOUNT_ACTIVATION_DAYS = 3
-LOGIN_URL = '/accounts/login'
-LOGOUT_REDIRECT_URL = '/accounts/login'
-LOGIN_REDIRECT_URL = '/'
+
 

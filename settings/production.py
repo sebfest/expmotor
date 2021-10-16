@@ -5,11 +5,12 @@ from settings.base import *
 DEBUG = False
 ALLOWED_HOSTS = ['expmotor.herokuapp.com', '*']
 
-# database configuration
+# Database configuration
 url = dj_database_url.config(default='postgres://...')
-print(url)
 DATABASES['default'].update(url)
-print(DATABASES)
+
+# Staticfile collection
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Email configuration
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -21,6 +22,10 @@ EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
 EMAIL_SUBJECT_PREFIX = ''
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
+
+#SSL
+SECURE_SSL_REDIRECT = True
+
 
 
 
