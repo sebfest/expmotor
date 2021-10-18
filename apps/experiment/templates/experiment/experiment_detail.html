@@ -12,9 +12,9 @@
         <thead class="thead-light">
         <tr>
             <th>Manager</th>
-            <th>E-mail</th>
-            <th>Cellphone</th>
-            <th>Active</th>
+            <th>Contact email</th>
+            <th>Contact phone</th>
+            <th>Status</th>
             <th>Slots</th>
             <th>Registrations</th>
             <th></th>
@@ -25,7 +25,13 @@
             <td>{{ experiment.manager | title }}</td>
             <td>{{ experiment.email }}</td>
             <td>{{ experiment.phone }}</td>
-            <td>{{ experiment.is_active }}</td>
+            <td>
+                {% if experiment.is_active %}
+                    <span class="badge badge-pill badge-success">Active</span>
+                {% else %}
+                    <span class="badge badge-pill badge-warning">Inactive</span>
+                {% endif %}
+            </td>
             <td>{{ experiment.slots }}</td>
             <td>
                 <div class="progress position-relative">
@@ -56,7 +62,7 @@
                 <th>Session time</th>
                 <th>Max subjects</th>
                 <th>Registered subjects</th>
-                <th>Active</th>
+                <th>Status</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -81,7 +87,13 @@
                             </div>
                         </div>
                     </td>
-                    <td>{{ session.is_active }}</td>
+                    <td>
+                        {% if session.is_active %}
+                            <span class="badge badge-pill badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-pill badge-warning">Inactive</span>
+                        {% endif %}
+                    </td>
                     <td><a class="btn btn-secondary btn-sm"
                            href={% url 'experiment:session_detail' pk_eks=experiment.pk pk=session.pk %}>Participants</a>
                     </td>
@@ -96,7 +108,9 @@
             </tbody>
         </table>
     {% else %}
-        <p class="text-center">There are no sessions in this experiment.</p>
+        <div class="alert alert-info" role="info">
+            There are no sessions in this experiment.
+        </div>
         <br>
     {% endif %}
     <div class="btn-group" role="group">

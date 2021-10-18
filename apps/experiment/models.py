@@ -32,7 +32,7 @@ class Experiment(AbstractBaseModel):
     phone = models.CharField(
         verbose_name=_('phone'),
         max_length=8,
-        help_text="Invite manager's phone number.",
+        help_text="Phone number participants can contact.",
         validators=[
             RegexValidator(
                 regex=r'^\d{8}$',
@@ -41,7 +41,7 @@ class Experiment(AbstractBaseModel):
         ]
     )
     registration_help = models.TextField(
-        verbose_name=_('registration_old mail'),
+        verbose_name=_('registration instructions'),
         default=defaults['registration_help'],
         help_text="This text will meet participants when registering for participation."
     )
@@ -123,7 +123,7 @@ class Session(AbstractBaseModel):
         help_text='The place where session is organized.',
     )
     max_subjects = models.PositiveIntegerField(
-        verbose_name=_('maximum number of subjects.'),
+        verbose_name=_('number of subjects.'),
         help_text='The maximal number of participants that can register.',
         validators=[
             MinValueValidator(

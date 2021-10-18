@@ -40,10 +40,15 @@ class ExperimentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_url = reverse_lazy('experiment:experiment_list')
     fields = [
         'name',
-        'manager',
         'email',
         'phone',
+        'registration_help',
+        'final_instructions',
     ]
+
+    def form_valid(self, form):
+        form.instance.manager = self.request.user
+        return super(ExperimentCreateView, self).form_valid(form)
 
 
 class ExperimentUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
@@ -52,10 +57,9 @@ class ExperimentUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessa
     success_message = "Experiment successfully updated"
     fields = [
         'name',
-        'manager',
         'email',
         'phone',
-        'confirmation_request',
+        'registration_help',
         'final_instructions',
     ]
 
@@ -95,22 +99,29 @@ class SessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return True if self.request.user == self.get_object().owner else False
 
 
-class SingleSessionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class SingleSessionCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Session
     form_class = SessionCreateForm
     template_name = 'experiment/session_create.html'
     success_message = "Session successfully created"
+    experiment = None
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
+
+    def test_func(self):
+        return True if self.request.user == self.experiment.owner else False
 
     def form_valid(self, form):
         """Add experiment to valid session form."""
-        experiment = get_object_or_404(Experiment, pk=self.kwargs['pk'])
-        form.instance.experiment = experiment
+        form.instance.experiment = self.experiment
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         """Add experiment instance to context"""
         context = super().get_context_data(**kwargs)
-        context['experiment'] = get_object_or_404(Experiment, pk=self.kwargs['pk'])
+        context['experiment'] = self.experiment
         return context
 
 
@@ -172,38 +183,43 @@ class SessionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class ParticipantCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Participant
     template_name = 'experiment/participant_create.html'
     success_message = "Participant successfully created"
     fail_message = "This session is already full."
+    session = None
     fields = [
         'first_name',
         'last_name',
         'email',
         'phone',
-        'is_active',
     ]
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.session = get_object_or_404(Session, pk=self.kwargs['pk'])
+
+    def test_func(self):
+        return True if self.request.user == self.session.owner else False
 
     def form_valid(self, form):
         """Bind calling session to participant instance."""
-        session_instance = get_object_or_404(Session, pk=self.kwargs['pk'])
-        if session_instance.is_full:
+        if self.session.is_full:
             messages.error(self.request, self.fail_message)
             return self.form_invalid(form)
-        form.instance.session = session_instance
+        form.instance.session = self.session
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         """Add session instance to context"""
         context = super().get_context_data(**kwargs)
-        context['session'] = get_object_or_404(Session, pk=self.kwargs['pk'])
+        context['session'] = self.session
         return context
 
     def get_success_url(self):
         """Return to session index."""
-        session_instance = get_object_or_404(Session, pk=self.kwargs['pk'])
-        return session_instance.get_absolute_url()
+        return self.session.get_absolute_url()
 
 
 class ParticipantUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
@@ -294,7 +310,7 @@ class RegistrationActivateView(View):
                       "which session you are in."
 
     def get_participant(self):
-        """Get particpant from encoded uid"""
+        """Get participant from encoded uid"""
         uid_decoded = force_text(urlsafe_base64_decode(self.kwargs.get('uidb64')))
         try:
             participant = Participant.objects.get(pk=uid_decoded)

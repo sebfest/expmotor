@@ -13,13 +13,13 @@ from .tokens import account_activation_token
 from settings.production import EMAIL_HOST_USER
 
 
-def send_mail(subject: str, body: str, recipient: str) -> None:
+def send_mail(sender: Optional[str] = EMAIL_HOST_USER, *, recipient: str, subject: str, body: str) -> None:
     """Send email from host to single recipient."""
     email = EmailMessage(
+        from_email=sender,
+        to=[recipient],
         subject=subject,
         body=body,
-        from_email=EMAIL_HOST_USER,
-        to=[recipient],
     )
     email.send()
 
@@ -34,11 +34,11 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
             'experiment_url': instance.get_full_absolute_url(),
             'invitation_manager': instance.manager.get_username(),
         }
-        recipient = instance.email
+        recipient = instance.manager.email
         message = render_to_string('experiment/experiment_created_confirmation.txt', context_dict)
         subject = f'[Expmotor] Experiment created ({instance.name})'
 
-        send_mail(subject=subject, body=message, recipient=recipient)
+        send_mail(recipient=recipient, subject=subject, body=message)
 
 
 @receiver(post_save, sender=Participant)
@@ -71,10 +71,12 @@ def send_registration_info(sender: Type[Participant], instance: Participant,
             'date': instance.session.date,
             'time': instance.session.time,
             'manager': instance.session.experiment.manager,
+            'email': instance.session.experiment.email,
+            'phone': instance.session.experiment.phone,
         }
         context = Context(context_dict)
 
-        subject='[Expmotor] Confirmation of experiment participation'
+        subject = '[Expmotor] Confirmation of experiment participation'
         message = template.render(context)
         recipient = instance.email
 

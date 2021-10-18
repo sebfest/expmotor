@@ -16,6 +16,7 @@
                 <th>Sessions</th>
                 <th>Slots</th>
                 <th>Registrations</th>
+                <th>Status</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -26,7 +27,26 @@
                     <td>{{ experiment.name }} </td>
                     <td>{{ experiment.sessions.all.count }}</td>
                     <td>{{ experiment.slots }}</td>
-                    <td>{{ experiment.registrations }}</td>
+                    <td>
+                        <div class="progress position-relative">
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 style="width: {{ experiment.complete }}%"
+                                 aria-valuenow="{{ experiment.complete }}"
+                                 aria-valuemin="0" aria-valuemax="1">
+                        <span class="justify-content-center d-flex position-absolute w-100" style="color: black">
+                            {{ experiment.registrations }}
+                        </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if experiment.is_active %}
+                            <span class="badge badge-pill badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-pill badge-warning">Inactive</span>
+                        {% endif %}
+                    </td>
                     <td><a class="btn btn-secondary btn-sm"
                            href={% url 'experiment:experiment_detail' pk=experiment.pk %}>Manage</a></td>
                     <td><a class="btn btn-secondary btn-sm"
@@ -36,9 +56,10 @@
             </tbody>
         </table>
     {% else %}
-        <p>There are no experiments.</p>
+        <div class="alert alert-info" role="info">
+            There are no experiments.
+        </div>
     {% endif %}
-
     <br>
     <a class="btn btn-secondary" href={% url 'experiment:experiment_add' %}>Add experiment</a>
 {% endblock %}

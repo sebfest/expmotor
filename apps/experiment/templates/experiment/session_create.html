@@ -10,12 +10,14 @@
 
     {% bootstrap_messages %}
 
-    <form class="form" action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
+    <form class="form-inline" action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
         {% csrf_token %}
         {% bootstrap_form_errors form type="all" layout='inline' %}
-        {% bootstrap_form form form_group_class='form-group' show_help=True show_label=False set_required=True size='medium' layout="horizontal" %}
-        <div class="d-flex">
-            {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+        {% bootstrap_form form show_help=False show_label=False set_required=True %}
+        <div class="form-row">
+            <div class="col-auto my-3">
+                {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+            </div>
         </div>
     </form>
 
