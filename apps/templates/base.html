@@ -1,35 +1,79 @@
+{% load static %}
+
 {% load bootstrap4 %}
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
     <head>
+        <!-- Meta -->
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
         <meta name="keywords" content="">
         {% block meta %}{% endblock %}
+
+        <!-- Title -->
         <title>{% block title %}Expmotor{% endblock %}</title>
-        <!-- Bootstrap core CSS -->
-        {% bootstrap_css %}
-        {% bootstrap_javascript jquery='full' %}
+
+        <!-- Favicon icon -->
+        <link rel="icon" type="image/png" sizes="16x16" href={% static 'experiment/images/favicon.png' %}>
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href={% static 'experiment/vendor/owl-carousel/css/owl.carousel.min.css' %}>
+        <link rel="stylesheet" href={% static 'experiment/vendor/owl-carousel/css/owl.theme.default.min.css' %}>
+        <link rel="stylesheet" href={% static 'experiment/vendor/jqvmap/css/jqvmap.min.css' %}>
+        <link rel="stylesheet" href={% static 'experiment/css/style.css' %}>
         {% block extrahead %}{% endblock %}
+
     </head>
+
     <body>
-        <!-- Navigation -->
-        {% include 'navbar.html' %}
-        <!-- Page Header -->
-        {% include 'header.html' %}
-        <!-- Main content -->
-        <div class="container px-4 px-lg-5 ">
-            <div class="row align-items-center">
-                <div class="col mx-auto">
-                    <h3>{% block heading %}{% endblock %}</h3>
-                    <hr class="mt-0 mb-4">
-                    {% block content %}{% endblock %}
-                </div>
+
+        <!-- Preloader -->
+        <div id="preloader">
+            <div class="sk-three-bounce">
+                <div class="sk-child sk-bounce1"></div>
+                <div class="sk-child sk-bounce2"></div>
+                <div class="sk-child sk-bounce3"></div>
             </div>
         </div>
-        <!-- Footer -->
-        {% include 'footer.html' %}
+
+        <!-- Wrapper -->
+        <div id="main-wrapper">
+
+            <!-- Nav header -->
+            {% include 'navheader.html' %}
+
+            <!-- Header -->
+            {% include 'header.html' %}
+
+            <!-- Sidebar -->
+            {% include 'navbar.html' %}
+
+            <!-- Content body -->
+            <div class="content-body">
+                <!-- row -->
+                <div class="container-fluid">
+                    <div class="row">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            {% include 'footer.html' %}
+        </div>
+
+        <!-- Required vendors -->
+        <script src={% static 'experiment/vendor/global/global.min.js' %}></script>
+        <script src={% static 'experiment/js/quixnav-init.js' %}></script>
+        <script src={% static 'experiment/js/custom.min.js' %}></script>
+
     </body>
 </html>
+
+

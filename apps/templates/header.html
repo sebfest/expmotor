@@ -1,9 +1,54 @@
-<header class="masthead">
-    <div class="container position-relative px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center" >
-            <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
-                <div class="site-heading"></div>
+{% load static %}
+
+<div class="header">
+    <div class="header-content">
+        <nav class="navbar navbar-expand">
+            <div class="collapse navbar-collapse justify-content-between">
+                <div class="header-left">
+                    <div class="search_bar dropdown">
+                        <span class="search_icon p-3 c-pointer" data-toggle="dropdown">
+                            <i class="mdi mdi-magnify"></i>
+                        </span>
+                        <div class="dropdown-menu p-0 m-0">
+                            <form>
+                                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="navbar-nav header-right">
+                    <li class="nav-item dropdown header-profile">
+                        <a class="nav-link" href="#" role="button" data-toggle="dropdown">
+                            <i class="mdi mdi-account mdi-24px"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            {% if request.user.is_authenticated %}
+                                <a class="dropdown-item" href={% url 'account:profile_detail' pk=request.user.pk %}>
+                                    <i class="icon-user"></i>
+                                    <span class="ml-2">Profile </span>
+                                </a>
+                                <a class="dropdown-item" href={% url 'auth_logout' %}>
+                                    <i class="icon-key"></i>
+                                    <span class="ml-2">Logout </span>
+                                </a>
+
+                            {% else %}
+
+                                <a class="dropdown-item" href={% url 'auth_login' %}>
+                                    <i class="icon-key"></i>
+                                    <span class="ml-2">Login </span>
+                                </a>
+                                <a class="dropdown-item" href={% url 'account:register' %}>
+                                    <i class="icon-book-open"></i>
+                                    <span class="ml-2">Register </span>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
             </div>
-        </div>
+        </nav>
     </div>
-</header>
+</div>
