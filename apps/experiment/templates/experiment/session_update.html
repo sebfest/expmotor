@@ -10,13 +10,32 @@
 
     {% bootstrap_messages %}
 
-    <form class="form" action="{% url 'experiment:session_update' pk_eks=session.experiment.pk pk=session.pk %}" method="post">
-        {% csrf_token %}
-        {% bootstrap_form_errors form type="all" layout='inline' %}
-        {% bootstrap_form form form_group_class='form-group' show_help=True show_label=True set_required=True size='medium' layout="horizontal" %}
-         <div>
-            {% bootstrap_button "Update" button_type="submit" button_class="btn-secondary" %}
+     <div class="content-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Session details</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="basic-form">
+                                {% bootstrap_messages %}
+                                <form class="form" action="{% url 'experiment:session_update' pk_eks=session.experiment.pk pk=session.pk %}" method="post">
+                                    {% csrf_token %}
+                                    {% bootstrap_form_errors form type="all" layout='horizontal' %}
+                                    {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal" %}
+                                    <div class="form-group">
+                                        {% bootstrap_button "Save" button_type="submit" button_class="btn-secondary" %}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
+    </div>
+
 
 {% endblock %}

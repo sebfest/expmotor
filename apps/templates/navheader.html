@@ -1,7 +1,8 @@
 {% load static %}
 
 <div class="nav-header">
-    <a href="index.html" class="brand-logo">
+
+    <a class="brand-logo" href={% url 'experiment:experiment_list' %} >
         <img class="logo-abbr" alt="" src={% static 'experiment/images/logo.png' %}>
         <img class="logo-compact" alt="" src={% static 'experiment/images/logo-text.png' %}>
         <img class="brand-title" alt="" src={% static 'experiment/images/logo-text.png' %}>

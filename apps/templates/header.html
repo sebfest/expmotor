@@ -24,7 +24,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
 
-                            {% if request.user.is_authenticated %}
+                            {% if user.is_authenticated %}
                                 <a class="dropdown-item" href={% url 'account:profile_detail' pk=request.user.pk %}>
                                     <i class="icon-user"></i>
                                     <span class="ml-2">Profile </span>

@@ -1,40 +1,84 @@
 {% extends "base.html" %}
 
+{% load bootstrap4 %}
+
 {% block heading %}Participants{% endblock %}
 
 {% block content %}
 
-    {% if participants %}
-        <table class="table table-hover">
-            <thead class="thead-light">
-                <tr>
-                    <th>First name</th>
-                    <th>Last name</th>
-                    <th>E-mail</th>
-                    <th>Phone</th>
-                    <th>Active</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for participant in participants %}
-                    <tr>
-                        <td>{{ participant.first_name }}</td>
-                        <td>{{ participant.last_name }}</td>
-                        <td>{{ participant.email }}</td>
-                        <td>{{ participant.phone |cut:" " }}</td>
-                        <td>{{ participant.is_active }}</td>
-                        <td><a class="btn btn-secondary btn-sm" href={% url 'experiment:participant_update' pk_eks=participant.session.experiment.pk pk_ses=participant.session.pk pk=participant.pk %}>Edit</a></td>
-                        <td><a class="btn btn-secondary btn-sm" href={% url 'experiment:participant_delete' pk_eks=participant.session.experiment.pk pk_ses=participant.session.pk pk=participant.pk %}>Delete</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        There are no participants in this experiment.
-    {% endif %}
-    <br>
+    <div class="content-body">
+        <div class="container-fluid">
+            {% bootstrap_messages %}
+            <div class="row page-titles mx-0">
+                <div class="col-sm-6 p-md-0">
+                    <div class="welcome-text">
+                        <h4>Experiments</h4>
+                        <p class="mb-0">A list of all participants</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Experiments</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Detail</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Participants</a></li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title"></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                {% if participants %}
+                                    <table class="table table-hover">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th>First name</th>
+                                            <th>Last name</th>
+                                            <th>E-mail</th>
+                                            <th>Phone</th>
+                                            <th>Active</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for participant in participants %}
+                                            <tr>
+                                                <td>{{ participant.first_name }}</td>
+                                                <td>{{ participant.last_name }}</td>
+                                                <td>{{ participant.email }}</td>
+                                                <td>{{ participant.phone |cut:" " }}</td>
+                                                <td>
+                                                    {% if participant.is_active %}
+                                                        <span class="badge badge-pill badge-success">Active</span>
+                                                    {% else %}
+                                                        <span class="badge badge-pill badge-warning">Inactive</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td><a class="btn btn-primary btn-sm"
+                                                       href={% url 'experiment:participant_update' pk_eks=participant.session.experiment.pk pk_ses=participant.session.pk pk=participant.pk %}>Edit</a>
+                                                </td>
+                                                <td><a class="btn btn-primary btn-sm"
+                                                       href={% url 'experiment:participant_delete' pk_eks=participant.session.experiment.pk pk_ses=participant.session.pk pk=participant.pk %}>Delete</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    There are no participants in this experiment.
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 

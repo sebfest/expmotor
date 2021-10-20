@@ -8,80 +8,138 @@
 
     {% bootstrap_messages %}
 
-    <table class="table table-hover">
-        <thead class="thead-light">
-        <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Place</th>
-            <th>Slots</th>
-            <th>Registrations</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>{{ session.date|date:'Y-m-d' }}</td>
-            <td>{{ session.time|time:"H:i" }}</td>
-            <td>{{ session.place }}</td>
-            <td>{{ session.max_subjects }}</td>
-            <td>
-                <div class="progress position-relative">
-                    <div class="progress-bar"
-                         role="progressbar"
-                         style="width: {{ session.complete }}%"
-                         aria-valuenow="{{ session.complete }}"
-                         aria-valuemin="0" aria-valuemax="1">
-                        <span class="justify-content-center d-flex position-absolute w-100" style="color: black">
-                            {{ session.registrations }}
-                        </span>
+    <div class="content-body">
+        <div class="container-fluid">
+            {% bootstrap_messages %}
+            <div class="row page-titles mx-0">
+                <div class="col-sm-6 p-md-0">
+                    <div class="welcome-text">
+                        <h4>Session info</h4>
+                        <p class="mb-0">Details about the session</p>
                     </div>
                 </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <br>
-    <hr>
-    {% if session.participants.all %}
-        <table class="table table-hover">
-            <thead class="thead-light">
-            <tr>
-                <th>First name</th>
-                <th>Last name</th>
-                <th>E-mail</th>
-                <th>Phone</th>
-                <th>Active</th>
-                <th></th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for participant in session.participants.all %}
-                <tr>
-                    <td>{{ participant.first_name }}</td>
-                    <td>{{ participant.last_name }}</td>
-                    <td>{{ participant.email }}</td>
-                    <td>{{ participant.phone |cut:" " }}</td>
-                    <td>{{ participant.is_active }}</td>
-                    <td><a class="btn btn-secondary btn-sm"
-                           href={% url 'experiment:participant_update' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>Edit</a>
-                    </td>
-                    <td><a class="btn btn-secondary btn-sm"
-                           href={% url 'experiment:participant_delete' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>Delete</a>
-                    </td>
-                </tr>
-                </tbody>
-            {% endfor %}
-        </table>
-    {% else %}
-        There are no participants in this experiment.
-    {% endif %}
-    <br>
-    <br>
-    <a class="btn btn-secondary" href={% url 'experiment:participant_add' pk_eks=session.experiment.pk pk=session.pk %}>Add
-        participant</a>
-    <a class="btn btn-secondary" href={% url 'experiment:experiment_detail' pk=session.experiment.pk %}>Back to
-        experiment.</a>
+                <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Experiments</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Session</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Detail</a></li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Session</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Place</th>
+                                        <th>Slots</th>
+                                        <th>Registrations</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>{{ session.date|date:'Y-m-d' }}</td>
+                                        <td>{{ session.time|time:"H:i" }}</td>
+                                        <td>{{ session.place }}</td>
+                                        <td>{{ session.max_subjects }}</td>
+                                        <td>
+                                            <div class="progress position-relative" style="height:1rem">
+                                                <div class="progress-bar"
+                                                     role="progressbar"
+                                                     style="width:{{ session.complete|floatformat:0 }}%"
+                                                     aria-valuenow="{{ session.complete|floatformat:0 }}"
+                                                     aria-valuemin="0" aria-valuemax="1">
+                                                    <span class="justify-content-center d-flex position-absolute w-100" style="color: black">
+                                                        {{ session.registrations }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Participants</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                {% if session.participants.all %}
+                                    <table class="table table-hover">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th>First name</th>
+                                            <th>Last name</th>
+                                            <th>E-mail</th>
+                                            <th>Phone</th>
+                                            <th>Active</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for participant in session.participants.all %}
+                                            <tr>
+                                                <td>{{ participant.first_name }}</td>
+                                                <td>{{ participant.last_name }}</td>
+                                                <td>{{ participant.email }}</td>
+                                                <td>{{ participant.phone |cut:" " }}</td>
+                                                <td>
+                                                    {% if participant.is_active %}
+                                                        <span class="badge badge-pill badge-success">Active</span>
+                                                    {% else %}
+                                                        <span class="badge badge-pill badge-warning">Inactive</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td><a class="btn btn-primary btn-sm"
+                                                       href={% url 'experiment:participant_update' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>Edit</a>
+                                                </td>
+                                                <td><a class="btn btn-primary btn-sm"
+                                                       href={% url 'experiment:participant_delete' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>Delete</a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        {% endfor %}
+                                    </table>
+                                {% else %}
+                                   <div class="alert alert-info" role="info">
+                                        There are no sessions in this experiment.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="btn-group" role="group">
+                         <a class="btn btn-primary mr-1"
+                            href={% url 'experiment:participant_add' pk_eks=session.experiment.pk pk=session.pk %}>
+                             Add participant</a>
+                        <a class="btn btn-primary mr-1"
+                           href={% url 'experiment:experiment_detail' pk=session.experiment.pk %}>
+                            Back to experiment.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 

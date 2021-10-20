@@ -6,60 +6,93 @@
 
 {% block content %}
 
-    {% bootstrap_messages %}
-
-    {% if experiments %}
-        <table class="table table-hover">
-            <thead class="thead-light">
-            <tr>
-                <th>Name</th>
-                <th>Sessions</th>
-                <th>Slots</th>
-                <th>Registrations</th>
-                <th>Status</th>
-                <th></th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for experiment in experiments %}
-                <tr>
-                    <td>{{ experiment.name }} </td>
-                    <td>{{ experiment.sessions.all.count }}</td>
-                    <td>{{ experiment.slots }}</td>
-                    <td>
-                        <div class="progress position-relative">
-                            <div class="progress-bar"
-                                 role="progressbar"
-                                 style="width: {{ experiment.complete }}%"
-                                 aria-valuenow="{{ experiment.complete }}"
-                                 aria-valuemin="0" aria-valuemax="1">
-                        <span class="justify-content-center d-flex position-absolute w-100" style="color: black">
-                            {{ experiment.registrations }}
-                        </span>
+    <div class="content-body">
+        <div class="container-fluid">
+            {% bootstrap_messages %}
+            <div class="row page-titles mx-0">
+                <div class="col-sm-6 p-md-0">
+                    <div class="welcome-text">
+                        <h4>Experiments</h4>
+                        <p class="mb-0">A list of all your experiments</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Experiments</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Bootstrap</a></li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Experiments</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    {% if experiments %}
+                                        <table class="table table-responsive-sm">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Sessions</th>
+                                                <th>Slots</th>
+                                                <th>Registrations</th>
+                                                <th>Status</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for experiment in experiments %}
+                                                <tr>
+                                                    <td>{{ experiment.name }} </td>
+                                                    <td>{{ experiment.sessions.all.count }}</td>
+                                                    <td>{{ experiment.slots }}</td>
+                                                    <td>
+                                                        <div class="progress position-relative">
+                                                            <div class="progress-bar"
+                                                                 role="progressbar"
+                                                                 style="width:{{ experiment.complete|floatformat:0 }}%;"
+                                                                 aria-valuenow="{{ experiment.complete|floatformat:0 }}"
+                                                                 aria-valuemin="0" aria-valuemax="1">
+                                                                <span class="justify-content-center d-flex position-absolute w-100"
+                                                                      style="color: black" >
+                                                                    {{ experiment.registrations }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {% if experiment.is_active %}
+                                                            <span class="badge badge-pill badge-success">Active</span>
+                                                        {% else %}
+                                                            <span class="badge badge-pill badge-warning">Inactive</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td><a class="btn btn-primary btn-sm"
+                                                           href={% url 'experiment:experiment_detail' pk=experiment.pk %}>Manage</a></td>
+                                                    <td><a class="btn btn-primary btn-sm"
+                                                           href={% url 'experiment:experiment_delete' pk=experiment.pk %}>Delete</a></td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% else %}
+                                        <div class="alert alert-info" role="info">
+                                            There are no experiments.
+                                        </div>
+                                    {% endif %}
+                                </table>
                             </div>
                         </div>
-                    </td>
-                    <td>
-                        {% if experiment.is_active %}
-                            <span class="badge badge-pill badge-success">Active</span>
-                        {% else %}
-                            <span class="badge badge-pill badge-warning">Inactive</span>
-                        {% endif %}
-                    </td>
-                    <td><a class="btn btn-secondary btn-sm"
-                           href={% url 'experiment:experiment_detail' pk=experiment.pk %}>Manage</a></td>
-                    <td><a class="btn btn-secondary btn-sm"
-                           href={% url 'experiment:experiment_delete' pk=experiment.pk %}>Delete</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-info" role="info">
-            There are no experiments.
+                    </div>
+                </div>
+            </div>
+            <a class="btn btn-primary" href={% url 'experiment:experiment_add' %}>Add experiment</a>
         </div>
-    {% endif %}
-    <br>
-    <a class="btn btn-secondary" href={% url 'experiment:experiment_add' %}>Add experiment</a>
+    </div>
+
 {% endblock %}
