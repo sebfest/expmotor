@@ -2,23 +2,28 @@
 
 {% load bootstrap4 %}
 
-{% block heading %}Create session for {{ experiment.name }}{% endblock %}
-
 {% block extrahead %} {{ form.media }} {% endblock %}
 
 {% block content %}
 
-    {% bootstrap_messages %}
-
-    <form class="form-inline" action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
-        {% csrf_token %}
-        {% bootstrap_form_errors form type="all" layout='inline' %}
-        {% bootstrap_form form show_help=False show_label=False set_required=True %}
-        <div class="form-row">
-            <div class="col-auto my-3">
-                {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+    <div class="container px-4 px-lg-5 ">
+        <div class="row align-items-center">
+            <div class="col mx-auto">
+                <h3>Create session for {{ experiment.name }}</h3>
+                <hr class="mt-0 mb-4">
+                {% bootstrap_messages %}
+                <form class="form-inline" action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form type="all" layout='inline' %}
+                    {% bootstrap_form form show_help=False show_label=False set_required=True %}
+                    <div class="form-row">
+                        <div class="col-auto my-3">
+                            {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </form>
+    </div>
 
 {% endblock %}

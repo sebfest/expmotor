@@ -2,19 +2,24 @@
 
 {% load bootstrap4 %}
 
-{% block heading %}Create participant for <a href="{{ session.get_absolute_url }}">{{ session }}</a>{% endblock %}
-
 {% block content %}
 
-    {% bootstrap_messages %}
-
-    <form class="form" action="{% url 'experiment:participant_add' pk_eks=session.experiment.pk pk=session.pk %}" method="post">
-        {% csrf_token %}
-        {% bootstrap_form_errors form type="all" layout='inline' %}
-        {% bootstrap_form form form_group_class='form-group' show_help=False show_label=True set_required=True size='medium' layout="horizontal" %}
-        <div class="d-flex">
-            {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+    <div class="container px-4 px-lg-5 ">
+        <div class="row align-items-center">
+            <div class="col mx-auto">
+                {% bootstrap_messages %}
+                <form class="form"
+                      action="{% url 'experiment:participant_add' pk_eks=session.experiment.pk pk=session.pk %}"
+                      method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form type="all" layout='inline' %}
+                    {% bootstrap_form form form_group_class='form-group' show_help=False show_label=True set_required=True size='medium' layout="horizontal" %}
+                    <div class="d-flex">
+                        {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+                    </div>
+                </form>
+            </div>
         </div>
-    </form>
+    </div>
 
 {% endblock %}

@@ -1,3 +1,5 @@
+{% load static %}
+
 {% load bootstrap4 %}
 
 <html>
@@ -20,15 +22,7 @@
         <!-- Page Header -->
         {% include 'header.html' %}
         <!-- Main content -->
-        <div class="container px-4 px-lg-5 ">
-            <div class="row align-items-center">
-                <div class="col mx-auto">
-                    <h3>{% block heading %}{% endblock %}</h3>
-                    <hr class="mt-0 mb-4">
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
-        </div>
+        {% block content %}{% endblock %}
         <!-- Footer -->
         {% include 'footer.html' %}
     </body>

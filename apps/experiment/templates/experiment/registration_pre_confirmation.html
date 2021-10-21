@@ -2,10 +2,16 @@
 
 {% load bootstrap4 %}
 
-{% block heading %}Thank you!{% endblock %}
-
 {% block content %}
 
-    {% bootstrap_messages %}
+    <div class="container px-4 px-lg-5 ">
+        <div class="row align-items-center">
+            <div class="col mx-auto">
+                <h3>Thank you!</h3>
+                <hr class="mt-0 mb-4">
+                {% bootstrap_messages %}
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
