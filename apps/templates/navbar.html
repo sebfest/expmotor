@@ -3,22 +3,22 @@
 <div class="quixnav">
     <div class="quixnav-scroll">
         <ul class="metismenu" id="menu">
-
             <li class="nav-label first">Main Menu</li>
-            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false"><i
-                    class="icon icon-single-04"></i><span class="nav-text">Dashboard</span></a>
+            <li>
+                <a class="has-arrow" aria-expanded="false" href="javascript:void()">
+                    <i class="icon icon-single-04"></i>
+                    <span class="nav-text">Account</span>
+                </a>
                 <ul aria-expanded="false">
-                    <li><a href="./index.html">Dashboard 1</a></li>
-                    <li><a href="./index2.html">Dashboard 2</a></li>
+                    <li><a href={% url 'account:profile_detail' pk=user.pk %}>Profile</a></li>
                 </ul>
             </li>
-
-            <li class="nav-label">Table</li>
-            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false"><i
-                    class="icon icon-layout-25"></i><span class="nav-text">Table</span></a>
+            <li><a class="has-arrow" aria-expanded="false" href="javascript:void()">
+                <i class="icon icon-layout-25"></i>
+                <span class="nav-text">Experiments</span></a>
                 <ul aria-expanded="false">
-                    <li><a href="table-bootstrap-basic.html">Bootstrap</a></li>
-                    <li><a href="table-datatable-basic.html">Datatable</a></li>
+                    <li><a href={% url 'experiment:experiment_list' %}>My experiments</a></li>
+                    <li><a href={% url 'experiment:experiment_add' %}>Create</a></li>
                 </ul>
             </li>
 
