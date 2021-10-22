@@ -4,13 +4,12 @@
 
 {% block content %}
 
-    <div class="container px-4 px-lg-5 ">
-        <div class="row align-items-center">
-            <div class="col mx-auto">
-                <h3>Thank you!</h3>
-                <hr class="mt-0 mb-4">
-                {% bootstrap_messages %}
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Thank you!</h4>
+        </div>
+        <div class="card-body">
+            {% bootstrap_messages %}
         </div>
     </div>
 

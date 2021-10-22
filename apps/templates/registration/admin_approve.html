@@ -1,12 +1,18 @@
 {% extends "registration/registration_base.html" %}
-{% load i18n %}
 
-{% block title %}{% trans "Approval Failure" %}{% endblock %}
+{% load i18n %}
 
 {% block content %}
 
-    <div class="alert alert-danger" role="alert">
-        {% trans "Account Approval failed." %}
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">{% trans "Approval Failure" %}</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger" role="alert">
+                {% trans "Account Approval failed." %}
+            </div>
+        </div>
     </div>
 
 {% endblock %}

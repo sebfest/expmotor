@@ -1,0 +1,32 @@
+{% load static %}
+
+<div class="sidebar" data-color="black" data-active-color="danger">
+    <div class="logo">
+        <a href="https://www.nhh.no/en/research-centres/fair/" class="simple-text logo-mini">
+            <div class="logo-image-small">
+                <img src={% static 'experiment/img/fair-kvadratisk-new.svg' %}>
+            </div>
+        </a>
+        <a class="simple-text logo-normal" href={% url 'experiment:experiment_list' %}>
+            ExpMotor
+        </a>
+    </div>
+    <div class="sidebar-wrapper">
+        {% if user.is_authenticated %}
+        <ul class="nav">
+            <li>
+                <a href={% url 'account:profile_detail' pk=user.pk %}>
+                    <i class="nc-icon nc-single-02"></i>
+                    <p>User Profile</p>
+                </a>
+            </li>
+            <li class="active ">
+                <a href={% url 'experiment:experiment_list' %}>
+                    <i class="nc-icon nc-tile-56"></i>
+                    <p>My experiments</p>
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+    </div>
+</div>

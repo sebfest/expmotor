@@ -2,25 +2,21 @@
 
 {% load bootstrap4 %}
 
-{% block heading %}Delete {{ typename }}{% endblock %}
-
 {% block content %}
 
-    <div class="container px-4 px-lg-5 ">
-        <div class="row align-items-center">
-            <div class="col mx-auto">
-                <h3>You're about to delete {{ object }}.</h3>
-                <hr class="mt-0 mb-4">
-                <form method="post">
-                    {% csrf_token %}
-                    {% buttons %}
-                        <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
-                        <button type="submit" class="btn btn-secondary">Confirm</button>
-                    {% endbuttons %}
-                </form>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">You're about to delete {{ object }}.</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% buttons %}
+                    <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                {% endbuttons %}
+            </form>
         </div>
     </div>
-
 
 {% endblock %}

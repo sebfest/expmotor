@@ -1,6 +1,6 @@
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.models import Site
@@ -92,7 +92,7 @@ class Experiment(AbstractBaseModel):
         """Number of registrations."""
         agg_count = Experiment.objects.all() \
             .filter(pk=self.pk) \
-            .aggregate(registrations=Count('sessions__participants'))
+            .aggregate(registrations=Count('sessions__participants', filter=Q(sessions__participants__is_active=True)))
         return agg_count.get('registrations') or 0
 
     @property
