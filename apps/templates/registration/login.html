@@ -16,7 +16,7 @@
             <form class="form" action="" method="post">
                 {% csrf_token %}
                 {% bootstrap_form_errors form type="all" layout='horizontal' %}
-                {% bootstrap_form form show_help=True show_label=True set_required=True size='medium' layout="horizontal" %}
+                {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal" %}
                 <div class="form-row">
                     <input class="btn btn-secondary" type="submit" value="{% trans 'Log in' %}"/>
                     <input type="hidden" name="next" value="{{ next }}"/>

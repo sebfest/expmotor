@@ -10,8 +10,8 @@
 
     <form class="form" method="post">
         {% csrf_token %}
-        {% bootstrap_form_errors form type="all" layout='inline' %}
-        {% bootstrap_form form form_group_class='form-group' show_help=True show_label=True set_required=True size='medium' layout="horizontal" %}
+        {% bootstrap_form_errors form type="all" layout='horizontal' %}
+        {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal" %}
         <div class="d-flex">
             {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
         </div>
