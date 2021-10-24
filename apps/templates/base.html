@@ -17,10 +17,10 @@
         {% block meta %}{% endblock %}
         <!--     Fonts and icons     -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet"/>
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+        <link href="{% static 'experiment/css/font-awesome.min.css' %}" rel="stylesheet">
         <!-- CSS Files -->
-        <link href={% static 'experiment/css/bootstrap.min.css' %} rel="stylesheet"/>
-        <link href={% static 'experiment/css/paper-dashboard.css' %} rel="stylesheet"/>
+        <link href="{% static 'experiment/css/bootstrap.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'experiment/css/paper-dashboard.css' %}" rel="stylesheet"/>
         {% bootstrap_javascript jquery='full' %}
         {% block extrahead %}{% endblock %}
     </head>
@@ -45,7 +45,8 @@
         <!--   Core JS Files   -->
         <script type="text/javascript" src={% static 'experiment/js/core/popper.min.js' %}></script>
         <script type="text/javascript" src={% static 'experiment/js/plugins/perfect-scrollbar.jquery.min.js' %}></script>
-        <script type="text/javascript" src={% static 'experiment/js/plugins/moment.min.js' %}></script>
+         <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
+        <script src="{% static 'experiment/js/paper-dashboard.min.js' %}" type="text/javascript"></script>
         {% block extrascript %}{% endblock %}
     </body>
 </html>
