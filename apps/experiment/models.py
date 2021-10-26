@@ -69,13 +69,14 @@ class Experiment(AbstractBaseModel):
         """URL to object."""
         return reverse('experiment:experiment_detail', kwargs={'pk': self.pk})
 
-    def get_full_absolute_url(self):
+    def get_full_absolute_url(self) -> str:
+        """URL to object with domain"""
         domain = Site.objects.get_current().domain
         url = self.get_absolute_url()
         return f'https://{domain}{url}'
 
     @property
-    def owner(self):
+    def owner(self) -> AUTH_USER_MODEL:
         """Owner of object"""
         return self.manager
 

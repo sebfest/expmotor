@@ -80,7 +80,7 @@ urlpatterns = [
         name='registration_create'
     ),
     path(
-        'experiment/<int:pk>/register/success',
+        'experiment/<int:pk>/register/success/',
         views.RegistrationPreConfirmView.as_view(),
         name='registration_success'
     ),
@@ -90,8 +90,18 @@ urlpatterns = [
         name='registration_activate'
     ),
     path(
-        'experiment/register/confirm',
+        'experiment/register/confirm/',
         views.RegistrationPostConfirmView.as_view(),
         name='registration_confirm'
+    ),
+    path(
+        'about/',
+        views.AboutView.as_view(),
+        name='about'
+    ),
+    path(
+        'license/',
+        views.LicenseView.as_view(),
+        name='license'
     ),
 ]

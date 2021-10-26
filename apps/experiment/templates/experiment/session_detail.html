@@ -91,7 +91,7 @@
                     {% endfor %}
                 </table>
             {% else %}
-                There are no participants in this experiment.
+                {% bootstrap_alert "There are currently no participants in this experiment." alert_type='info' dismissible=False %}
             {% endif %}
             <div class="btn-group" role="group">
                 <a class="btn btn-secondary mr-1"

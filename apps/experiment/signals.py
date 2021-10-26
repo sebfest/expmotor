@@ -1,10 +1,12 @@
 from typing import Type, FrozenSet, Optional
 
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import Template, Context
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -46,17 +48,25 @@ def send_email_confirmation_request(sender: Type[Participant], instance: Partici
                                     created: bool, update_fields: Optional[FrozenSet], **kwargs) -> None:
     """Send request to conform email after successful creation."""
     if created:
+        domain = Site.objects.get_current().domain
+        path = reverse(
+            'experiment:registration_activate',
+            kwargs={
+                'uidb64': urlsafe_base64_encode(force_bytes(instance.pk)),
+                'token': account_activation_token.make_token(instance),
+            }
+        )
+        url = f'https://{domain}{path}'
+
         template = Template(instance.session.experiment.confirmation_request)
         context_dict = {
-            'uid': urlsafe_base64_encode(force_bytes(instance.pk)),
-            'token': account_activation_token.make_token(instance),
+            'registration_link': url,
         }
         context = Context(context_dict)
 
         subject = '[Expmotor] Please confirm your email'
         message = template.render(context)
         recipient = instance.email
-
         send_mail(subject=subject, body=message, recipient=recipient)
 
 

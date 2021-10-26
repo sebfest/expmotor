@@ -306,8 +306,8 @@ class RegistrationPreConfirmView(TemplateView):
 class RegistrationActivateView(View):
     token_invalid_message = "Your link is broken."
     participant_missing_message = "Your registration_old does not exist"
-    success_message = "Your email has been confirmed. An email will be sent you shortly, confirming the details of " \
-                      "which session you are in."
+    success_message = "Your registration has been confirmed. An email will be sent you shortly, " \
+                      "confirming the details of which session you are in."
 
     def get_participant(self):
         """Get participant from encoded uid"""
@@ -338,3 +338,11 @@ class RegistrationActivateView(View):
 
 class RegistrationPostConfirmView(TemplateView):
     template_name = 'experiment/registration_post_confirmation.html'
+
+
+class AboutView(TemplateView):
+    template_name = 'experiment/about.html'
+
+
+class LicenseView(TemplateView):
+    template_name = 'experiment/license.html'

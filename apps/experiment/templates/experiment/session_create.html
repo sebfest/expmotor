@@ -13,16 +13,18 @@
             <h4 class="card-title">Create session for {{ experiment.name }}</h4>
         </div>
         <div class="card-body">
-            <form class="form-row inline" action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
+            <form action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
                 {% csrf_token %}
-                {% bootstrap_form_errors form type="all" layout='inline' %}
-                {% bootstrap_form form show_help=False show_label=False set_required=True layout='inline' label_class='col-auto' %}
-            </form>
-            <div class="form-group row">
-                <div class="col-sm-10">
+                <div class="form-row">
+                    {% bootstrap_form_errors form type="all" layout='inline' %}
+                </div>
+                <div class="form-row">
+                    {% bootstrap_form form show_help=False show_label=False set_required=True layout='inline' %}
+                </div>
+                <div class="form-row">
                     {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 

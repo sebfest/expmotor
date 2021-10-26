@@ -2,15 +2,13 @@
 
 {% load bootstrap4 %}
 
-{% block heading %}Edit participant{% endblock %}
-
 {% block content %}
 
     {% bootstrap_messages %}
 
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Update participant details</h4>
+            <h4 class="card-title">Edit participant details</h4>
         </div>
         <div class="card-body">
             <form action="{% url 'experiment:participant_update' pk_eks=participant.session.experiment.pk pk_ses=participant.session.pk pk=participant.pk %}"

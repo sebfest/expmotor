@@ -1,12 +1,12 @@
 defaults = {'registration_help': """<p> This page lets you register for the experiment.</p>
-<p> You need to tick off the session you would like to take part in.</p>
+<p> You need to chose the session you would like to take part in and fill out the rest of hte registration form.</p>
 """,
             'confirmation_request_email': """
 You have registered for an experiment using "Expmotor". 
 
 Please confirm your email address by clicking on this link: 
     
-http://127.0.0.1:8000{% url 'experiment:registration_activate' uidb64=uid token=token  %}
+{{ registration_link }}
     
 This is an auto-generated email.
 """,
