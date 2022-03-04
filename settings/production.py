@@ -82,17 +82,17 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Database configuration
-# POSTGRES_PW = get_env_variable('POSTGRES_PW')
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'expmotor',
-#         'USER': 'admin',
-#         'PASSWORD': POSTGRES_PW,
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
+POSTGRES_PW = get_env_variable('POSTGRES_PW')
+DATABASES = {
+    'default': {
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'NAME': 'expmotor',
+        # 'USER': 'admin',
+        # 'PASSWORD': POSTGRES_PW,
+        # 'HOST': 'localhost',
+        # 'PORT': '',
+    }
+}
 url = dj_database_url.config(default='postgres://...')
 DATABASES['default'].update(url)
 
