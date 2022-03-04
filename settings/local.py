@@ -124,7 +124,24 @@ ACCOUNT_ACTIVATION_DAYS = 3
 SITE_ID = 1
 
 # Email configuration to write on disk
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
 
+# Email configuration SMTP
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.office365.com'
+# EMAIL_PORT = '587'
+# EMAIL_HOST_USER = 'thechoicelab@nhh.no'
+# EMAIL_HOST_PASSWORD = 'miW9xKMzHMTRuMS'
+
+# o356 authentification
+EMAIL_BACKEND = 'django_o365mail.EmailBackend'
+O365_MAIL_CLIENT_ID = 'thechoicelab@nhh.no'
+O365_MAIL_CLIENT_SECRET = 'miW9xKMzHMTRuMS'
+O365_MAIL_TENANT_ID = '33a15b2f-8499-4199-8d56-f20b5aa91af2'
+
+EMAIL_SUBJECT_PREFIX = ''
+DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
+SERVER_EMAIL = 'thechoicelab@nhh.no'
 
