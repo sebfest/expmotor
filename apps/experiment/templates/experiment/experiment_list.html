@@ -16,18 +16,26 @@
                     <thead class="thead-light">
                     <tr>
                         <th>Name</th>
+                        <th>Status</th>
                         <th>Sessions</th>
                         <th>Slots</th>
                         <th>Registrations</th>
-                        <th>Status</th>
-                        <th></th>
-                        <th></th>
+                        <th>Participants</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for experiment in experiments %}
                         <tr>
-                            <td>{{ experiment.name }} </td>
+                            <td>
+                                <a href={% url 'experiment:experiment_detail' pk=experiment.pk %}>{{ experiment.name }} </a>
+                            </td>
+                            <td>
+                                {% if experiment.is_active %}
+                                    <span class="badge badge-pill badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-warning">Inactive</span>
+                                {% endif %}
+                            </td>
                             <td>{{ experiment.sessions.all.count }}</td>
                             <td>{{ experiment.slots }}</td>
                             <td>
@@ -45,17 +53,8 @@
                                 </div>
                             </td>
                             <td>
-                                {% if experiment.is_active %}
-                                    <span class="badge badge-pill badge-success">Active</span>
-                                {% else %}
-                                    <span class="badge badge-pill badge-warning">Inactive</span>
-                                {% endif %}
-                            </td>
-                            <td><a class="btn btn-secondary btn-sm"
-                                   href={% url 'experiment:experiment_detail' pk=experiment.pk %}>Manage</a>
-                            </td>
-                            <td><a class="btn btn-secondary btn-sm"
-                                   href={% url 'experiment:experiment_delete' pk=experiment.pk %}>Delete</a>
+                                <a class="btn btn-secondary btn-sm" role="button"
+                                   href={% url 'experiment:participant_list' pk=experiment.pk %}>List all</a>
                             </td>
                         </tr>
                     {% endfor %}

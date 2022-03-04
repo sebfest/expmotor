@@ -250,14 +250,23 @@ class ParticipantUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
 class ParticipantListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = 'experiment/participant_list.html'
     context_object_name = 'participants'
+    experiment = None
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
 
     def test_func(self):
-        experiment = get_object_or_404(Experiment, pk=self.kwargs['pk'])
-        return True if self.request.user == experiment.owner else False
+        return True if self.request.user == self.experiment.owner else False
 
     def get_queryset(self):
         """Limit list of participants to session members."""
-        return Participant.objects.filter(session__experiment__pk=self.kwargs['pk'], ).order_by('last_name')
+        return Participant.objects.filter(session__experiment=self.experiment).order_by('last_name')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['experiment'] = self.experiment
+        return context
 
 
 class ParticipantDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):

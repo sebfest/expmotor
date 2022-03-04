@@ -18,6 +18,7 @@
                 {% bootstrap_form form form_group_class='form-group' show_help=False show_label=True set_required=True layout="horizontal" %}
                 <div>
                     {% bootstrap_button "Update" button_type="submit" button_class="btn-secondary" %}
+                    <a class="btn btn-danger" href={% url 'experiment:participant_delete' pk_eks=participant.session.experiment.pk pk_ses=participant.session.pk pk=participant.pk %}>Delete</a>
                 </div>
             </form>
         </div>

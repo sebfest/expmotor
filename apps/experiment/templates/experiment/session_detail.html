@@ -7,7 +7,9 @@
     {% bootstrap_messages %}
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Session for experiment: {{ session.experiment.name }}</h4>
+            <h4 class="card-title">Session for experiment:
+                <a href={% url 'experiment:experiment_detail' pk=session.experiment.pk %}>{{ session.experiment.name }}</a>
+            </h4>
         </div>
         <div class="card-body">
             <table class="table table-hover">
@@ -18,12 +20,13 @@
                     <th>Place</th>
                     <th>Slots</th>
                     <th>Registrations</th>
-                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>{{ session.date|date:'Y-m-d' }}</td>
+                    <td>
+                        <a href={% url 'experiment:session_update' pk_eks=session.experiment.pk pk=session.pk %}>{{ session.date|date:'Y-m-d' }}</a>
+                    </td>
                     <td>{{ session.time|time:"H:i" }}</td>
                     <td>{{ session.place }}</td>
                     <td>{{ session.max_subjects }}</td>
@@ -39,9 +42,6 @@
                         </span>
                             </div>
                         </div>
-                    </td>
-                    <td><a class="btn btn-secondary btn-sm"
-                           href={% url 'experiment:session_update' pk_eks=session.experiment.pk pk=session.pk %}>Edit</a>
                     </td>
                 </tr>
                 </tbody>
@@ -62,15 +62,17 @@
                         <th>E-mail</th>
                         <th>Phone</th>
                         <th>Active</th>
-                        <th></th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for participant in session.participants.all %}
                         <tr>
-                            <td>{{ participant.first_name }}</td>
-                            <td>{{ participant.last_name }}</td>
+                            <td>
+                                <a href={% url 'experiment:participant_update' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>{{ participant.first_name }}</a>
+                            </td>
+                            <td>
+                                <a href={% url 'experiment:participant_update' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>{{ participant.last_name }}</a>
+                            </td>
                             <td>{{ participant.email }}</td>
                             <td>{{ participant.phone |cut:" " }}</td>
                             <td>
@@ -80,12 +82,6 @@
                                     <span class="badge badge-pill badge-warning">Inactive</span>
                                 {% endif %}
                             </td>
-                            <td><a class="btn btn-secondary btn-sm"
-                                   href={% url 'experiment:participant_update' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>Edit</a>
-                            </td>
-                            <td><a class="btn btn-secondary btn-sm"
-                                   href={% url 'experiment:participant_delete' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>Delete</a>
-                            </td>
                         </tr>
                         </tbody>
                     {% endfor %}
@@ -94,12 +90,9 @@
                 {% bootstrap_alert "There are currently no participants in this experiment." alert_type='info' dismissible=False %}
             {% endif %}
             <div class="btn-group" role="group">
-                <a class="btn btn-secondary mr-1"
-                   href={% url 'experiment:experiment_detail' pk=session.experiment.pk %}>
-                    Back to experiment.</a>
-                <a class="btn btn-secondary mr-1"
-                   href={% url 'experiment:participant_add' pk_eks=session.experiment.pk pk=session.pk %}>
-                    Add participant</a>
+                <a class="btn btn-secondary"
+                   href={% url 'experiment:participant_add' pk_eks=session.experiment.pk pk=session.pk %}>Add
+                    participant</a>
             </div>
         </div>
     </div>
