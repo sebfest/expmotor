@@ -1,5 +1,5 @@
 import os
-import dj_database_url
+
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -16,8 +16,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = get_env_variable('DB_SECRET_KEY')
 DEBUG = False
 ALLOWED_HOSTS = [
-    'expmotor.herokuapp.com',
-    '*',
+    'thomas.nhh.no',
 ]
 
 INSTALLED_APPS = [
@@ -85,16 +84,14 @@ AUTH_PASSWORD_VALIDATORS = [
 POSTGRES_PW = get_env_variable('POSTGRES_PW')
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': 'expmotor',
-        # 'USER': 'admin',
-        # 'PASSWORD': POSTGRES_PW,
-        # 'HOST': 'localhost',
-        # 'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'expmotor',
+        'USER': 'sebastian',
+        'PASSWORD': POSTGRES_PW,
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
-url = dj_database_url.config(default='postgres://...')
-DATABASES['default'].update(url)
 
 AUTH_USER_MODEL = 'auth.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -118,9 +115,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Registration
 ADMINS = [('sebastian', 'sebastian.fest@nhh.no')]
-LOGIN_URL = '/accounts/login'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGIN_URL = '/expmotor/accounts/login'
+LOGIN_REDIRECT_URL = '/expmotor'
+LOGOUT_REDIRECT_URL = '/expmotor/accounts/login'
 REGISTRATION_OPEN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
 REGISTRATION_ADMINS = ADMINS

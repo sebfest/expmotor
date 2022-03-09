@@ -135,13 +135,15 @@ SITE_ID = 1
 # EMAIL_HOST_USER = 'thechoicelab@nhh.no'
 # EMAIL_HOST_PASSWORD = 'miW9xKMzHMTRuMS'
 
+EMAIL_SUBJECT_PREFIX = ''
+DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
+SERVER_EMAIL = 'thechoicelab@nhh.no'
+
 # o356 authentification
 EMAIL_BACKEND = 'django_o365mail.EmailBackend'
 O365_MAIL_CLIENT_ID = 'thechoicelab@nhh.no'
 O365_MAIL_CLIENT_SECRET = 'miW9xKMzHMTRuMS'
 O365_MAIL_TENANT_ID = '33a15b2f-8499-4199-8d56-f20b5aa91af2'
 
-EMAIL_SUBJECT_PREFIX = ''
-DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
-SERVER_EMAIL = 'thechoicelab@nhh.no'
+
 
