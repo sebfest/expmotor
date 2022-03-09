@@ -145,5 +145,32 @@ O365_MAIL_CLIENT_ID = 'thechoicelab@nhh.no'
 O365_MAIL_CLIENT_SECRET = 'miW9xKMzHMTRuMS'
 O365_MAIL_TENANT_ID = '33a15b2f-8499-4199-8d56-f20b5aa91af2'
 
-
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/info.log',
+            'formatter': 'simple',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
