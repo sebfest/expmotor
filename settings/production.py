@@ -153,16 +153,10 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/info.log',
-            'formatter': 'simple',
-        },
         'logfile': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/info2.log',
+            'filename': os.path.join(BASE_DIR, 'logs', 'info.log'),
             'maxBytes': 50000,
             'backupCount': 2,
             'formatter': 'simple',
@@ -174,8 +168,8 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'logfile'],
-            'level': 'INFO',
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
             'propagate': True,
         },
     },
