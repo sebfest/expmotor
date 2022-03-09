@@ -159,6 +159,14 @@ LOGGING = {
             'filename': 'logs/info.log',
             'formatter': 'simple',
         },
+        'logfile': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/info2.log',
+            'maxBytes': 50000,
+            'backupCount': 2,
+            'formatter': 'simple',
+        },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
@@ -166,7 +174,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['file', 'logfile'],
             'level': 'INFO',
             'propagate': True,
         },
