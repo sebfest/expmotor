@@ -333,7 +333,8 @@ class RegistrationActivateView(View):
         participant = self.get_participant()
         valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
 
-        if valid_token and participant is not None:
+        # TODO safe links messes this up, can't check valid token
+        if participant is not None:
             participant.confirmed_email = True
             participant.save(update_fields=['confirmed_email'])
             messages.success(self.request, self.success_message)
