@@ -45,6 +45,7 @@ class Experiment(AbstractBaseModel):
         default=defaults['registration_help'],
         help_text="This text will meet participants when registering for participation."
     )
+    # TODO: remove
     confirmation_request = models.TextField(
         verbose_name=_('confirmation mail'),
         default=defaults['confirmation_request_email'],
