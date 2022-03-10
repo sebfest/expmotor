@@ -115,9 +115,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Registration settings
 ADMINS = [('admin', 'admin@expmotor.no')]
-LOGIN_URL = '/accounts/login'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGIN_URL = '/expmotor/accounts/login'
+LOGIN_REDIRECT_URL = '/expmotor'
+LOGOUT_REDIRECT_URL = '/expmotor/accounts/login'
 REGISTRATION_OPEN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = 'admin@expmotor.no'
 REGISTRATION_ADMINS = ADMINS
