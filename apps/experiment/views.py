@@ -290,7 +290,7 @@ class ParticipantDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
 class RegistrationView(SuccessMessageMixin, CreateView):
     form_class = ParticipantRegistrationForm
     template_name = 'experiment/registration_create.html'
-    success_message = "An email will be sent you shortly. Click on the link in that email to complete the registration_old"
+    success_message = "An email will be sent you shortly. Click on the link in that email to complete the registration"
 
     def get_form_kwargs(self):
         experiment = get_object_or_404(Experiment, pk=self.kwargs.get('pk'))

@@ -183,7 +183,7 @@ class Participant(AbstractBaseModel):
     email = models.EmailField(
         verbose_name=_('email'),
         help_text='An email will be sent to this address for validation purposes, you must click on a link in this '
-                  'email before registration_old is complete.'
+                  'email before registration is complete.'
     )
     confirmed_email = models.BooleanField(
         default=False,
