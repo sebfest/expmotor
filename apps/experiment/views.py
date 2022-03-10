@@ -333,15 +333,12 @@ class RegistrationActivateView(View):
         participant = self.get_participant()
         valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
 
-        if valid_token is False:
-            messages.error(self.request, self.token_invalid_message)
+        if valid_token and participant is not None:
+            participant.confirmed_email = True
+            participant.save(update_fields=['confirmed_email'])
+            messages.success(self.request, self.success_message)
         else:
-            if participant is not None:
-                participant.confirmed_email = True
-                participant.save(update_fields=['confirmed_email'])
-                messages.success(self.request, self.success_message)
-            else:
-                messages.error(self.request, 'Error')
+            messages.error(self.request, 'Error')
 
         return HttpResponseRedirect(reverse('experiment:registration_confirm'))
 
