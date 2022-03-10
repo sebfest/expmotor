@@ -6,7 +6,8 @@ You have registered for an experiment using "Expmotor".
 
 Please confirm your email address by clicking on this link: 
     
-{{ registration_link }}
+<a href="{{ registration_link }}">Click here"</a>    
+
     
 This is an auto-generated email.
 """,

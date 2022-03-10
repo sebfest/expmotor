@@ -314,7 +314,7 @@ class RegistrationPreConfirmView(TemplateView):
 
 class RegistrationActivateView(View):
     token_invalid_message = "Your link is broken."
-    participant_missing_message = "Your registration_old does not exist"
+    participant_missing_message = "Your registration does not exist"
     success_message = "Your registration has been confirmed. An email will be sent you shortly, " \
                       "confirming the details of which session you are in."
 
@@ -333,14 +333,15 @@ class RegistrationActivateView(View):
         participant = self.get_participant()
         valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
 
-        if not valid_token:
+        if valid_token is False:
             messages.error(self.request, self.token_invalid_message)
-        elif participant is not None and valid_token:
-            participant.confirmed_email = True
-            participant.save(update_fields=['confirmed_email'])
-            messages.success(self.request, self.success_message)
         else:
-            messages.error(self.request, 'Error')
+            if participant is not None:
+                participant.confirmed_email = True
+                participant.save(update_fields=['confirmed_email'])
+                messages.success(self.request, self.success_message)
+            else:
+                messages.error(self.request, 'Error')
 
         return HttpResponseRedirect(reverse('experiment:registration_confirm'))
 
