@@ -19,6 +19,7 @@
                         <th>Last name</th>
                         <th>E-mail</th>
                         <th>Phone</th>
+                        <th>Confirmed</th>
                         <th>Active</th>
                     </tr>
                     </thead>
@@ -29,6 +30,13 @@
                             <td>{{ participant.last_name }}</td>
                             <td>{{ participant.email }}</td>
                             <td>{{ participant.phone |cut:" " }}</td>
+                            <td>
+                                {% if participant.confirmed_email %}
+                                    <span class="badge badge-pill badge-success">Yes</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-warning">No</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if participant.is_active %}
                                     <span class="badge badge-pill badge-success">Active</span>

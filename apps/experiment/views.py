@@ -333,7 +333,7 @@ class RegistrationActivateView(View):
         participant = self.get_participant()
         valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
 
-        # TODO safe links messes this up, can't check valid token
+        # TODO Office356 safe links messes this up, can't check valid token
         if participant is not None:
             participant.confirmed_email = True
             participant.save(update_fields=['confirmed_email'])
