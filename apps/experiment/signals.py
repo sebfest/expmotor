@@ -1,21 +1,22 @@
 from typing import Type, FrozenSet, Optional
 
 from django.contrib.sites.models import Site
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import Template, Context
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
+from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
 
+from settings.production import EMAIL_HOST_USER
 from .models import Experiment, Participant
 from .tokens import account_activation_token
-from settings.production import EMAIL_HOST_USER
 
 
-def send_mail(sender: Optional[str] = EMAIL_HOST_USER, *, recipient: str, subject: str, body: str) -> None:
+def send_my_mail(sender: Optional[str] = EMAIL_HOST_USER, *, recipient: str, subject: str, body: str) -> None:
     """Send email from host to single recipient."""
     email = EmailMessage(
         from_email=sender,
@@ -23,7 +24,7 @@ def send_mail(sender: Optional[str] = EMAIL_HOST_USER, *, recipient: str, subjec
         subject=subject,
         body=body,
     )
-    email.send(fail_silently=False)
+    email.send(fail_silently=True)
 
 
 @receiver(post_save, sender=Experiment)
@@ -40,7 +41,7 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
         message = render_to_string('experiment/experiment_created_confirmation.txt', context_dict)
         subject = f'[Expmotor] Experiment created ({instance.name})'
 
-        send_mail(recipient=recipient, subject=subject, body=message)
+        send_my_mail(recipient=recipient, subject=subject, body=message)
 
 
 @receiver(post_save, sender=Participant)
@@ -58,16 +59,22 @@ def send_email_confirmation_request(sender: Type[Participant], instance: Partici
         )
         url = f'https://{domain}{path}'
 
-        template = Template(instance.session.experiment.confirmation_request)
-        context_dict = {
-            'registration_link': url,
-        }
-        context = Context(context_dict)
-
         subject = '[Expmotor] Please confirm your email'
-        message = template.render(context)
         recipient = instance.email
-        send_mail(subject=subject, body=message, recipient=recipient)
+        html_message = render_to_string(
+            'experiment/participant_pre_conformation_email.html',
+            {'registration_link': url}
+        )
+        message = strip_tags(html_message)
+
+        send_mail(
+            subject=subject,
+            message=message,
+            html_message=html_message,
+            from_email=EMAIL_HOST_USER,
+            recipient_list=[recipient],
+            fail_silently=True,
+        )
 
 
 @receiver(post_save, sender=Participant)
@@ -90,4 +97,4 @@ def send_registration_info(sender: Type[Participant], instance: Participant,
         message = template.render(context)
         recipient = instance.email
 
-        send_mail(subject=subject, body=message, recipient=recipient)
+        send_my_mail(subject=subject, body=message, recipient=recipient)
