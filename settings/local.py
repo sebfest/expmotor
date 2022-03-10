@@ -109,32 +109,25 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Registration settings
+ACCOUNT_ACTIVATION_DAYS = 3
 ADMINS = [('admin', 'admin@expmotor.no')]
+INCLUDE_REGISTER_URL = False
+INCLUDE_AUTH_URLS = True
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 REGISTRATION_OPEN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = 'admin@expmotor.no'
 REGISTRATION_ADMINS = ADMINS
-INCLUDE_REGISTER_URL = False
-INCLUDE_AUTH_URLS = True
-ACCOUNT_ACTIVATION_DAYS = 3
 
 # Django Sites
 SITE_ID = 1
 
 # Email configuration to write on disk
-# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-# EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
 
-# Email configuration SMTP
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_PORT = '587'
-EMAIL_HOST_USER = 'admin@expmotor.no'
-EMAIL_HOST_PASSWORD = 'FyZ5EgtkVAzcwqx'
-
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

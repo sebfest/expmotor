@@ -13,7 +13,7 @@ http://{{site.domain}}{% url 'registration_activate' activation_key %}
 
 {% blocktrans with site_name=site.name %}
 Sincerely,
-{{ site_name }} Management
+{{ site_name }} Expmotor Team at FAIR
 {% endblocktrans %}
 
 
