@@ -109,12 +109,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Registration settings
-ADMINS = [('sebastian', 'sebastian.fest@nhh.no')]
+ADMINS = [('admin', 'admin@expmotor.no')]
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 REGISTRATION_OPEN = True
-REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
+REGISTRATION_DEFAULT_FROM_EMAIL = 'admin@expmotor.no'
 REGISTRATION_ADMINS = ADMINS
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
@@ -128,22 +128,12 @@ SITE_ID = 1
 # EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
 
 # Email configuration SMTP
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.office365.com'
-# EMAIL_PORT = '587'
-# EMAIL_HOST_USER = 'thechoicelab@nhh.no'
-# EMAIL_HOST_PASSWORD = 'miW9xKMzHMTRuMS'
-
-EMAIL_SUBJECT_PREFIX = ''
-DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
-SERVER_EMAIL = 'thechoicelab@nhh.no'
-
-# o356 authentification
-EMAIL_BACKEND = 'django_o365mail.EmailBackend'
-O365_MAIL_CLIENT_ID = 'thechoicelab@nhh.no'
-O365_MAIL_CLIENT_SECRET = 'miW9xKMzHMTRuMS'
-O365_MAIL_TENANT_ID = '33a15b2f-8499-4199-8d56-f20b5aa91af2'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'admin@expmotor.no'
+EMAIL_HOST_PASSWORD = 'FyZ5EgtkVAzcwqx'
 
 LOGGING = {
     'version': 1,
@@ -153,6 +143,11 @@ LOGGING = {
             'format': '{levelname} {asctime} {message}',
             'style': '{',
         },
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[{server_time}] {message}',
+            'style': '{',
+        }
     },
     'handlers': {
         'console': {
@@ -168,12 +163,22 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'simple',
         },
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'django.server',
+        },
     },
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['django.server', 'file'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }

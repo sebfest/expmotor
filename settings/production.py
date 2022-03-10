@@ -113,13 +113,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Registration
-ADMINS = [('sebastian', 'sebastian.fest@nhh.no')]
-LOGIN_URL = '/expmotor/accounts/login'
-LOGIN_REDIRECT_URL = '/expmotor'
-LOGOUT_REDIRECT_URL = '/expmotor/accounts/login'
+# Registration settings
+ADMINS = [('admin', 'admin@expmotor.no')]
+LOGIN_URL = '/accounts/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login'
 REGISTRATION_OPEN = True
-REGISTRATION_DEFAULT_FROM_EMAIL = 'thechoicelab@nhh.no'
+REGISTRATION_DEFAULT_FROM_EMAIL = 'admin@expmotor.no'
 REGISTRATION_ADMINS = ADMINS
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
@@ -175,8 +175,3 @@ LOGGING = {
         },
     },
 }
-
-
-
-
-

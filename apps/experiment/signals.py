@@ -23,7 +23,7 @@ def send_mail(sender: Optional[str] = EMAIL_HOST_USER, *, recipient: str, subjec
         subject=subject,
         body=body,
     )
-    email.send(fail_silently=True)
+    email.send(fail_silently=False)
 
 
 @receiver(post_save, sender=Experiment)
