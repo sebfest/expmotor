@@ -54,6 +54,7 @@ class ParticipantRegistrationForm(forms.ModelForm):
         """Find available sessions"""
         valid_sessions = Session.objects\
             .filter(experiment_id=self.experiment.id)\
+            .exclude(is_active=False)\
             .annotate(free_slots=F('max_subjects') - Count('participants', filter=Q(participants__is_active=True)))\
             .filter(free_slots__gt=0)
         return valid_sessions

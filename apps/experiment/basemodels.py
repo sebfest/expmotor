@@ -53,5 +53,5 @@ class AbstractBaseModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['-activation_date', '-created_date']
+        ordering = ['-created_date']
         get_latest_by = 'activation_date'

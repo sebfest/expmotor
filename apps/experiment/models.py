@@ -84,16 +84,16 @@ class Experiment(AbstractBaseModel):
     @property
     def slots(self) -> int:
         """Number of available slots."""
-        agg_sum = Experiment.objects.all() \
-            .filter(pk=self.pk) \
+        agg_sum = Experiment.objects.all()\
+            .filter(pk=self.pk)\
             .aggregate(slots=Sum('sessions__max_subjects'))
         return agg_sum.get('slots') or 0
 
     @property
     def registrations(self) -> int:
         """Number of registrations."""
-        agg_count = Experiment.objects.all() \
-            .filter(pk=self.pk) \
+        agg_count = Experiment.objects.all()\
+            .filter(pk=self.pk)\
             .aggregate(registrations=Count('sessions__participants', filter=Q(sessions__participants__is_active=True)))
         return agg_count.get('registrations') or 0
 
@@ -162,6 +162,9 @@ class Session(AbstractBaseModel):
     def is_full(self) -> bool:
         """Checks whether session is full."""
         return self.registrations >= self.max_subjects
+
+    class Meta:
+        ordering = ['date', 'time']
 
 
 class Participant(AbstractBaseModel):
