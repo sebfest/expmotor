@@ -124,33 +124,37 @@ class SingleSessionCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMe
         context['experiment'] = self.experiment
         return context
 
+    def get_success_url(self):
+        """Return to experiment index."""
+        return self.experiment.get_absolute_url()
+
 
 class MultipleSessionCreateView(LoginRequiredMixin, SuccessMessageMixin, FormView):
     form_class = formset_factory(SessionCreateForm, validate_min=1)
     template_name = 'experiment/session_create_multiple.html'
     success_message = "Session successfully created"
-    experiment_object = None
+    experiment = None
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.experiment_object = get_object_or_404(Experiment, pk=kwargs.get('pk'))
+        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
 
     def get_context_data(self, **kwargs):
         """Add experiment instance to context."""
         context = super().get_context_data(**kwargs)
-        context['experiment'] = self.experiment_object
+        context['experiment'] = self.experiment
         return context
 
     def form_valid(self, formset):
         """Add experiment instance to valid session form data."""
         for form in formset:
-            form.instance.experiment = self.experiment_object
+            form.instance.experiment = self.experiment
             form.save()
         return super().form_valid(formset)
 
     def get_success_url(self):
         """Return to experiment index."""
-        return self.experiment_object.get_absolute_url()
+        return self.experiment.get_absolute_url()
 
 
 class SessionUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
@@ -315,6 +319,7 @@ class RegistrationPreConfirmView(TemplateView):
 class RegistrationActivateView(View):
     token_invalid_message = "Your link is broken."
     participant_missing_message = "Your registration does not exist"
+    already_registered_message = "Your registration has been confirmed already. Check your inbox."
     success_message = "Your registration has been confirmed. An email will be sent you shortly, " \
                       "confirming the details of which session you are in."
 
@@ -325,21 +330,22 @@ class RegistrationActivateView(View):
             participant = Participant.objects.get(pk=uid_decoded)
         except Participant.DoesNotExist:
             participant = None
-            messages.error(self.request, self.participant_missing_message)
         return participant
 
     def get(self, request, *args, **kwargs):
         """Find participant and update confirmed_email field."""
         participant = self.get_participant()
-        valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
 
-        # TODO Office356 safe links messes this up, can't check valid token
-        if participant is not None:
+        if participant and participant.confirmed_email:
+            messages.success(self.request, self.already_registered_message)
+        elif participant and not participant.confirmed_email:
+            valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
+            print(f'Has a valid token: {valid_token}')
             participant.confirmed_email = True
             participant.save(update_fields=['confirmed_email'])
             messages.success(self.request, self.success_message)
         else:
-            messages.error(self.request, 'Error')
+            messages.error(self.request, self.participant_missing_message)
 
         return HttpResponseRedirect(reverse('experiment:registration_confirm'))
 

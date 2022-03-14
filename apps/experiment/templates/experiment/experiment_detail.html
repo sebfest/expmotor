@@ -6,7 +6,7 @@
     {% bootstrap_messages %}
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Experiment: {{ experiment.name|title }}</h4>
+            <h4 class="card-title">Experiment: <a href={% url 'experiment:experiment_update' pk=experiment.pk %}>{{ experiment.name|title }}</a></h4>
         </div>
         <div class="card-body">
             <table class="table table-hover">
@@ -22,7 +22,7 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td><a href={% url 'experiment:experiment_update' pk=experiment.pk %}>{{ experiment.email }}</a></td>
+                    <td>{{ experiment.email }}</td>
                     <td>{{ experiment.phone }}</td>
                     <td>
                         {% if experiment.is_active %}
