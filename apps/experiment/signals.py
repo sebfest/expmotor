@@ -59,12 +59,18 @@ def send_email_confirmation_request(sender: Type[Participant], instance: Partici
         )
         url = f'https://{domain}{path}'
 
-        subject = '[Expmotor] Please confirm your email'
+
         recipient = instance.email
         name = instance.first_name
+        title = instance.session.experiment.name
+        subject = f'{title}: Please confirm your email'
         html_message = render_to_string(
             'experiment/participant_pre_conformation_email.html',
-            {'registration_link': url, 'name': name}
+            {
+                'registration_link': url,
+                'name': name,
+                'title': title,
+            }
         )
         message = strip_tags(html_message)
 
