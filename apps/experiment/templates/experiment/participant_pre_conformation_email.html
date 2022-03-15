@@ -3,18 +3,24 @@
 <html lang="en">
 
 <head>
-    <title>{{ site.name }} {% trans "Participant approval" %}</title>
+    <title>{% trans "E-mail confirmation." %}</title>
 </head>
 
 <body>
-<p>
-    {% blocktrans %}
-    You have registered for an experiment using "Expmotor". <br> Please confirm your email address by clicking on this link:
-    {% endblocktrans %}
-    <a href="{{ registration_link }}">{{ registration_link }}</a>
+    <p>
+    Hi {{ name }},<br>
+    <br>
+    You have registered for an experiment using FAIR's "Expmotor". <br>
+    <br>
+    Please confirm your email address by copying and pasting this link into your browser: <br>
+    <br>
+    <a href="">{{ registration_link }}</a>
     <br>
     <br>
-    This is an auto-generated email.
+    Sincerely,<br>
+    <br>
+    Expmotor Team at FAIR <br>
+    Norwegian School of Economics
 </p>
 </body>
 
