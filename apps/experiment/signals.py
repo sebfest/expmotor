@@ -100,7 +100,8 @@ def send_registration_info(sender: Type[Participant], instance: Participant,
         }
         context = Context(context_dict)
 
-        subject = '[Expmotor] Confirmation of experiment participation'
+        title = instance.session.experiment.name
+        subject = f'{title}: Confirmation of experiment participation'
         message = template.render(context)
         recipient = instance.email
 
