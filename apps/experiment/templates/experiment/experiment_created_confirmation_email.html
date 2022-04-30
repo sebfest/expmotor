@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>E-mail confirmation for {{ title }} registration.</title>
+</head>
+
+<body>
+<p>
+    Dear {{ invitation_manager | title }}.<br>
+    <br>
+    You have successfully created the experiment {{ experiment_name }} in Expmotor.<br>
+    <br>
+    This email confirms that you registered a valid e-mail address.<br>
+    <br>
+    To add a session to {{ experiment_name }}, <a href="{{ experiment_url }}">click here.</a><br>
+    <br>
+    Sincerely,<br>
+    <br>
+    Expmotor Team at FAIR <br>
+    Norwegian School of Economics
+</p>
+</body>
+
+</html>

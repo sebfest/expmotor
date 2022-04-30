@@ -1,15 +1,5 @@
 defaults = {'registration_help': """<p> This page lets you register for the experiment.</p>
-<p> You need to chose the session you would like to take part in and fill out the rest of hte registration form.</p>
-""",
-            'confirmation_request_email': """
-You have registered for an experiment using "Expmotor". 
-
-Please confirm your email address by clicking on this link: 
-    
-<a href="{{ registration_link }}">Click here"</a>    
-
-    
-This is an auto-generated email.
+<p> You need to chose the session you would like to take part in and fill out the rest of the registration form.</p>
 """,
             'final_instructions_email': """We confirm your participation in the experiment.
     

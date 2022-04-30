@@ -6,28 +6,32 @@ import django
 
 django.setup()
 
-
-from .models import Experiment
-from .factories import ExperimentFactory
+from experiment.models import Experiment
+from experiment.factories import ExperimentFactory
 from django.contrib.auth.models import User
 
 
 def create() -> None:
-    """Create dummy participants"""
-    print("Starting blog population script...")
+    """Create dummy registrations"""
+    print("Starting production...")
 
     ExperimentFactory.create_batch(size=5)
 
     for instance in Experiment.objects.all():
         print(instance)
-    print("...population finished")
+    print("...production finished")
 
 
 def delete() -> None:
-    """Delete all dummy posts and associated authors."""
+    """Delete all dummy registrations and associated managers."""
     print("Deleting")
     Experiment.objects.all().delete()
     User.objects.filter(is_superuser=False).delete()
+    
+    folder = '../../messages/'
+    for f in os.listdir(folder):
+        os.remove(os.path.join(folder, f))
+
     print("Success.")
 
 

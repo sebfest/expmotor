@@ -31,13 +31,8 @@ urlpatterns = [
     ),
     path(
         'experiment/<int:pk>/session/add/',
-        views.SingleSessionCreateView.as_view(),
+        views.SessionCreateView.as_view(),
         name='session_add'
-    ),
-    path(
-        'experiment/<int:pk>/session/add_multiple/',
-        views.MultipleSessionCreateView.as_view(),
-        name='session_add_multiple'
     ),
     path(
         'experiment/<int:pk_eks>/session/<int:pk>/',
@@ -55,24 +50,24 @@ urlpatterns = [
         name='session_delete'
     ),
     path(
-        'experiment/<int:pk>/participants/',
-        views.ParticipantListView.as_view(),
-        name='participant_list'
+        'experiment/<int:pk>/registrations/',
+        views.RegistrationListView.as_view(),
+        name='registration_list'
     ),
     path(
-        'experiment/<int:pk_eks>/session/<int:pk>/partcipant/add/',
-        views.ParticipantCreateView.as_view(),
-        name='participant_add'
+        'experiment/<int:pk_eks>/session/<int:pk>/registration/add/',
+        views.RegistrationCreateView.as_view(),
+        name='registration_add'
     ),
     path(
-        'experiment/<int:pk_eks>/session/<int:pk_ses>/participant/<int:pk>/update/',
-        views.ParticipantUpdateView.as_view(),
-        name='participant_update'
+        'experiment/<int:pk_eks>/session/<int:pk_ses>/registration/<int:pk>/update/',
+        views.RegistrationUpdateView.as_view(),
+        name='registration_update'
     ),
     path(
-        'experiment/<int:pk_eks>/session/<int:pk_ses>/participant/<int:pk>/delete/',
-        views.ParticipantDeleteView.as_view(),
-        name='participant_delete'
+        'experiment/<int:pk_eks>/session/<int:pk_ses>/registration/<int:pk>/delete/',
+        views.RegistrationDeleteView.as_view(),
+        name='registration_delete'
     ),
     path(
         'experiment/<int:pk>/register/',
@@ -85,7 +80,7 @@ urlpatterns = [
         name='registration_success'
     ),
     re_path(
-        r'^experiment/register/activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,40})/$',
+        r'^experiment/register/activate/(?P<uidb64>[\dA-Za-z_\-]+)/(?P<token>[\dA-Za-z]{1,6}-[\dA-Za-z]{1,32})/$',
         views.RegistrationActivateView.as_view(),
         name='registration_activate'
     ),

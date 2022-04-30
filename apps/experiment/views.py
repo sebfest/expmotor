@@ -10,8 +10,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.views.generic import DetailView, ListView, UpdateView, CreateView, DeleteView, FormView, TemplateView
 
-from .forms import ParticipantUpdateForm, ParticipantRegistrationForm, SessionCreateForm, SessionUpdateForm
-from .models import Experiment, Session, Participant
+from .forms import RegistrationForm, SessionCreateForm, SessionUpdateForm, \
+    RegistrationCreateOrUpdateForm
+from .models import Experiment, Session, Registration
 from .tokens import account_activation_token
 
 
@@ -21,6 +22,7 @@ class ExperimentListView(LoginRequiredMixin, ListView):
     redirect_field_name = None
 
     def get_queryset(self):
+        """Get all experiments belonging to the logged-in user."""
         return Experiment.objects.filter(manager=self.request.user)
 
 
@@ -30,6 +32,7 @@ class ExperimentDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template_name = 'experiment/experiment_detail.html'
 
     def test_func(self):
+        """Only experiment owners allowed to view experiment."""
         return True if self.request.user == self.get_object().owner else False
 
 
@@ -42,13 +45,15 @@ class ExperimentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         'name',
         'email',
         'phone',
+        'title',
         'registration_help',
         'final_instructions',
     ]
 
     def form_valid(self, form):
+        """Add logged in user to new experiment."""
         form.instance.manager = self.request.user
-        return super(ExperimentCreateView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class ExperimentUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
@@ -59,11 +64,13 @@ class ExperimentUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessa
         'name',
         'email',
         'phone',
+        'title',
         'registration_help',
         'final_instructions',
     ]
 
     def test_func(self):
+        """Only experiment owners allowed to update experiment."""
         return True if self.request.user == self.get_object().owner else False
 
 
@@ -75,6 +82,7 @@ class ExperimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_message = "Experiment successfully deleted"
 
     def test_func(self):
+        """Only experiment owners allowed to delete experiment."""
         return True if self.request.user == self.get_object().owner else False
 
     def delete(self, request, *args, **kwargs):
@@ -93,13 +101,15 @@ class SessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     ]
 
     def get_queryset(self):
+        """Get session belonging to owner of related experiment."""
         return Session.objects.filter(experiment__manager=self.request.user)
 
     def test_func(self):
+        """Only experiment owners allowed to view session."""
         return True if self.request.user == self.get_object().owner else False
 
 
-class SingleSessionCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
+class SessionCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Session
     form_class = SessionCreateForm
     template_name = 'experiment/session_create.html'
@@ -107,10 +117,12 @@ class SingleSessionCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMe
     experiment = None
 
     def setup(self, request, *args, **kwargs):
+        """Get related experiment."""
         super().setup(request, *args, **kwargs)
         self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
 
     def test_func(self):
+        """Only experiment owners allowed to create session for the experiment."""
         return True if self.request.user == self.experiment.owner else False
 
     def form_valid(self, form):
@@ -125,35 +137,7 @@ class SingleSessionCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMe
         return context
 
     def get_success_url(self):
-        """Return to experiment index."""
-        return self.experiment.get_absolute_url()
-
-
-class MultipleSessionCreateView(LoginRequiredMixin, SuccessMessageMixin, FormView):
-    form_class = formset_factory(SessionCreateForm, validate_min=1)
-    template_name = 'experiment/session_create_multiple.html'
-    success_message = "Session successfully created"
-    experiment = None
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
-
-    def get_context_data(self, **kwargs):
-        """Add experiment instance to context."""
-        context = super().get_context_data(**kwargs)
-        context['experiment'] = self.experiment
-        return context
-
-    def form_valid(self, formset):
-        """Add experiment instance to valid session form data."""
-        for form in formset:
-            form.instance.experiment = self.experiment
-            form.save()
-        return super().form_valid(formset)
-
-    def get_success_url(self):
-        """Return to experiment index."""
+        """Return to experiment detail view."""
         return self.experiment.get_absolute_url()
 
 
@@ -164,9 +148,11 @@ class SessionUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageM
     success_message = "Session successfully updated"
 
     def test_func(self):
+        """Only session owners allowed to update session."""
         return True if self.request.user == self.get_object().owner else False
 
     def get_success_url(self):
+        """Return to experiment detail view."""
         return self.object.experiment.get_absolute_url()
 
 
@@ -177,42 +163,73 @@ class SessionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_message = "Session successfully deleted"
 
     def test_func(self):
+        """Only session owners allowed to delete session."""
         return True if self.request.user == self.get_object().owner else False
 
     def get_success_url(self):
+        """Return to experiment detail view."""
         return self.object.experiment.get_absolute_url()
 
     def delete(self, request, *args, **kwargs):
+        """Add delete message."""
         messages.success(self.request, self.success_message)
         return super().delete(request, *args, **kwargs)
 
 
-class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
-    model = Participant
-    template_name = 'experiment/participant_create.html'
-    success_message = "Participant successfully created"
-    fail_message = "This session is already full."
-    session = None
-    fields = [
-        'first_name',
-        'last_name',
-        'email',
-        'phone',
-    ]
+class RegistrationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    template_name = 'experiment/registration_list.html'
+    context_object_name = 'registrations'
+    experiment = None
 
     def setup(self, request, *args, **kwargs):
+        """Add experiment to view"""
+        super().setup(request, *args, **kwargs)
+        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
+
+    def test_func(self):
+        """Only owner can view registrations."""
+        return True if self.request.user == self.experiment.owner else False
+
+    def get_queryset(self):
+        """Get all registrations for experiment."""
+        return Registration.objects.filter(session__experiment=self.experiment).order_by('last_name')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Add experiment instance to context."""
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['experiment'] = self.experiment
+        return context
+
+
+class RegistrationCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
+    model = Registration
+    form_class = RegistrationCreateOrUpdateForm
+    template_name = 'experiment/registration_create.html'
+    success_message = "Registration successfully created."
+    session_full_message = "This session is already full."
+    session = None
+
+    def setup(self, request, *args, **kwargs):
+        """Add session to view"""
         super().setup(request, *args, **kwargs)
         self.session = get_object_or_404(Session, pk=self.kwargs['pk'])
 
     def test_func(self):
+        """Only session owners can create registrations."""
         return True if self.request.user == self.session.owner else False
 
+    def get_form_kwargs(self):
+        """Add session instance to form."""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'session': self.session})
+        return kwargs
+
     def form_valid(self, form):
-        """Bind calling session to participant instance."""
-        if self.session.is_full:
-            messages.error(self.request, self.fail_message)
+        """Check if session has been filled up."""
+        session = get_object_or_404(Session, pk=self.kwargs['pk'])
+        if session.is_full:
+            messages.error(self.request, self.session_full_message)
             return self.form_invalid(form)
-        form.instance.session = self.session
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -223,25 +240,34 @@ class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
 
     def get_success_url(self):
         """Return to session index."""
-        return self.session.get_absolute_url()
+        return self.object.get_absolute_url()
 
 
-class ParticipantUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
-    model = Participant
-    form_class = ParticipantUpdateForm
-    template_name = 'experiment/participant_update.html'
-    success_message = "Participant successfully updated"
+class RegistrationUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    model = Registration
+    form_class = RegistrationCreateOrUpdateForm
+    template_name = 'experiment/registration_update.html'
+    success_message = "Registration successfully updated."
 
     def test_func(self):
+        """Only session owners can update registrations."""
         return True if self.request.user == self.get_object().owner else False
 
+    def get_form_kwargs(self):
+        """Add session to form."""
+        session = get_object_or_404(Session, pk=self.kwargs.get('pk_ses'))
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'session': session})
+        return kwargs
+
     def form_valid(self, form):
-        """Check if participant can be activated."""
+        """Check if registration can be activated."""
         is_activated = False
         if 'is_active' in form.changed_data and form.cleaned_data['is_active']:
             is_activated = True
+
         if is_activated and form.instance.session.is_full:
-            form.add_error('is_active', "You cannot activate this participant. The session is full.")
+            form.add_error('is_active', "You cannot activate this registration. The session is already full.")
             return self.form_invalid(form)
         else:
             return super().form_valid(form)
@@ -251,38 +277,17 @@ class ParticipantUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
         return self.object.get_absolute_url()
 
 
-class ParticipantListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    template_name = 'experiment/participant_list.html'
-    context_object_name = 'participants'
-    experiment = None
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
-
-    def test_func(self):
-        return True if self.request.user == self.experiment.owner else False
-
-    def get_queryset(self):
-        """Limit list of participants to session members."""
-        return Participant.objects.filter(session__experiment=self.experiment).order_by('last_name')
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context['experiment'] = self.experiment
-        return context
-
-
-class ParticipantDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
-    model = Participant
+class RegistrationDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
+    model = Registration
     template_name = 'experiment/confirm_delete.html'
-    extra_context = {'typename': 'participant'}
-    success_message = "Participant successfully deleted"
+    success_message = "Registration successfully deleted"
 
     def test_func(self):
+        """Only owner can delete registration."""
         return True if self.request.user == self.get_object().owner else False
 
     def delete(self, request, *args, **kwargs):
+        """Add delete message."""
         messages.success(self.request, self.success_message)
         return super().delete(request, *args, **kwargs)
 
@@ -292,11 +297,12 @@ class ParticipantDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
 
 
 class RegistrationView(SuccessMessageMixin, CreateView):
-    form_class = ParticipantRegistrationForm
-    template_name = 'experiment/registration_create.html'
-    success_message = "An email will be sent you shortly. Click on the link in that email to complete the registration"
+    form_class = RegistrationForm
+    template_name = 'experiment/registration.html'
+    success_message = "An email will be sent you shortly. Click on the link in that email to complete the registration."
 
     def get_form_kwargs(self):
+        """Add experiment to form."""
         experiment = get_object_or_404(Experiment, pk=self.kwargs.get('pk'))
         kwargs = super().get_form_kwargs()
         kwargs.update({'experiment': experiment})
@@ -309,6 +315,7 @@ class RegistrationView(SuccessMessageMixin, CreateView):
         return context
 
     def get_success_url(self):
+        """Redirect to registration success page."""
         return reverse('experiment:registration_success', kwargs={'pk': self.kwargs.get('pk')})
 
 
@@ -318,34 +325,47 @@ class RegistrationPreConfirmView(TemplateView):
 
 class RegistrationActivateView(View):
     token_invalid_message = "Your link is broken."
-    participant_missing_message = "Your registration does not exist"
+    registration_missing_message = "Your registration does not exist."
     already_registered_message = "Your registration has been confirmed already. Check your inbox."
-    success_message = "Your registration has been confirmed. An email will be sent you shortly, " \
-                      "confirming the details of which session you are in."
+    registration_success_message = "Your registration has been confirmed. An email will be sent you shortly, " \
+                                   "confirming the details of which session you are in."
 
-    def get_participant(self):
-        """Get participant from encoded uid"""
+    def get_registration(self):
+        """Get registration from encoded uid."""
         uid_decoded = force_text(urlsafe_base64_decode(self.kwargs.get('uidb64')))
+        registration = None
         try:
-            participant = Participant.objects.get(pk=uid_decoded)
-        except Participant.DoesNotExist:
-            participant = None
-        return participant
+            registration = Registration.objects.get(pk=uid_decoded)
+        except Registration.DoesNotExist:
+            pass
+        except Registration.MultipleObjectsReturned:
+            pass
+        finally:
+            return registration
+
+    def check_token(self, registration):
+        """Check if token is valid"""
+        is_valid_token = account_activation_token.check_token(
+            registration,
+            self.kwargs.get('token')
+        )
+        return is_valid_token
 
     def get(self, request, *args, **kwargs):
-        """Find participant and update confirmed_email field."""
-        participant = self.get_participant()
+        """Find registration and update confirmed_email field."""
+        registration = self.get_registration()
+        valid_token = self.check_token(registration)
 
-        if participant and participant.confirmed_email:
+        if not registration:
+            messages.error(self.request, self.registration_missing_message)
+        elif registration and registration.confirmed_email:
             messages.success(self.request, self.already_registered_message)
-        elif participant and not participant.confirmed_email:
-            valid_token = account_activation_token.check_token(participant, self.kwargs.get('token'))
-            print(f'Has a valid token: {valid_token}')
-            participant.confirmed_email = True
-            participant.save(update_fields=['confirmed_email'])
-            messages.success(self.request, self.success_message)
+        elif registration and valid_token and not registration.confirmed_email:
+            registration.confirmed_email = True
+            registration.save(update_fields=['confirmed_email'])
+            messages.success(self.request, self.registration_success_message)
         else:
-            messages.error(self.request, self.participant_missing_message)
+            messages.error(self.request, self.token_invalid_message)
 
         return HttpResponseRedirect(reverse('experiment:registration_confirm'))
 

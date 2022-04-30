@@ -13,7 +13,6 @@
         <div class="card-body">
             <form class="form" action="{% url 'experiment:experiment_update' pk=experiment.pk %}" method="post">
                 {% csrf_token %}
-                {% bootstrap_form_errors form type="all" layout='horizontal' %}
                 {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal" %}
                 <div class="d-flex">
                     {% bootstrap_button "Update" button_type="submit" button_class="btn-secondary" %}

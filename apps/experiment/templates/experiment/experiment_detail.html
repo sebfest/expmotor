@@ -6,7 +6,8 @@
     {% bootstrap_messages %}
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Experiment: <a href={% url 'experiment:experiment_update' pk=experiment.pk %}>{{ experiment.name|title }}</a></h4>
+            <h4 class="card-title">Experiment: <a
+                    href={% url 'experiment:experiment_update' pk=experiment.pk %}>{{ experiment.name|title }}</a></h4>
         </div>
         <div class="card-body">
             <table class="table table-hover">
@@ -14,23 +15,16 @@
                 <tr>
                     <th>Contact email</th>
                     <th>Contact phone</th>
-                    <th>Status</th>
-                    <th>Slots</th>
+                    <th>Available slots</th>
                     <th>Registered subjects</th>
                     <th>Distribution link</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>{{ experiment.email }}</td>
                     <td>{{ experiment.phone }}</td>
-                    <td>
-                        {% if experiment.is_active %}
-                            <span class="badge badge-pill badge-success">Active</span>
-                        {% else %}
-                            <span class="badge badge-pill badge-warning">Inactive</span>
-                        {% endif %}
-                    </td>
                     <td>{{ experiment.slots }}</td>
                     <td>
                         <div class="progress position-relative">
@@ -55,6 +49,13 @@
                            href="{% url 'experiment:registration_create' pk=experiment.pk %}">
                             Open
                         </a>
+                    </td>
+                    <td>
+                        {% if experiment.is_active %}
+                            <span class="badge badge-pill badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-pill badge-warning">Inactive</span>
+                        {% endif %}
                     </td>
                 </tr>
                 </tbody>
@@ -106,27 +107,21 @@
                     <tr>
                         <th>Session date</th>
                         <th>Session time</th>
-                        <th>Max subjects</th>
-                        <th>Status</th>
+                        <th>Session place</th>
+                        <th>Available slots</th>
                         <th>Registered subjects</th>
-                        <th>Participants</th>
+                        <th>Status</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for session in experiment.sessions.all %}
                         <tr>
                             <td>
-                                <a href={% url 'experiment:session_update' pk_eks=experiment.pk pk=session.pk %}>{{ session.date|date:'Y-m-d' }}</a>
+                                <a href={% url 'experiment:session_detail' pk_eks=experiment.pk pk=session.pk %}>{{ session.date|date:'Y-m-d' }}</a>
                             </td>
                             <td>{{ session.time|time:"H:i" }}</td>
+                            <td>{{ session.place }}</td>
                             <td>{{ session.max_subjects }}</td>
-                            <td>
-                                {% if session.is_active %}
-                                    <span class="badge badge-pill badge-success">Active</span>
-                                {% else %}
-                                    <span class="badge badge-pill badge-warning">Inactive</span>
-                                {% endif %}
-                            </td>
                             <td>
                                 <div class="progress position-relative">
                                     <div class="progress-bar"
@@ -142,10 +137,11 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="btn-group" role="group">
-                                    <a class="btn btn-secondary btn-sm"
-                                       href={% url 'experiment:session_detail' pk_eks=experiment.pk pk=session.pk %}>List</a>
-                                </div>
+                                {% if session.is_active %}
+                                    <span class="badge badge-pill badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-pill badge-warning">Inactive</span>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -157,7 +153,8 @@
                 </div>
             {% endif %}
             <div class="btn-group" role="group">
-                <a class="btn btn-secondary mr-1" role="button" href={% url 'experiment:session_add' pk=experiment.pk %}>Add new session</a>
+                <a class="btn btn-secondary mr-1" role="button"
+                   href={% url 'experiment:session_add' pk=experiment.pk %}>Add new session</a>
             </div>
         </div>
     </div>

@@ -3,11 +3,12 @@ import random
 
 from django.utils import timezone
 from django.utils.text import slugify
+from django.db.models.signals import post_save
 from factory import LazyAttribute, SubFactory, Faker, RelatedFactoryList, Iterator
-from factory.django import DjangoModelFactory
+from factory.django import DjangoModelFactory, mute_signals
 from factory.fuzzy import FuzzyDateTime
 
-from .models import Experiment, Session, Participant
+from experiment.models import Experiment, Session, Registration
 from settings import base
 
 
@@ -33,7 +34,7 @@ class UserFactory(DjangoModelFactory):
     )
     is_staff = Faker(
         'boolean',
-        chance_of_getting_true=100
+        chance_of_getting_true=0
     )
     is_superuser = Faker(
         'boolean',
@@ -50,9 +51,9 @@ class UserFactory(DjangoModelFactory):
     )
 
 
-class ParticipantFactory(DjangoModelFactory):
+class RegistrationFactory(DjangoModelFactory):
     class Meta:
-        model = Participant
+        model = Registration
         django_get_or_create = ('first_name', 'last_name')
 
     first_name = Faker(
@@ -63,6 +64,10 @@ class ParticipantFactory(DjangoModelFactory):
         'last_name',
         locale='no_NO'
     )
+    phone = Faker(
+        'phone_number',
+        locale='no_NO'
+    )
     email = Faker(
         'email',
         locale='no_NO'
@@ -70,10 +75,6 @@ class ParticipantFactory(DjangoModelFactory):
     confirmed_email = Faker(
         'boolean',
         chance_of_getting_true=95
-    )
-    phone = Faker(
-        'phone_number',
-        locale='no_NO'
     )
     created_date = FuzzyDateTime(
         timezone.now() - datetime.timedelta(days=random.randint(5, 356))
@@ -99,7 +100,7 @@ class SessionFactory(DjangoModelFactory):
         timezone.now() + datetime.timedelta(days=random.randint(5, 30))
     )
     time = LazyAttribute(
-        lambda obj: obj.date
+        lambda obj: obj.date.replace(microsecond=0, second=0, minute=0)
     )
     place = Faker(
         'address',
@@ -120,7 +121,7 @@ class SessionFactory(DjangoModelFactory):
         'boolean', chance_of_getting_true=99
     )
     participants = RelatedFactoryList(
-        ParticipantFactory,
+        RegistrationFactory,
         factory_related_name='session',
         size=lambda: random.randint(1, 10),
     )
@@ -134,19 +135,21 @@ class ExperimentFactory(DjangoModelFactory):
     manager = SubFactory(
         UserFactory
     )
-    name = Faker(
-        'bothify',
-        text='??????'
+    name = LazyAttribute(
+        lambda obj: slugify(obj.title) if random.randint(0, 100) < 80 else None
+    )
+    title = Faker(
+        'sentence',
+        nb_words=3,
     )
     email = Faker(
         'email',
         locale='no_NO'
     )
     phone = Faker(
-        'phone_number',
-        locale='no_NO'
+        'random_number',
+        digits=8,
     )
-
     created_date = FuzzyDateTime(
         timezone.now() - datetime.timedelta(days=random.randint(5, 356))
     )

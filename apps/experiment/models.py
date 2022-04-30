@@ -1,7 +1,10 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum, Count, Q
+from django.db.models.functions import Coalesce
 from django.urls import reverse
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.models import Site
 
@@ -18,11 +21,15 @@ class Experiment(AbstractBaseModel):
         related_name='experiments',
         on_delete=models.CASCADE
     )
-    name = models.CharField(
+    name = models.SlugField(
         verbose_name=_('name'),
-        max_length=30,
-        help_text='Name of experiment; max 30 letters.',
-        unique=True,
+        max_length=50,
+        help_text='Internal name of the experiment; Only letters, numbers, underscores or hyphens.',
+    )
+    title = models.CharField(
+        verbose_name=_('title'),
+        max_length=50,
+        help_text='Title of the experiment; visible to participants.',
     )
     email = models.EmailField(
         verbose_name=_('inviter email'),
@@ -43,28 +50,49 @@ class Experiment(AbstractBaseModel):
     registration_help = models.TextField(
         verbose_name=_('registration instructions'),
         default=defaults['registration_help'],
-        help_text="This text will meet participants when registering for participation."
-    )
-    # TODO: remove
-    confirmation_request = models.TextField(
-        verbose_name=_('confirmation mail'),
-        default=defaults['confirmation_request_email'],
-        help_text="Message in email asking subjects to confirm their email address."
+        help_text="This text will meet participants when they register."
     )
     final_instructions = models.TextField(
         verbose_name=_('instructions mail'),
         default=defaults['final_instructions_email'],
-        help_text="Message in email sent after confirmation of email address."
+        help_text="This message is sent to participant after confirmation of their email address."
     )
 
-    class Meta:
-        verbose_name = _('experiment')
-        verbose_name_plural = _('experiments')
-        ordering = ['-created_date']
-        get_latest_by = 'activation_date'
+    @property
+    def owner(self) -> AUTH_USER_MODEL:
+        """Owner of object"""
+        return self.manager
+
+    @property
+    def slots(self) -> int:
+        """Number of available slots."""
+        agg_sum = self.sessions.aggregate(
+            slots=Coalesce(Sum('max_subjects'), 0)
+        )
+        return agg_sum.get('slots', 0)
+
+    @property
+    def registrations(self) -> int:
+        """Number of registrations."""
+        active_registrations = Q(participants__is_active=True)
+        agg_count = self.sessions.aggregate(
+            registrations=Coalesce(Count('participants', filter=active_registrations), 0)
+        )
+        return agg_count.get('registrations', 0)
+
+    @property
+    def complete(self) -> float:
+        """Registration rate."""
+        return (self.registrations / self.slots) * 100.0 if self.slots > 0 else 0.0
 
     def __str__(self) -> str:
+        """String representation."""
         return f'{self.name}'
+
+    def clean(self):
+        if not self.name:
+            self.name = slugify(self.title)
+        super().clean()
 
     def get_absolute_url(self) -> str:
         """URL to object."""
@@ -76,31 +104,11 @@ class Experiment(AbstractBaseModel):
         url = self.get_absolute_url()
         return f'https://{domain}{url}'
 
-    @property
-    def owner(self) -> AUTH_USER_MODEL:
-        """Owner of object"""
-        return self.manager
-
-    @property
-    def slots(self) -> int:
-        """Number of available slots."""
-        agg_sum = Experiment.objects.all()\
-            .filter(pk=self.pk)\
-            .aggregate(slots=Sum('sessions__max_subjects'))
-        return agg_sum.get('slots') or 0
-
-    @property
-    def registrations(self) -> int:
-        """Number of registrations."""
-        agg_count = Experiment.objects.all()\
-            .filter(pk=self.pk)\
-            .aggregate(registrations=Count('sessions__participants', filter=Q(sessions__participants__is_active=True)))
-        return agg_count.get('registrations') or 0
-
-    @property
-    def complete(self):
-        """Registration rate."""
-        return (self.registrations / self.slots) * 100.0 if self.slots else 0.0
+    class Meta:
+        verbose_name = _('experiment')
+        verbose_name_plural = _('experiments')
+        ordering = ['-created_date']
+        get_latest_by = 'activation_date'
 
 
 class Session(AbstractBaseModel):
@@ -135,14 +143,6 @@ class Session(AbstractBaseModel):
         ],
     )
 
-    def __str__(self) -> str:
-        if self.date and self.time:
-            return f"{self.date.strftime('%Y-%m-%d')}, {self.time.strftime('%H:%M:%S')}"
-
-    def get_absolute_url(self) -> str:
-        """URL to object."""
-        return reverse('experiment:session_detail', kwargs={'pk_eks': self.experiment.pk, 'pk': self.pk})
-
     @property
     def owner(self) -> AUTH_USER_MODEL:
         """Owner of object"""
@@ -150,29 +150,38 @@ class Session(AbstractBaseModel):
 
     @property
     def registrations(self) -> int:
-        """Number of participants registered."""
+        """Number of active participants in session."""
         return self.participants.filter(is_active=True).count()
 
     @property
     def complete(self) -> float:
         """Share of participants registered."""
-        return (self.registrations / self.max_subjects) * 100.0
+        return (self.registrations / self.max_subjects) * 100.0 if self.max_subjects > 0 else 0.0
 
     @property
     def is_full(self) -> bool:
         """Checks whether session is full."""
         return self.registrations >= self.max_subjects
 
+    def __str__(self) -> str:
+        if self.date and self.time:
+            return f"{self.date.strftime('%Y-%m-%d')} {self.time.strftime('%H:%M:%S')}"
+
+    def get_absolute_url(self) -> str:
+        """URL to object."""
+        return reverse('experiment:session_detail', kwargs={'pk_eks': self.experiment.pk, 'pk': self.pk})
+
     class Meta:
         ordering = ['date', 'time']
 
 
-class Participant(AbstractBaseModel):
+class Registration(AbstractBaseModel):
     session = models.ForeignKey(
         Session,
         verbose_name=_('session'),
         related_name='participants',
         on_delete=models.CASCADE,
+        help_text='The session you sign up for.'
     )
     first_name = models.CharField(
         verbose_name=_('first name'),
@@ -184,6 +193,11 @@ class Participant(AbstractBaseModel):
         max_length=30,
         help_text='Your last name.',
     )
+    phone = models.CharField(
+        verbose_name=_('phone'),
+        max_length=15,
+        help_text="Your phone number.",
+    )
     email = models.EmailField(
         verbose_name=_('email'),
         help_text='An email will be sent to this address for validation purposes, you must click on a link in this '
@@ -193,23 +207,35 @@ class Participant(AbstractBaseModel):
         default=False,
         help_text='Set to "True" when e-mail is confirmed.'
     )
-    phone = models.CharField(
-        verbose_name=_('phone'),
-        max_length=15,
-        help_text="Your phone number.",
-    )
+
+    @property
+    def owner(self) -> AUTH_USER_MODEL:
+        """Owner of object"""
+        return self.session.experiment.manager
 
     def __str__(self) -> str:
+        """String representation"""
         if self.first_name and self.last_name:
             return f'{self.first_name} {self.last_name}'
 
     def get_absolute_url(self) -> str:
+        """URL to object."""
         return reverse(
             'experiment:session_detail',
             kwargs={'pk_eks': self.session.experiment.pk, 'pk': self.session.pk}
         )
 
-    @property
-    def owner(self):
-        """Owner of object"""
-        return self.session.experiment.manager
+    def validate_unique(self, *args, **kwargs) -> None:
+        """Validate duplicate bookings for experiment."""
+        super().validate_unique(*args, **kwargs)
+        if 'session' in kwargs['exclude']:
+            return
+        if self.pk is None:
+            if Registration.objects.filter(
+                session__experiment__pk=self.session.experiment.pk,
+                email=self.email,
+            ).exists():
+                raise ValidationError('Your are already registered for this experiment.')
+
+    class Meta:
+        ordering = ['created_date']

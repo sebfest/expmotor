@@ -1,7 +1,0 @@
-Dear {{ invitation_manager | title }}.
-
-You have successfully created the experiment {{ experiment_name }} in Expmotor.
-
-This email confirms that you registered a valid e-mail address.
-
-To add a session to {{ experiment_name }}, click here: {{ experiment_url }}.

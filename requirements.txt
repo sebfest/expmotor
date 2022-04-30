@@ -3,12 +3,12 @@ beautifulsoup4==4.10.0
 certifi==2021.10.8
 charset-normalizer==2.0.12
 dj-config-url==0.1.1
-Django==3.2.6
-django-bootstrap-datepicker-plus==3.0.5
-django-bootstrap4==3.0.1
-django-debug-toolbar==3.2.2
+Django==3.2.13
+django-bootstrap-datepicker-plus==4.0.0
+django-bootstrap4==22.1
+django-debug-toolbar==3.3.0
 django-o365mail==1.0.1
-django-registration-redux==2.9
+django-registration-redux==2.10
 factory-boy==3.2.0
 Faker==8.12.1
 gunicorn==20.1.0

@@ -8,22 +8,18 @@
 
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Register for {{ experiment.name }}</h4>
+            <h4 class="card-title">Add participant to session: {{ session }}</h4>
         </div>
         <div class="card-body">
-            {{ experiment.registration_help | safe }}
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-header"></div>
-        <div class="card-body">
-            <form class="form" action="{% url 'experiment:registration_create' pk=experiment.pk %}" method="post">
+            <form class="form"
+                  action="{% url 'experiment:registration_add' pk_eks=session.experiment.pk pk=session.pk %}"
+                  method="post">
                 {% csrf_token %}
-                {% bootstrap_form_errors form type="all" layout='horizontal' %}
-                {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal" %}
-                {% buttons %}
-                    <button type="submit" class="btn btn-secondary">Register</button>
-                {% endbuttons %}
+                {% bootstrap_form form show_help=False show_label=True set_required=True layout="horizontal" %}
+                <div class="d-flex">
+                    {% bootstrap_button "Add participant" button_type="submit" button_class="btn-danger" %}
+                    <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
+                </div>
             </form>
         </div>
     </div>

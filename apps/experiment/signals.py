@@ -12,19 +12,8 @@ from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
 
 from settings.production import EMAIL_HOST_USER
-from .models import Experiment, Participant
+from .models import Experiment, Registration
 from .tokens import account_activation_token
-
-
-def send_my_mail(sender: Optional[str] = EMAIL_HOST_USER, *, recipient: str, subject: str, body: str) -> None:
-    """Send email from host to single recipient."""
-    email = EmailMessage(
-        from_email=sender,
-        to=[recipient],
-        subject=subject,
-        body=body,
-    )
-    email.send(fail_silently=True)
 
 
 @receiver(post_save, sender=Experiment)
@@ -37,15 +26,23 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
             'experiment_url': instance.get_full_absolute_url(),
             'invitation_manager': instance.manager.get_username(),
         }
-        recipient = instance.manager.email
-        message = render_to_string('experiment/experiment_created_confirmation.txt', context_dict)
         subject = f'[Expmotor] Experiment created ({instance.name})'
+        recipient = instance.manager.email
+        html_message = render_to_string('experiment/experiment_created_confirmation_email.html', context_dict)
+        message = strip_tags(html_message)
 
-        send_my_mail(recipient=recipient, subject=subject, body=message)
+        send_mail(
+            subject=subject,
+            message=message,
+            html_message=html_message,
+            from_email=EMAIL_HOST_USER,
+            recipient_list=[recipient],
+            fail_silently=True,
+        )
 
 
-@receiver(post_save, sender=Participant)
-def send_email_confirmation_request(sender: Type[Participant], instance: Participant,
+@receiver(post_save, sender=Registration)
+def send_email_confirmation_request(sender: Type[Registration], instance: Registration,
                                     created: bool, update_fields: Optional[FrozenSet], **kwargs) -> None:
     """Send request to conform email after successful creation."""
     if created:
@@ -59,19 +56,15 @@ def send_email_confirmation_request(sender: Type[Participant], instance: Partici
         )
         url = f'https://{domain}{path}'
 
-
-        recipient = instance.email
-        name = instance.first_name
         title = instance.session.experiment.name
         subject = f'{title}: Please confirm your email'
-        html_message = render_to_string(
-            'experiment/participant_pre_conformation_email.html',
-            {
-                'registration_link': url,
-                'name': name,
-                'title': title,
-            }
-        )
+        context_dict = {
+            'registration_link': url,
+            'name': instance.first_name,
+            'title': title,
+        }
+        recipient = instance.email
+        html_message = render_to_string('experiment/registration_pre_conformation_email.html', context_dict)
         message = strip_tags(html_message)
 
         send_mail(
@@ -84,10 +77,10 @@ def send_email_confirmation_request(sender: Type[Participant], instance: Partici
         )
 
 
-@receiver(post_save, sender=Participant)
-def send_registration_info(sender: Type[Participant], instance: Participant,
+@receiver(post_save, sender=Registration)
+def send_registration_info(sender: Type[Registration], instance: Registration,
                            created: bool, update_fields: Optional[FrozenSet], **kwargs) -> None:
-    """Send email with registration_old info after email confirmation."""
+    """Send email with registration info after email confirmation."""
     if not created and update_fields and 'confirmed_email' in update_fields:
         template = Template(instance.session.experiment.final_instructions)
         context_dict = {
@@ -105,4 +98,10 @@ def send_registration_info(sender: Type[Participant], instance: Participant,
         message = template.render(context)
         recipient = instance.email
 
-        send_my_mail(subject=subject, body=message, recipient=recipient)
+        email = EmailMessage(
+            from_email=sender,
+            to=[recipient],
+            subject=subject,
+            body=message,
+        )
+        email.send(fail_silently=True)

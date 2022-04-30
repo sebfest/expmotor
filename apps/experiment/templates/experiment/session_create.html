@@ -15,14 +15,10 @@
         <div class="card-body">
             <form action="{% url 'experiment:session_add' pk=experiment.pk %}" method="post">
                 {% csrf_token %}
-                <div class="form-row">
-                    {% bootstrap_form_errors form type="all" layout='inline' %}
-                </div>
-                <div class="form-row">
-                    {% bootstrap_form form show_help=False show_label=False set_required=True layout='inline' %}
-                </div>
-                <div class="form-row">
-                    {% bootstrap_button "Submit" button_type="submit" button_class="btn-secondary" %}
+                {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal"  %}
+                <div class="d-flex">
+                    {% bootstrap_button "Add session" button_type="submit" button_class="btn-danger" %}
+                    <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
                 </div>
             </form>
         </div>

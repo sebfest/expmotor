@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Experiment, Session, Participant
+from .models import Experiment, Session, Registration
 
 
 class SessionInline(admin.TabularInline):
@@ -53,10 +53,6 @@ class ExperimentAdmin(admin.ModelAdmin):
             'fields': ['registration_help'],
             'classes': ('collapse',),
         }),
-        ('Confirmation', {
-            'fields': ['confirmation_request'],
-            'classes': ('collapse',),
-        }),
         ('Instructions', {
             'fields': ['final_instructions'],
             'classes': ('collapse',),
@@ -79,7 +75,7 @@ class ExperimentAdmin(admin.ModelAdmin):
 
 
 class ParticipantInline(admin.TabularInline):
-    model = Participant
+    model = Registration
     extra = 1
     can_delete = True
     fields = (
@@ -155,11 +151,11 @@ class ParticipantAdmin(admin.ModelAdmin):
     )
 
     @admin.action(description='View on site')
-    def get_object_link(self, participant: Participant) -> str:
+    def get_object_link(self, participant: Registration) -> str:
         item_url = participant.get_absolute_url()
         return format_html('<a href="{url}">Open</a>', url=item_url)
 
 
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Session, SessionAdmin)
-admin.site.register(Participant, ParticipantAdmin)
+admin.site.register(Registration, ParticipantAdmin)

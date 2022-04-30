@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+
+{% block content %}
+
+    {% bootstrap_messages %}
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Register for {{ experiment.name }}</h4>
+        </div>
+        <div class="card-body">
+            {{ experiment.registration_help | safe }}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"></div>
+        <div class="card-body">
+            <form class="form" action="{% url 'experiment:registration_create' pk=experiment.pk %}" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal" %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-secondary">Register</button>
+                {% endbuttons %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" data-backdrop="static" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Privacy policy.</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>FAIR takes the following steps to meet its confidentiality requirements:</p>
+                    <ul>
+                        <li>All data collected during <b>recruitment</b> is stored on a server that is accessible only
+                            for the respective research project coordinator and FAIR's research data manager.
+                        </li>
+                        <li>All data collected is used only for the purpose of recruiting subjects to participate
+                            in research experiments.
+                        </li>
+                        <li>No data is passed on to third parties.
+                        </li>
+                        <li>Data is stored for a limited amount of one year.
+                        </li>
+                        <li>All personally-identifying data collected during an <b>experiment</b> (e.g., your name) is
+                            processed according to the approved data management and data protection document of each
+                            respective study. Usually, any personal information is replaced with a code number,
+                            and the list linking code numbers to personally-identifying data is kept separate from
+                            the experimental data. The analysis of the data is done anonymously and it is ensured
+                            that your decisions cannot be linked back to your person in any way.
+                        </li>
+                    </ul>
+                    <p>As a registered participant, it is your right to lodge a complaint if you believe that sensitive
+                        information about you collected during registration has not actually been kept confidential.
+                        Such complaints can be delivered to the Norwegian Centre for Research Data.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
