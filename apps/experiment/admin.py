@@ -74,68 +74,83 @@ class ExperimentAdmin(admin.ModelAdmin):
         return format_html('<a href="{url}">Open</a>', url=item_url)
 
 
-class ParticipantInline(admin.TabularInline):
+class RegistrationInline(admin.TabularInline):
     model = Registration
     extra = 1
     can_delete = True
     fields = (
-        'first_name',
         'last_name',
-        'email',
+        'first_name',
         'phone',
+        'email',
+        'confirmed_email',
+        'is_active',
     )
 
 
 class SessionAdmin(admin.ModelAdmin):
     list_select_related = True
+    list_per_page = 20
     list_display = (
         'date',
         'time',
         'place',
         'max_subjects',
         'participant_count',
-        'get_object_link',
         'is_active',
     )
-    ordering = ('-created_date',)
+    ordering = ('date',)
+    date_hierarchy = 'date'
     actions_on_top = True
     actions_on_bottom = False
-    readonly_fields = (
-        'created_date',
-        'activation_date',
-        'modified_date',
-        'experiment',
+    list_filter = (
+        'date',
+        'is_active',
     )
+    view_on_site = False
     fields = (
         'experiment',
         'max_subjects',
         'date',
         'time',
         'place',
+        'is_active',
     )
-    inlines = [ParticipantInline]
-
-    @admin.action(description='View on site')
-    def get_object_link(self, session: Session) -> str:
-        item_url = session.get_absolute_url()
-        return format_html('<a href="{url}">Open</a>', url=item_url)
+    readonly_fields = (
+        'experiment',
+        'created_date',
+        'activation_date',
+        'modified_date',
+    )
+    inlines = [RegistrationInline]
 
     @admin.display(description='Participants registered.')
     def participant_count(self, session: Session) -> str:
         return format_html('{number}', number=session.participants.count())
 
 
-class ParticipantAdmin(admin.ModelAdmin):
-    list_select_related = True
+class RegistrationAdmin(admin.ModelAdmin):
+    list_select_related = False
+    list_per_page = 20
     list_display = (
-        'first_name',
         'last_name',
+        'first_name',
+        'phone',
         'email',
+        'confirmed_email',
         'is_active',
     )
-    ordering = ('-created_date',)
+    ordering = ('last_name',)
     actions_on_top = True
     actions_on_bottom = False
+    search_fields = ['last_name']
+    date_hierarchy = 'created_date'
+    list_filter = (
+        'session__date',
+        'confirmed_email',
+        'is_active',
+    )
+    view_on_site = False
     readonly_fields = (
         'session',
         'created_date',
@@ -146,16 +161,13 @@ class ParticipantAdmin(admin.ModelAdmin):
         'session',
         'first_name',
         'last_name',
+        'phone',
         'email',
+        'confirmed_email',
         'is_active',
     )
-
-    @admin.action(description='View on site')
-    def get_object_link(self, participant: Registration) -> str:
-        item_url = participant.get_absolute_url()
-        return format_html('<a href="{url}">Open</a>', url=item_url)
 
 
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Session, SessionAdmin)
-admin.site.register(Registration, ParticipantAdmin)
+admin.site.register(Registration, RegistrationAdmin)

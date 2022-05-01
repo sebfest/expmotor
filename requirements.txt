@@ -7,7 +7,6 @@ Django==3.2.13
 django-bootstrap-datepicker-plus==4.0.0
 django-bootstrap4==22.1
 django-debug-toolbar==3.3.0
-django-o365mail==1.0.1
 django-registration-redux==2.10
 factory-boy==3.2.0
 Faker==8.12.1
