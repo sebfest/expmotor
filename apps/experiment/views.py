@@ -180,6 +180,7 @@ class RegistrationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = 'experiment/registration_list.html'
     context_object_name = 'registrations'
     experiment = None
+    paginate_by = 10
 
     def setup(self, request, *args, **kwargs):
         """Add experiment to view"""

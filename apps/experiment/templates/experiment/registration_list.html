@@ -8,30 +8,30 @@
 
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">All registrations for <a href={% url 'experiment:experiment_detail' pk=experiment.pk %}>{{ experiment.name }} </a></h4>
+            <h4 class="card-title">Registrations for experiment
+                <a href={% url 'experiment:experiment_detail' pk=experiment.pk %}>{{ experiment.name }} </a>
+            </h4>
         </div>
         <div class="card-body">
             {% if registrations %}
-                <input class="form-control" id="myInput" type="text" placeholder="Search registrations..">
                 <br>
                 <table class="table table-hover">
                     <thead class="thead-light">
                     <tr>
-                        <th>First name</th>
                         <th>Last name</th>
+                        <th>First name</th>
                         <th>E-mail</th>
                         <th>Phone</th>
                         <th>Email confirmed</th>
                         <th>Active</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody id="myTable">
                     {% for registration in registrations %}
                         <tr>
-                            <td>
-                                <a href={% url 'experiment:registration_update' pk_eks=registration.session.experiment.pk pk_ses=registration.session.pk pk=registration.pk %}>{{ registration.first_name }}</a>
-                            </td>
                             <td>{{ registration.last_name }}</td>
+                            <td>{{ registration.first_name }}</td>
                             <td>{{ registration.email }}</td>
                             <td>{{ registration.phone |cut:" " }}</td>
                             <td>
@@ -48,30 +48,70 @@
                                     <span class="badge badge-pill badge-warning">Inactive</span>
                                 {% endif %}
                             </td>
+                            <td class="text-left">
+                                <a class="btn btn-warning btn-link btn-icon btn-sm edit"
+                                   href={% url 'experiment:registration_update' pk_eks=registration.session.experiment.pk pk_ses=registration.session.pk pk=registration.pk %}>
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                                   href={% url 'experiment:registration_delete' pk_eks=registration.session.experiment.pk pk_ses=registration.session.pk pk=registration.pk %}>
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
+                <!-- Pager -->
+                {% if is_paginated %}
+                    <div class="row">
+                        <div class="col-sm-12 col-md-5">
+                            <div class="dataTables_info">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }}
+                                of {{ page_obj.paginator.count }} entries
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-7">
+                            <div>
+                                <nav class="pagination">
+                                    <li class="page-item {% if page_obj.number == 1 %} disabled {% endif %}">
+                                        <a href="?page=1" class="page-link">First</a>
+                                    </li>
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">Previous</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <a href="#" class="page-link">Previous</a>
+                                        </li>
+                                    {% endif %}
+                                    {% for page in page_obj.paginator.page_range %}
+                                        <li class="page-item {% if page == page_obj.number %} active {% endif %}">
+                                            <a href="?page={{ page }}" class="page-link">{{ page }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <a href="#" class="page-link">Next</a>
+                                        </li>
+                                    {% endif %}
+                                    <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %} disabled {% endif %}">
+                                        <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last</a>
+                                    </li>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             {% else %}
                 There are no registration for this experiment.
             {% endif %}
         </div>
     </div>
-
-{% endblock %}
-
-{% block extrascript %}
-
-    <script>
-        $(document).ready(function () {
-            $("#myInput").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-                $("#myTable tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-    </script>
 
 {% endblock %}
 
