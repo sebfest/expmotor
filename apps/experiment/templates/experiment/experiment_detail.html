@@ -6,56 +6,69 @@
     {% bootstrap_messages %}
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Experiment: <a
-                    href={% url 'experiment:experiment_update' pk=experiment.pk %}>{{ experiment.name|title }}</a></h4>
+            <h4 class="card-title">{{ experiment.name|title }} </h4>
         </div>
         <div class="card-body">
             <table class="table table-hover">
                 <thead class="thead-light">
                 <tr>
-                    <th>Contact email</th>
-                    <th>Contact phone</th>
-                    <th>Available slots</th>
-                    <th>Registered subjects</th>
-                    <th>Distribution link</th>
-                    <th>Status</th>
+                    <th scope="col" class="text-center">Contact email</th>
+                    <th scope="col" class="text-center">Contact phone</th>
+                    <th scope="col" class="text-center">Available slots</th>
+                    <th scope="col" class="text-center">Registrations</th>
+                    <th scope="col" class="text-center">Status</th>
+                    <th scope="col" class="text-center">Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>{{ experiment.email }}</td>
-                    <td>{{ experiment.phone }}</td>
-                    <td>{{ experiment.slots }}</td>
-                    <td>
+                    <td class="text-center">{{ experiment.email }}</td>
+                    <td class="text-center">{{ experiment.phone }}</td>
+                    <td class="text-center">{{ experiment.slots }}</td>
+                    <td class="text-center">
                         <div class="progress position-relative">
                             <div class="progress-bar"
                                  role="progressbar"
                                  style="width: {{ experiment.complete }}%"
                                  aria-valuenow="{{ experiment.complete|floatformat:0 }}"
                                  aria-valuemin="0" aria-valuemax="1">
-                                <span class="justify-content-center d-flex position-absolute w-100"
-                                      style="color: black">
-                                    {{ experiment.registrations }}
-                                </span>
+                                    <span class="justify-content-center d-flex position-absolute w-100"
+                                          style="color: black">
+                                        {{ experiment.registrations }}
+                                    </span>
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
-                                data-target="#linkModal">
-                            Show
-                        </button>
-                        <a class="btn btn-outline-secondary btn-sm"
-                           href="{% url 'experiment:registration_create' pk=experiment.pk %}">
-                            Open
-                        </a>
-                    </td>
-                    <td>
+                    <td class="text-center">
                         {% if experiment.is_active %}
                             <span class="badge badge-pill badge-success">Active</span>
                         {% else %}
                             <span class="badge badge-pill badge-warning">Inactive</span>
                         {% endif %}
+                    </td>
+                    <td class="text-center">
+                                <span data-toggle="modal" data-target="#linkModal">
+                                    <a class="btn btn-info btn-link btn-icon btn-sm list"
+                                       data-toggle="tooltip" data-placement="top" title="Registration link"
+                                       href='#'>
+                                          <i class="fa fa-link"></i>
+                                    </a>
+                                </span>
+                        <a class="btn btn-info btn-link btn-icon btn-sm list"
+                           data-toggle="tooltip" data-placement="top" title="Show all registrations"
+                           href={% url 'experiment:registration_list' pk=experiment.pk %}>
+                            <i class="fa fa-list"></i>
+                        </a>
+                        <a class="btn btn-warning btn-link btn-icon btn-sm edit"
+                           data-toggle="tooltip" data-placement="top" title="Edit"
+                           href={% url 'experiment:experiment_update' pk=experiment.pk %}>
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                           data-toggle="tooltip" data-placement="top" title="Delete"
+                           href={% url 'experiment:experiment_delete' pk=experiment.pk %}>
+                            <i class="fa fa-times"></i>
+                        </a>
                     </td>
                 </tr>
                 </tbody>
@@ -98,31 +111,32 @@
     </div>
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Sessions</h4>
+            <h4 class="card-title">Session overview</h4>
         </div>
         <div class="card-body">
             {% if experiment.sessions.all %}
                 <table class="table table-hover">
                     <thead class="thead-light">
                     <tr>
-                        <th>Session date</th>
-                        <th>Session time</th>
-                        <th>Session place</th>
-                        <th>Available slots</th>
-                        <th>Registered subjects</th>
-                        <th>Status</th>
+                        <th scope="col">#</th>
+                        <th scope="col" class="text-center">Session date</th>
+                        <th scope="col" class="text-center">Session time</th>
+                        <th scope="col" class="text-center">Session place</th>
+                        <th scope="col" class="text-center">Available slots</th>
+                        <th scope="col" class="text-center">Registrations</th>
+                        <th scope="col" class="text-center">Status</th>
+                        <th scope="col" class="text-center">Action</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for session in experiment.sessions.all %}
                         <tr>
-                            <td>
-                                <a href={% url 'experiment:session_detail' pk_eks=experiment.pk pk=session.pk %}>{{ session.date|date:'Y-m-d' }}</a>
-                            </td>
-                            <td>{{ session.time|time:"H:i" }}</td>
-                            <td>{{ session.place }}</td>
-                            <td>{{ session.max_subjects }}</td>
-                            <td>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td class="text-center">{{ session.date|date:'Y-m-d' }}</td>
+                            <td class="text-center">{{ session.time|time:"H:i" }}</td>
+                            <td class="text-center">{{ session.place }}</td>
+                            <td class="text-center">{{ session.max_subjects }}</td>
+                            <td class="text-center">
                                 <div class="progress position-relative">
                                     <div class="progress-bar"
                                          role="progressbar"
@@ -136,12 +150,29 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {% if session.is_active %}
                                     <span class="badge badge-pill badge-success">Active</span>
                                 {% else %}
                                     <span class="badge badge-pill badge-warning">Inactive</span>
                                 {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <a class="btn btn-info btn-link btn-icon btn-sm list"
+                                   data-toggle="tooltip" data-placement="top" title="Show registrations"
+                                   href={% url 'experiment:session_detail' pk_eks=experiment.pk pk=session.pk %}>
+                                    <i class="fa fa-list"></i>
+                                </a>
+                                <a class="btn btn-warning btn-link btn-icon btn-sm edit"
+                                   data-toggle="tooltip" data-placement="top" title="Edit"
+                                   href={% url 'experiment:session_update' pk_eks=experiment.pk pk=session.pk %}>
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                                   data-toggle="tooltip" data-placement="top" title="Delete"
+                                   href={% url 'experiment:session_delete' pk_eks=experiment.pk pk=session.pk %}>
+                                    <i class="fa fa-times"></i>
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}

@@ -8,7 +8,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Add participant to session: {{ session }}</h4>
+            <h4 class="card-title">Add registration for {{ session.experiment |title }} to session on {{ session.date|date:'Y-m-d' }} at {{ session.time|time:"H:i" }}</h4>
         </div>
         <div class="card-body">
             <form class="form"
@@ -17,7 +17,7 @@
                 {% csrf_token %}
                 {% bootstrap_form form show_help=False show_label=True set_required=True layout="horizontal" %}
                 <div class="d-flex">
-                    {% bootstrap_button "Add participant" button_type="submit" button_class="btn-danger" %}
+                    {% bootstrap_button "Add registration" button_type="submit" button_class="btn-danger" %}
                     <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
                 </div>
             </form>

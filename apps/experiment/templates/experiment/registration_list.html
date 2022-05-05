@@ -17,43 +17,45 @@
                 <br>
                 <table class="table table-hover">
                     <thead class="thead-light">
-                    <tr>
-                        <th>Last name</th>
-                        <th>First name</th>
-                        <th>E-mail</th>
-                        <th>Phone</th>
-                        <th>Email confirmed</th>
-                        <th>Active</th>
-                        <th>Action</th>
-                    </tr>
+                        <tr>
+                            <th scope="col">Last name</th>
+                            <th scope="col">First name</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col" >Phone</th>
+                            <th scope="col" class="text-center">Email confirmed</th>
+                            <th scope="col" class="text-center">Active</th>
+                            <th scope="col" class="text-center">Action</th>
+                        </tr>
                     </thead>
                     <tbody id="myTable">
                     {% for registration in registrations %}
-                        <tr>
+                        <tr scope="row">
                             <td>{{ registration.last_name }}</td>
                             <td>{{ registration.first_name }}</td>
                             <td>{{ registration.email }}</td>
                             <td>{{ registration.phone |cut:" " }}</td>
-                            <td>
+                            <td class="text-center">
                                 {% if registration.confirmed_email %}
                                     <span class="badge badge-pill badge-success">Yes</span>
                                 {% else %}
                                     <span class="badge badge-pill badge-warning">No</span>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {% if registration.is_active %}
                                     <span class="badge badge-pill badge-success">Active</span>
                                 {% else %}
                                     <span class="badge badge-pill badge-warning">Inactive</span>
                                 {% endif %}
                             </td>
-                            <td class="text-left">
+                            <td class="text-center">
                                 <a class="btn btn-warning btn-link btn-icon btn-sm edit"
+                                   data-toggle="tooltip" data-placement="top" title="Edit"
                                    href={% url 'experiment:registration_update' pk_eks=registration.session.experiment.pk pk_ses=registration.session.pk pk=registration.pk %}>
                                     <i class="fa fa-edit"></i>
                                 </a>
                                 <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                                   data-toggle="tooltip" data-placement="top" title="Delete"
                                    href={% url 'experiment:registration_delete' pk_eks=registration.session.experiment.pk pk_ses=registration.session.pk pk=registration.pk %}>
                                     <i class="fa fa-times"></i>
                                 </a>
