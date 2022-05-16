@@ -8,24 +8,45 @@
 
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Registrations for experiment
-                <a href={% url 'experiment:experiment_detail' pk=experiment.pk %}>{{ experiment.name }} </a>
-            </h4>
+            <div class="row">
+                <div class="col">
+                    <h4 class="card-title">Registrations for experiment
+                        <a href={% url 'experiment:experiment_detail' pk=experiment.pk %}>{{ experiment.name }} </a>
+                    </h4>
+                </div>
+                <div class="col col-md-auto">
+                    <form class="form-inline card-title"
+                          action="{% url 'experiment:registration_search' pk=experiment.pk %}"
+                          method="get">
+                        <div class="input-group">
+                            <input name="q"
+                                   type="text"
+                                   class="form-control"
+                                   placeholder="Name etc."
+                                   aria-label="Search"
+                                   aria-describedby="button-addon2">
+                            <div class="input-group-append ">
+                                <button class="btn btn-outline-warning m-0" type="submit" id="button-addon2">Saerch</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             {% if registrations %}
                 <br>
                 <table class="table table-hover">
                     <thead class="thead-light">
-                        <tr>
-                            <th scope="col">Last name</th>
-                            <th scope="col">First name</th>
-                            <th scope="col">E-mail</th>
-                            <th scope="col" >Phone</th>
-                            <th scope="col" class="text-center">Email confirmed</th>
-                            <th scope="col" class="text-center">Active</th>
-                            <th scope="col" class="text-center">Action</th>
-                        </tr>
+                    <tr>
+                        <th scope="col">Last name</th>
+                        <th scope="col">First name</th>
+                        <th scope="col">E-mail</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col" class="text-center">Email confirmed</th>
+                        <th scope="col" class="text-center">Active</th>
+                        <th scope="col" class="text-center">Action</th>
+                    </tr>
                     </thead>
                     <tbody id="myTable">
                     {% for registration in registrations %}
@@ -68,7 +89,8 @@
                 {% if is_paginated %}
                     <div class="row">
                         <div class="col-sm-12 col-md-5">
-                            <div class="dataTables_info">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }}
+                            <div class="dataTables_info">Showing {{ page_obj.start_index }}
+                                to {{ page_obj.end_index }}
                                 of {{ page_obj.paginator.count }} entries
                             </div>
                         </div>
@@ -94,7 +116,8 @@
                                     {% endfor %}
                                     {% if page_obj.has_next %}
                                         <li class="page-item">
-                                            <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next</a>
+                                            <a href="?page={{ page_obj.next_page_number }}"
+                                               class="page-link">Next</a>
                                         </li>
                                     {% else %}
                                         <li class="page-item disabled">
@@ -102,7 +125,8 @@
                                         </li>
                                     {% endif %}
                                     <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %} disabled {% endif %}">
-                                        <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last</a>
+                                        <a href="?page={{ page_obj.paginator.num_pages }}"
+                                           class="page-link">Last</a>
                                     </li>
                                 </nav>
                             </div>
@@ -110,7 +134,8 @@
                     </div>
                 {% endif %}
             {% else %}
-                There are no registration for this experiment.
+                <br>
+                <h5 class="text-center">No registrations found.</h5>
             {% endif %}
         </div>
     </div>

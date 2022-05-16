@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -200,6 +201,37 @@ class RegistrationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context['experiment'] = self.experiment
         return context
+
+
+class RegistrationSearchView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Registration
+    context_object_name = 'registrations'
+    template_name = 'experiment/registration_list.html'
+    experiment = None
+
+    def setup(self, request, *args, **kwargs):
+        """Add experiment to view"""
+        super().setup(request, *args, **kwargs)
+        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
+
+    def test_func(self):
+        """Only owner can view registrations."""
+        return True if self.request.user == self.experiment.owner else False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Add experiment instance to context."""
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['experiment'] = self.experiment
+        return context
+
+    def get_queryset(self):
+        """Filter search results."""
+        query = self.request.GET.get("q")
+        object_list = Registration.objects.select_related().filter(
+            Q(session__experiment__manager=self.request.user),
+            Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        )
+        return object_list
 
 
 class RegistrationCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):

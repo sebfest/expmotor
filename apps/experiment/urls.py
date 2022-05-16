@@ -55,6 +55,11 @@ urlpatterns = [
         name='registration_list'
     ),
     path(
+        'experiment/<int:pk>/registrations/search/',
+        views.RegistrationSearchView.as_view(),
+        name='registration_search'
+    ),
+    path(
         'experiment/<int:pk_eks>/session/<int:pk>/registration/add/',
         views.RegistrationCreateView.as_view(),
         name='registration_add'
