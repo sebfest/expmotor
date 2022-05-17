@@ -19,14 +19,21 @@
                           action="{% url 'experiment:registration_search' pk=experiment.pk %}"
                           method="get">
                         <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="nc-icon nc-zoom-split"></i>
+                                </div>
+                            </div>
                             <input name="q"
                                    type="text"
                                    class="form-control"
                                    placeholder="Name etc."
                                    aria-label="Search"
                                    aria-describedby="button-addon2">
+
                             <div class="input-group-append ">
-                                <button class="btn btn-outline-warning m-0" type="submit" id="button-addon2">Saerch</button>
+                                <button class="btn btn-outline-warning m-0" type="submit" id="button-addon2">Saerch
+                                </button>
                             </div>
                         </div>
                     </form>
