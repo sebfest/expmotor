@@ -126,10 +126,11 @@
             {% else %}
                 {% bootstrap_alert "There are currently no participants in this experiment." alert_type='info' dismissible=False %}
             {% endif %}
-            <div class="btn-group" role="group">
-                <a class="btn btn-secondary"
+             <div class="d-flex">
+                <a class="btn btn-primary"
                    href={% url 'experiment:registration_add' pk_eks=session.experiment.pk pk=session.pk %}>Add
                     registration</a>
+                <button type="button" class="btn btn-secondary mr-1" onclick="window.history.go(-1);">Back</button>
             </div>
         </div>
     </div>

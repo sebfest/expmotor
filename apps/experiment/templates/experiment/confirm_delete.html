@@ -12,8 +12,10 @@
             <form method="post">
                 {% csrf_token %}
                 {% buttons %}
-                    <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Confirm</button>
+                    <div class="d-flex">
+                        <button type="submit" class="btn btn-danger">Confirm</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Cancel</button>
+                    </div>
                 {% endbuttons %}
             </form>
         </div>
