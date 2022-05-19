@@ -7,7 +7,9 @@
     {% bootstrap_messages %}
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Details for {{ session.experiment |title }} session</h4>
+            <h4 class="card-title">Session {{ session |title }} for <a
+                    href={% url 'experiment:experiment_detail' pk=session.experiment.pk %}>{{ session.experiment |title }}</a>
+            </h4>
         </div>
         <div class="card-body">
             <table class="table table-hover">
@@ -126,10 +128,11 @@
             {% else %}
                 {% bootstrap_alert "There are currently no participants in this experiment." alert_type='info' dismissible=False %}
             {% endif %}
-            <div class="btn-group" role="group">
-                <a class="btn btn-secondary"
+            <div class="d-flex">
+                <a class="btn btn-primary"
                    href={% url 'experiment:registration_add' pk_eks=session.experiment.pk pk=session.pk %}>Add
                     registration</a>
+                <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Back</button>
             </div>
         </div>
     </div>

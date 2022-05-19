@@ -1,17 +1,15 @@
+from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Coalesce
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.sites.models import Site
 
-
+from settings.local import AUTH_USER_MODEL
 from .basemodels import AbstractBaseModel
 from .constants import defaults
-from settings.local import AUTH_USER_MODEL
 
 
 class Experiment(AbstractBaseModel):
@@ -57,6 +55,12 @@ class Experiment(AbstractBaseModel):
         default=defaults['final_instructions_email'],
         help_text="This message is sent to participant after confirmation of their email address."
     )
+    qr_code_image = models.ImageField(
+        verbose_name=_('qr_code'),
+        help_text="Qr_code image with URL to registration site.",
+        blank=True,
+        upload_to='qr_codes/'
+    )
 
     @property
     def owner(self) -> AUTH_USER_MODEL:
@@ -88,11 +92,6 @@ class Experiment(AbstractBaseModel):
     def __str__(self) -> str:
         """String representation."""
         return f'{self.name}'
-
-    def clean(self):
-        if not self.name:
-            self.name = slugify(self.title)
-        super().clean()
 
     def get_absolute_url(self) -> str:
         """URL to object."""
@@ -232,8 +231,8 @@ class Registration(AbstractBaseModel):
             return
         if self.pk is None:
             if Registration.objects.filter(
-                session__experiment__pk=self.session.experiment.pk,
-                email=self.email,
+                    session__experiment__pk=self.session.experiment.pk,
+                    email=self.email,
             ).exists():
                 raise ValidationError('Your are already registered for this experiment.')
 

@@ -1,9 +1,11 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.forms import formset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils.encoding import force_text
@@ -89,6 +91,25 @@ class ExperimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, self.success_message)
         return super().delete(request, *args, **kwargs)
+
+
+class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View):
+    experiment = None
+
+    def test_func(self):
+        """Only experiment owners allowed to download qrcode image."""
+        self.experiment = Experiment.objects.get(pk=self.kwargs['pk'])
+        return True if self.request.user == self.experiment.owner else False
+
+    def get(self, request, *args, **kwargs):
+        """Send QrCode as attached image."""
+        image = self.experiment.qr_code_image
+        response = FileResponse(
+            open(image.path, "rb"),
+            as_attachment=True,
+            filename=os.path.basename(image.path),
+        )
+        return response
 
 
 class SessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
