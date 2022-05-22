@@ -1,5 +1,6 @@
 from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db.models import F, Count, Q
 from django.utils import timezone
@@ -59,7 +60,42 @@ class SessionUpdateForm(SessionForm):
         fields = SessionForm.Meta.fields + ['is_active', ]
 
 
-class RegistrationCreateOrUpdateForm(forms.ModelForm):
+class RegistrationCreateForm(forms.ModelForm):
+    class Meta:
+        model = Registration
+        fields = [
+            'session',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'is_active',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        self.session = kwargs.pop('session')
+        super().__init__(*args, **kwargs)
+        if self.session:
+            self.fields['session'].queryset = self.get_parent_session()
+            self.fields['session'].empty_label = None
+            self.fields['session'].required = False
+            self.fields['session'].disabled = True
+            self.fields['session'].widget = forms.HiddenInput()
+
+    def get_parent_session(self):
+        """Get parent session."""
+        return Session.objects.filter(pk=self.session.pk)
+
+    def clean_session(self):
+        """Only the parent session is valid."""
+        return self.session
+
+    def clean(self):
+        # TODO: Check if registration can be added.
+        super().clean()
+
+
+class RegistrationUpdateForm(forms.ModelForm):
     class Meta:
         model = Registration
         fields = [
@@ -77,31 +113,32 @@ class RegistrationCreateOrUpdateForm(forms.ModelForm):
         instance = getattr(self, 'instance', None)
         if instance and instance.pk:
             self.fields['session'].queryset = self.get_all_available_sessions()
-        else:
-            self.fields['session'].queryset = self.get_parent_session()
-            self.fields['session'].empty_label = None
-            self.fields['session'].required = False
-            self.fields['session'].disabled = True
-            self.fields['session'].widget = forms.HiddenInput()
 
     def get_all_available_sessions(self):
         """Find available sessions."""
-        active_participants = Q(participants__is_active=True)
+        active_registrations = Q(participants__is_active=True)
         available_sessions = Session.objects \
             .filter(experiment_id=self.instance.session.experiment.id) \
-            .annotate(free_slots=F('max_subjects') - Count('participants', filter=active_participants)) \
-            .filter(free_slots__gte=0)
+            .annotate(free_slots=F('max_subjects') - Count('participants', filter=active_registrations)) \
+            .filter(free_slots__gte=0) \
+            .order_by('date', 'time')
         return available_sessions
 
-    def get_parent_session(self):
-        return Session.objects.filter(pk=self.session.pk)
+    def clean(self):
+        """Check if registration can be updated."""
+        cleaned_data = super().clean()
+        session_is_full = cleaned_data['session'].is_full
+        active_registration = cleaned_data['is_active']
+        is_activated = 'is_active' in self.changed_data and active_registration
+        changed_session = 'session' in self.changed_data
 
-    def clean_session(self):
-        instance = getattr(self, 'instance', None)
-        if instance:
-            return self.session
-        else:
-            return self.cleaned_data['session']
+        if changed_session and session_is_full and active_registration:
+            err_msg = ValidationError("This session is already full.", code='invalid')
+            self.add_error('session', err_msg)
+
+        if is_activated and session_is_full:
+            err_msg = ValidationError("You cannot activate this registration. The session is full.", code='invalid')
+            self.add_error('is_active', err_msg)
 
 
 class RegistrationForm(forms.ModelForm):
@@ -134,5 +171,6 @@ class RegistrationForm(forms.ModelForm):
             .filter(experiment_id=self.experiment.id)\
             .exclude(is_active=False)\
             .annotate(free_slots=F('max_subjects') - Count('participants', filter=Q(participants__is_active=True)))\
-            .filter(free_slots__gt=0)
+            .filter(free_slots__gt=0) \
+            .order_by('date', 'time')
         return valid_sessions
