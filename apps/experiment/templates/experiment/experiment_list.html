@@ -55,19 +55,19 @@
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <a class="btn btn-info btn-link btn-icon btn-sm list"
-                                   data-toggle="tooltip" data-placement="top" title="Show sessions"
-                                   href={% url 'experiment:experiment_detail' pk=experiment.pk %}>
-                                    <i class="fa fa-info"></i>
+                                <a class="btn btn-info btn-link btn-icon list"
+                                   data-toggle="tooltip" data-placement="top" title="Sessions"
+                                   href={% url 'experiment:experiment_detail' pk=experiment.pk  %}>
+                                     <i class="fa fa-list"></i>
                                 </a>
-                                <a class="btn btn-warning btn-link btn-icon btn-sm edit"
-                                   data-toggle="tooltip" data-placement="top" title="Edit info"
-                                   href={% url 'experiment:experiment_update' pk=experiment.pk %}>
+                                <a class="btn btn-warning btn-link btn-icon edit"
+                                   data-toggle="tooltip" data-placement="top" title="Edit"
+                                   href={% url 'experiment:experiment_update' pk=experiment.pk  %}>
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                                <a class="btn btn-danger btn-link btn-icon remove"
                                    data-toggle="tooltip" data-placement="top" title="Delete"
-                                   href={% url 'experiment:experiment_delete' pk=experiment.pk %}>
+                                   href={% url 'experiment:experiment_delete' pk=experiment.pk  %}>
                                     <i class="fa fa-times"></i>
                                 </a>
                             </td>

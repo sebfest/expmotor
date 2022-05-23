@@ -1,18 +1,19 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.forms import formset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
-from django.views.generic import DetailView, ListView, UpdateView, CreateView, DeleteView, FormView, TemplateView
+from django.views.generic import DetailView, ListView, UpdateView, CreateView, DeleteView, TemplateView
 
 from .forms import RegistrationForm, SessionCreateForm, SessionUpdateForm, \
-    RegistrationCreateOrUpdateForm
+    RegistrationCreateForm, RegistrationUpdateForm
 from .models import Experiment, Session, Registration
 from .tokens import account_activation_token
 
@@ -52,7 +53,7 @@ class ExperimentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     ]
 
     def form_valid(self, form):
-        """Add logged in user to new experiment."""
+        """Add logged-in user to new experiment."""
         form.instance.manager = self.request.user
         return super().form_valid(form)
 
@@ -89,6 +90,25 @@ class ExperimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, self.success_message)
         return super().delete(request, *args, **kwargs)
+
+
+class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View):
+    experiment = None
+
+    def test_func(self):
+        """Only experiment owners allowed to download qrcode image."""
+        self.experiment = Experiment.objects.get(pk=self.kwargs['pk'])
+        return True if self.request.user == self.experiment.owner else False
+
+    def get(self, request, *args, **kwargs):
+        """Send QrCode as attached image."""
+        image = self.experiment.qr_code_image
+        response = FileResponse(
+            open(image.path, "rb"),
+            as_attachment=True,
+            filename=os.path.basename(image.path),
+        )
+        return response
 
 
 class SessionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -236,7 +256,7 @@ class RegistrationSearchView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class RegistrationCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Registration
-    form_class = RegistrationCreateOrUpdateForm
+    form_class = RegistrationCreateForm
     template_name = 'experiment/registration_create.html'
     success_message = "Registration successfully created."
     session_full_message = "This session is already full."
@@ -254,16 +274,8 @@ class RegistrationCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
     def get_form_kwargs(self):
         """Add session instance to form."""
         kwargs = super().get_form_kwargs()
-        kwargs.update({'session': self.session})
+        kwargs['session'] = self.session
         return kwargs
-
-    def form_valid(self, form):
-        """Check if session has been filled up."""
-        session = get_object_or_404(Session, pk=self.kwargs['pk'])
-        if session.is_full:
-            messages.error(self.request, self.session_full_message)
-            return self.form_invalid(form)
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         """Add session instance to context"""
@@ -278,7 +290,7 @@ class RegistrationCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
 
 class RegistrationUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = Registration
-    form_class = RegistrationCreateOrUpdateForm
+    form_class = RegistrationUpdateForm
     template_name = 'experiment/registration_update.html'
     success_message = "Registration successfully updated."
 
@@ -288,22 +300,9 @@ class RegistrationUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
 
     def get_form_kwargs(self):
         """Add session to form."""
-        session = get_object_or_404(Session, pk=self.kwargs.get('pk_ses'))
         kwargs = super().get_form_kwargs()
-        kwargs.update({'session': session})
+        kwargs['session'] = get_object_or_404(Session, pk=self.kwargs.get('pk_ses'))
         return kwargs
-
-    def form_valid(self, form):
-        """Check if registration can be activated."""
-        is_activated = False
-        if 'is_active' in form.changed_data and form.cleaned_data['is_active']:
-            is_activated = True
-
-        if is_activated and form.instance.session.is_full:
-            form.add_error('is_active', "You cannot activate this registration. The session is already full.")
-            return self.form_invalid(form)
-        else:
-            return super().form_valid(form)
 
     def get_success_url(self):
         """Return to session index."""

@@ -22,6 +22,7 @@ class ExperimentAdmin(admin.ModelAdmin):
     list_select_related = True
     list_display = (
         'name',
+        'manager',
         'created_date',
         'modified_date',
         'slots',

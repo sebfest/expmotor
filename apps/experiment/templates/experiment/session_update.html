@@ -18,9 +18,12 @@
                   method="post">
                 {% csrf_token %}
                 {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal" %}
-                <div>
-                    {% bootstrap_button "Save" button_type="submit" button_class="btn-secondary" %}
-                    <a class="btn btn-danger" href={% url 'experiment:session_delete' pk_eks=session.experiment.pk pk=session.pk %}>Delete</a>
+                <div class="d-flex">
+                    {% bootstrap_button "Update" button_type="submit" button_class="btn-primary" %}
+                    <a class="btn btn-secondary"
+                       role="button"
+                       href={% url 'experiment:session_detail' pk_eks=session.experiment.pk pk=session.pk %}>Cancel
+                    </a>
                 </div>
             </form>
         </div>

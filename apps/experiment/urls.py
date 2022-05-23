@@ -30,6 +30,11 @@ urlpatterns = [
         name='experiment_delete'
     ),
     path(
+        'experiment/<int:pk>/qrcode/',
+        views.ExperimentQrcodeDownloadView.as_view(),
+        name='experiment_qr_download'
+    ),
+    path(
         'experiment/<int:pk>/session/add/',
         views.SessionCreateView.as_view(),
         name='session_add'

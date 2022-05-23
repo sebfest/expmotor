@@ -136,7 +136,7 @@ class ExperimentFactory(DjangoModelFactory):
         UserFactory
     )
     name = LazyAttribute(
-        lambda obj: slugify(obj.title) if random.randint(0, 100) < 80 else None
+        lambda obj: slugify(obj.title)
     )
     title = Faker(
         'sentence',

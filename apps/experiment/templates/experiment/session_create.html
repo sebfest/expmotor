@@ -18,7 +18,9 @@
                 {% bootstrap_form form show_help=True show_label=True set_required=True layout="horizontal"  %}
                 <div class="d-flex">
                     {% bootstrap_button "Add session" button_type="submit" button_class="btn-primary" %}
-                    <button type="button" class="btn btn-secondary mr-1" onclick="window.history.go(-1);">Cancel</button>
+                    <a class="btn btn-secondary"
+                       role="button"
+                       href={% url 'experiment:experiment_detail' pk=experiment.pk %}>Cancel</a>
                 </div>
             </form>
         </div>
