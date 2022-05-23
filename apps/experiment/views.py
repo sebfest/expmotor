@@ -274,16 +274,8 @@ class RegistrationCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
     def get_form_kwargs(self):
         """Add session instance to form."""
         kwargs = super().get_form_kwargs()
-        kwargs.update({'session': self.session})
+        kwargs['session'] = self.session
         return kwargs
-
-    def form_valid(self, form):
-        """Check if session has been filled up."""
-        session = get_object_or_404(Session, pk=self.kwargs['pk'])
-        if session.is_full:
-            messages.error(self.request, self.session_full_message)
-            return self.form_invalid(form)
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         """Add session instance to context"""

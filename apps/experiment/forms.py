@@ -47,8 +47,9 @@ class SessionCreateForm(SessionForm):
         today = timezone.now().date()
 
         if session_date <= today:
-            self.add_error(None, forms.ValidationError("Session date must be in the future"))
-            self.add_error('date', forms.ValidationError("Session date must be in the future"))
+            err_msg = ValidationError("Session date must be in the future", code='invalid')
+            self.add_error(None, err_msg)
+            self.add_error('date', err_msg)
         return session_date
 
     class Meta(SessionForm.Meta):
@@ -91,8 +92,18 @@ class RegistrationCreateForm(forms.ModelForm):
         return self.session
 
     def clean(self):
-        # TODO: Check if registration can be added.
-        super().clean()
+        """Check if session is full."""
+        cleaned_data = super().clean()
+        session_is_full = cleaned_data['session'].is_full
+        active_registration = cleaned_data['is_active']
+
+        if session_is_full and active_registration:
+            err_msg = ValidationError(
+                "This session is already full. You may only add inactive registrations",
+                code='invalid'
+            )
+            self.add_error(None, err_msg)
+            self.add_error('is_active', '')
 
 
 class RegistrationUpdateForm(forms.ModelForm):

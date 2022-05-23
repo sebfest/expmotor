@@ -70,12 +70,12 @@
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <a class="btn btn-warning btn-link btn-icon btn-sm edit"
+                                <a class="btn btn-warning btn-link btn-icon edit"
                                    data-toggle="tooltip" data-placement="top" title="Edit"
                                    href={% url 'experiment:registration_update' pk_eks=registration.session.experiment.pk pk_ses=registration.session.pk pk=registration.pk %}>
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                                <a class="btn btn-danger btn-link btn-icon remove"
                                    data-toggle="tooltip" data-placement="top" title="Delete"
                                    href={% url 'experiment:registration_delete' pk_eks=registration.session.experiment.pk pk_ses=registration.session.pk pk=registration.pk %}>
                                     <i class="fa fa-times"></i>
@@ -135,8 +135,14 @@
                 {% endif %}
             {% else %}
                 <br>
-                <h5 class="text-center">No registrations found.</h5>
+                <h5 class="text-center">No registrations found {% if request.GET.q %}for "{{ request.GET.q }}" {% endif %}</h5>
             {% endif %}
+            <br>
+            <div class="d-flex">
+
+                 <a class="btn btn-secondary"
+                   href={% url 'experiment:experiment_detail' pk=experiment.pk %}>Back</a>
+            </div>
         </div>
     </div>
 

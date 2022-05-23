@@ -54,17 +54,17 @@
                                           <i class="fa fa-link"></i>
                                     </a>
                                 </span>
-                        <a class="btn btn-info btn-link btn-icon btn-sm list"
+                        <a class="btn btn-info btn-link btn-icon list"
                            data-toggle="tooltip" data-placement="top" title="Show all registrations"
                            href={% url 'experiment:registration_list' pk=experiment.pk %}>
-                            <i class="fa fa-list"></i>
+                            <i class="fa fa-users"></i>
                         </a>
-                        <a class="btn btn-warning btn-link btn-icon btn-sm edit"
+                        <a class="btn btn-warning btn-link btn-icon edit"
                            data-toggle="tooltip" data-placement="top" title="Edit"
                            href={% url 'experiment:experiment_update' pk=experiment.pk %}>
                             <i class="fa fa-edit"></i>
                         </a>
-                        <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                        <a class="btn btn-danger btn-link btn-icon remove"
                            data-toggle="tooltip" data-placement="top" title="Delete"
                            href={% url 'experiment:experiment_delete' pk=experiment.pk %}>
                             <i class="fa fa-times"></i>
@@ -166,17 +166,17 @@
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <a class="btn btn-info btn-link btn-icon btn-sm list"
+                                <a class="btn btn-info btn-link btn-icon list"
                                    data-toggle="tooltip" data-placement="top" title="Show registrations"
                                    href={% url 'experiment:session_detail' pk_eks=experiment.pk pk=session.pk %}>
-                                    <i class="fa fa-list"></i>
+                                    <i class="fa fa-users"></i>
                                 </a>
-                                <a class="btn btn-warning btn-link btn-icon btn-sm edit"
+                                <a class="btn btn-warning btn-link btn-icon edit"
                                    data-toggle="tooltip" data-placement="top" title="Edit"
                                    href={% url 'experiment:session_update' pk_eks=experiment.pk pk=session.pk %}>
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <a class="btn btn-danger btn-link btn-icon btn-sm remove"
+                                <a class="btn btn-danger btn-link btn-icon remove"
                                    data-toggle="tooltip" data-placement="top" title="Delete"
                                    href={% url 'experiment:session_delete' pk_eks=experiment.pk pk=session.pk %}>
                                     <i class="fa fa-times"></i>
@@ -194,7 +194,8 @@
              <div class="d-flex">
                 <a class="btn btn-primary" role="button"
                    href={% url 'experiment:session_add' pk=experiment.pk %}>Add new session</a>
-                <button type="button" class="btn btn-secondary" onclick="window.history.go(-1);">Back</button>
+                 <a class="btn btn-secondary" role="button"
+                   href={% url 'experiment:experiment_list' %}>Back</a>
             </div>
         </div>
     </div>
