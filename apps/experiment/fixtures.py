@@ -32,10 +32,6 @@ def delete() -> None:
     for f in os.listdir(folder):
         os.remove(os.path.join(folder, f))
 
-    folder = '../../media/qr_codes/'
-    for f in os.listdir(folder):
-        os.remove(os.path.join(folder, f))
-
     print("Success.")
 
 

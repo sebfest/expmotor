@@ -1,5 +1,7 @@
 import os
+from io import BytesIO
 
+import qrcode
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -95,18 +97,36 @@ class ExperimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View):
     experiment = None
 
+    def setup(self, request, *args, **kwargs):
+        """Get related experiment."""
+        super().setup(request, *args, **kwargs)
+        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
+
     def test_func(self):
         """Only experiment owners allowed to download qrcode image."""
-        self.experiment = Experiment.objects.get(pk=self.kwargs['pk'])
         return True if self.request.user == self.experiment.owner else False
 
     def get(self, request, *args, **kwargs):
         """Send QrCode as attached image."""
-        image = self.experiment.qr_code_image
+        file_ext = 'PNG'
+        file_name = f'{self.experiment.name}_qr_code.{file_ext.lower()}'
+        file_content_type = 'image/png'
+
+        qr_content = self.experiment.get_full_absolute_url()
+        qr = qrcode.QRCode()
+        qr.add_data(qr_content)
+        qr.make()
+
+        buffer = BytesIO()
+        image = qr.make_image(fill='black', back_color='white')
+        image.save(buffer, file_ext)
+        buffer.seek(0)
+
         response = FileResponse(
-            open(image.path, "rb"),
+            buffer,
             as_attachment=True,
-            filename=os.path.basename(image.path),
+            filename=file_name,
+            content_type=file_content_type,
         )
         return response
 
@@ -201,7 +221,7 @@ class RegistrationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = 'experiment/registration_list.html'
     context_object_name = 'registrations'
     experiment = None
-    paginate_by = 10
+    paginate_by = 8
 
     def setup(self, request, *args, **kwargs):
         """Add experiment to view"""
@@ -214,7 +234,7 @@ class RegistrationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         """Get all registrations for experiment."""
-        return Registration.objects.filter(session__experiment=self.experiment).order_by('last_name')
+        return Registration.objects.select_related().filter(session__experiment=self.experiment).order_by('last_name')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Add experiment instance to context."""

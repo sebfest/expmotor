@@ -44,37 +44,6 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
         )
 
 
-@receiver(post_save, sender=Experiment)
-def generate_qr_code_for_experiment(sender: Type[Experiment], instance: Experiment, created: bool, **kwargs) -> None:
-    """Generate qr code image after successful experiment creation."""
-    if created:
-        file_ext = 'PNG'
-        file_name = f'{instance.name}_qr_code.{file_ext.lower()}'
-        file_content_type = 'image/png'
-
-        qr_content = instance.get_full_absolute_url()
-        qr = qrcode.QRCode()
-        qr.add_data(qr_content)
-        qr.make()
-
-        buffer = BytesIO()
-        image = qr.make_image(fill='black', back_color='white')
-        image.save(buffer, file_ext)
-
-        uploaded_file = InMemoryUploadedFile(
-            file=buffer,
-            field_name=None,
-            name=file_name,
-            content_type=file_content_type,
-            size=buffer.tell(),
-            charset=None
-        )
-        instance.qr_code_image.save(file_name, uploaded_file, save=True)
-
-        for temporary in [image, buffer, uploaded_file]:
-            temporary.close()
-
-
 @receiver(post_save, sender=Registration)
 def send_email_confirmation_request(sender: Type[Registration], instance: Registration,
                                     created: bool, update_fields: Optional[FrozenSet], **kwargs) -> None:

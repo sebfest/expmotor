@@ -10,8 +10,8 @@
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    <h4 class="card-title">Registrations for experiment
-                        <a href={% url 'experiment:experiment_detail' pk=experiment.pk %}>{{ experiment.name }} </a>
+                    <h4 class="card-title">Registrations for project:
+                        <a href={% url 'experiment:experiment_detail' pk=experiment.pk %}>{{ experiment.name | title}} </a>
                     </h4>
                 </div>
                 <div class="col col-md-auto">
