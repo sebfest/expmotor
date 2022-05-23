@@ -3,9 +3,8 @@ import random
 
 from django.utils import timezone
 from django.utils.text import slugify
-from django.db.models.signals import post_save
 from factory import LazyAttribute, SubFactory, Faker, RelatedFactoryList, Iterator
-from factory.django import DjangoModelFactory, mute_signals
+from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyDateTime
 
 from experiment.models import Experiment, Session, Registration
