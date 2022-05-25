@@ -24,10 +24,11 @@ class ExperimentListView(LoginRequiredMixin, ListView):
     template_name = 'experiment/experiment_list.html'
     context_object_name = 'experiments'
     redirect_field_name = None
+    paginate_by = 5
 
     def get_queryset(self):
         """Get all experiments belonging to the logged-in user."""
-        return Experiment.objects.filter(manager=self.request.user)
+        return Experiment.objects.prefetch_related('sessions').filter(manager=self.request.user)
 
 
 class ExperimentDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

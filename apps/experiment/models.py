@@ -27,7 +27,7 @@ class Experiment(AbstractBaseModel):
     title = models.CharField(
         verbose_name=_('title'),
         max_length=50,
-        help_text='Title of the experiment; visible to participants.',
+        help_text='Title of the experiment; visible to subjects who register.',
     )
     email = models.EmailField(
         verbose_name=_('inviter email'),
@@ -37,7 +37,7 @@ class Experiment(AbstractBaseModel):
     phone = models.CharField(
         verbose_name=_('phone'),
         max_length=8,
-        help_text="Phone number participants can contact.",
+        help_text="Phone number subjects can contact.",
         validators=[
             RegexValidator(
                 regex=r'^\d{8}$',
@@ -48,18 +48,12 @@ class Experiment(AbstractBaseModel):
     registration_help = models.TextField(
         verbose_name=_('registration instructions'),
         default=defaults['registration_help'],
-        help_text="This text will meet participants when they register."
+        help_text="This text will meet subjects when they register."
     )
     final_instructions = models.TextField(
         verbose_name=_('instructions mail'),
         default=defaults['final_instructions_email'],
-        help_text="This message is sent to participant after confirmation of their email address."
-    )
-    qr_code_image = models.ImageField(
-        verbose_name=_('qr_code'),
-        help_text="Qr_code image with URL to registration site.",
-        blank=True,
-        upload_to='qr_codes/'
+        help_text="This message is sent to subjects after confirmation of their email address."
     )
 
     @property
@@ -76,18 +70,18 @@ class Experiment(AbstractBaseModel):
         return agg_sum.get('slots', 0)
 
     @property
-    def registrations(self) -> int:
-        """Number of registrations."""
-        active_registrations = Q(participants__is_active=True)
+    def active_registrations(self) -> int:
+        """Number of active registrations for experiment."""
+        active_registrations = Q(registrations__is_active=True)
         agg_count = self.sessions.aggregate(
-            registrations=Coalesce(Count('participants', filter=active_registrations), 0)
+            registrations=Coalesce(Count('registrations', filter=active_registrations), 0)
         )
         return agg_count.get('registrations', 0)
 
     @property
     def complete(self) -> float:
-        """Registration rate."""
-        return (self.registrations / self.slots) * 100.0 if self.slots > 0 else 0.0
+        """Percentage of completed registrations."""
+        return (self.active_registrations / self.slots) * 100.0 if self.slots > 0 else 0.0
 
     def __str__(self) -> str:
         """String representation."""
@@ -133,7 +127,7 @@ class Session(AbstractBaseModel):
     )
     max_subjects = models.PositiveIntegerField(
         verbose_name=_('number of subjects.'),
-        help_text='The maximal number of participants that can register.',
+        help_text='The maximal number of subjects that can register.',
         validators=[
             MinValueValidator(
                 limit_value=1,
@@ -148,23 +142,25 @@ class Session(AbstractBaseModel):
         return self.experiment.manager
 
     @property
-    def registrations(self) -> int:
-        """Number of active participants in session."""
-        return self.participants.filter(is_active=True).count()
+    def active_registrations(self) -> int:
+        """Number of active registrations for session."""
+        return self.registrations.filter(is_active=True).count()
 
     @property
     def complete(self) -> float:
-        """Share of participants registered."""
-        return (self.registrations / self.max_subjects) * 100.0 if self.max_subjects > 0 else 0.0
+        """Percentage of completed active registrations."""
+        return (self.active_registrations / self.max_subjects) * 100.0 if self.max_subjects > 0 else 0.0
 
     @property
     def is_full(self) -> bool:
         """Checks whether session is full."""
-        return self.registrations >= self.max_subjects
+        return self.active_registrations >= self.max_subjects
 
     def __str__(self) -> str:
         if self.date and self.time:
             return f"{self.date.strftime('%Y-%m-%d')} {self.time.strftime('%H:%M:%S')}"
+        else:
+            return 'Empty session.'
 
     def get_absolute_url(self) -> str:
         """URL to object."""
@@ -178,7 +174,7 @@ class Registration(AbstractBaseModel):
     session = models.ForeignKey(
         Session,
         verbose_name=_('session'),
-        related_name='participants',
+        related_name='registrations',
         on_delete=models.CASCADE,
         help_text='The session you sign up for.'
     )
@@ -232,7 +228,7 @@ class Registration(AbstractBaseModel):
         if 'session' in kwargs['exclude']:
             return
         if self.pk is None:
-            if Registration.objects.filter(
+            if Registration.objects.select_related().filter(
                     session__experiment__pk=self.session.experiment.pk,
                     email=self.email,
             ).exists():

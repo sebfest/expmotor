@@ -38,7 +38,7 @@
                                  aria-valuenow="{{ session.complete|floatformat:0 }}"
                                  aria-valuemin="0" aria-valuemax="1">
                         <span class="justify-content-center d-flex position-absolute w-100" style="color: black">
-                            {{ session.registrations }}
+                            {{ session.active_registrations }}
                         </span>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
             <h4 class="card-title">Registrations</h4>
         </div>
         <div class="card-body">
-            {% if session.participants.all %}
+            {% if session.registrations.all %}
                 <br>
                 <table class="table table-hover">
                     <thead class="thead-light">
@@ -88,22 +88,22 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for participant in session.participants.all %}
+                    {% for registration in session.registrations.all %}
                         <tr>
                             <th scope="row">{{ forloop.counter }}</th>
-                            <td class="text-center">{{ participant.first_name }}</td>
-                            <td class="text-center">{{ participant.last_name }}</td>
-                            <td class="text-center">{{ participant.phone |cut:" " }}</td>
-                            <td class="text-center">{{ participant.email }}</td>
+                            <td class="text-center">{{ registration.first_name }}</td>
+                            <td class="text-center">{{ registration.last_name }}</td>
+                            <td class="text-center">{{ registration.phone |cut:" " }}</td>
+                            <td class="text-center">{{ registration.email }}</td>
                             <td class="text-center">
-                                {% if participant.confirmed_email %}
+                                {% if registration.confirmed_email %}
                                     <span class="badge badge-pill badge-success">Yes</span>
                                 {% else %}
                                     <span class="badge badge-pill badge-warning">No</span>
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                {% if participant.is_active %}
+                                {% if registration.is_active %}
                                     <span class="badge badge-pill badge-success">Active</span>
                                 {% else %}
                                     <span class="badge badge-pill badge-warning">Inactive</span>
@@ -112,12 +112,12 @@
                             <td class="text-center">
                                 <a class="btn btn-warning btn-link btn-icon edit"
                                    data-toggle="tooltip" data-placement="top" title="Edit"
-                                   href={% url 'experiment:registration_update' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>
+                                   href={% url 'experiment:registration_update' pk_eks=session.experiment.pk pk_ses=session.pk pk=registration.pk %}>
                                     <i class="fa fa-edit"></i>
                                 </a>
                                 <a class="btn btn-danger btn-link btn-icon remove"
                                    data-toggle="tooltip" data-placement="top" title="Delete"
-                                   href={% url 'experiment:registration_delete' pk_eks=session.experiment.pk pk_ses=session.pk pk=participant.pk %}>
+                                   href={% url 'experiment:registration_delete' pk_eks=session.experiment.pk pk_ses=session.pk pk=registration.pk %}>
                                     <i class="fa fa-times"></i>
                                 </a>
                             </td>

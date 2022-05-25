@@ -15,14 +15,14 @@ class SessionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
         if instance and instance.pk:
-            max_subjects_validator = self.get_max_subjects_validator()
-            self.fields['max_subjects'].validators.append(max_subjects_validator)
-            self.fields['max_subjects'].widget.attrs['min'] = max_subjects_validator.limit_value
+            min_subjects_validator = self.get_min_subjects_validator()
+            self.fields['max_subjects'].validators.append(min_subjects_validator)
+            self.fields['max_subjects'].widget.attrs['min'] = min_subjects_validator.limit_value
 
-    def get_max_subjects_validator(self):
+    def get_min_subjects_validator(self):
         """Return validator to not allow fewer slots than registered subjects"""
-        min_value = self.instance.participants.filter(is_active=True).count()
-        message = f'The maximum number of participants must be larger than {min_value}'
+        min_value = self.instance.active_registrations
+        message = f'The maximum number of registrations must be larger than {min_value}'
         return MinValueValidator(limit_value=min_value, message=message)
 
     class Meta:
@@ -127,10 +127,11 @@ class RegistrationUpdateForm(forms.ModelForm):
 
     def get_all_available_sessions(self):
         """Find available sessions."""
-        active_registrations = Q(participants__is_active=True)
+        active_registrations = Q(registrations__is_active=True)
         available_sessions = Session.objects \
-            .filter(experiment_id=self.instance.session.experiment.id) \
-            .annotate(free_slots=F('max_subjects') - Count('participants', filter=active_registrations)) \
+            .prefetch_related() \
+            .filter(experiment_id=self.session.experiment.id) \
+            .annotate(free_slots=F('max_subjects') - Count('registrations', filter=active_registrations)) \
             .filter(free_slots__gte=0) \
             .order_by('date', 'time')
         return available_sessions
@@ -178,10 +179,12 @@ class RegistrationForm(forms.ModelForm):
 
     def get_available_sessions(self):
         """Find available sessions"""
+        active_registrations = Q(registrations__is_active=True)
         valid_sessions = Session.objects\
+            .prefetch_related() \
             .filter(experiment_id=self.experiment.id)\
             .exclude(is_active=False)\
-            .annotate(free_slots=F('max_subjects') - Count('participants', filter=Q(participants__is_active=True)))\
+            .annotate(free_slots=F('max_subjects') - Count('registrations', filter=active_registrations))\
             .filter(free_slots__gt=0) \
             .order_by('date', 'time')
         return valid_sessions

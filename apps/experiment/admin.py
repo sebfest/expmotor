@@ -13,7 +13,7 @@ class SessionInline(admin.TabularInline):
         'time',
         'place',
         'max_subjects',
-        'registrations',
+        'active_registrations',
     )
     readonly_fields = ('registrations',)
 
@@ -26,7 +26,7 @@ class ExperimentAdmin(admin.ModelAdmin):
         'created_date',
         'modified_date',
         'slots',
-        'registrations',
+        'active_registrations',
         'is_active',
         'get_object_link',
     )
@@ -97,7 +97,7 @@ class SessionAdmin(admin.ModelAdmin):
         'time',
         'place',
         'max_subjects',
-        'participant_count',
+        'active_registrations',
         'is_active',
     )
     ordering = ('date',)
@@ -125,9 +125,9 @@ class SessionAdmin(admin.ModelAdmin):
     )
     inlines = [RegistrationInline]
 
-    @admin.display(description='Participants registered.')
-    def participant_count(self, session: Session) -> str:
-        return format_html('{number}', number=session.participants.count())
+    @admin.display(description='Registrations.')
+    def active_registrations(self, session: Session) -> str:
+        return format_html('{registrations}', registrations=session.active_registrations)
 
 
 class RegistrationAdmin(admin.ModelAdmin):
