@@ -228,7 +228,7 @@ class Registration(AbstractBaseModel):
         if 'session' in kwargs['exclude']:
             return
         if self.pk is None:
-            if Registration.objects.select_related().filter(
+            if Registration.objects.select_related('session__experiment').filter(
                     session__experiment__pk=self.session.experiment.pk,
                     email=self.email,
             ).exists():
