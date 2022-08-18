@@ -1,10 +1,6 @@
-from io import BytesIO
 from typing import Type, FrozenSet, Optional
 
-import qrcode
-
 from django.contrib.sites.models import Site
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.mail import EmailMessage, send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver

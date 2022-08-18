@@ -1,4 +1,3 @@
-import os
 from io import BytesIO
 
 import qrcode
@@ -113,7 +112,7 @@ class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View
         file_name = f'{self.experiment.name}_qr_code.{file_ext.lower()}'
         file_content_type = 'image/png'
 
-        qr_content = self.experiment.get_full_absolute_url()
+        qr_content = self.request.build_absolute_uri().replace('qrcode', 'register')
         qr = qrcode.QRCode()
         qr.add_data(qr_content)
         qr.make()
