@@ -80,13 +80,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-POSTGRES_PW = get_env_variable('POSTGRES_PW')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'expmotor',
-        'USER': 'admin',
-        'PASSWORD': POSTGRES_PW,
+        'NAME': get_env_variable('POSTGRES_NAME'),
+        'USER': get_env_variable('POSTGRES_USER'),
+        'PASSWORD': get_env_variable('POSTGRES_PW'),
         'HOST': 'localhost',
         'PORT': '',
     }

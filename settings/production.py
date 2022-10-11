@@ -15,9 +15,7 @@ def get_env_variable(var_name):
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = get_env_variable('DB_SECRET_KEY')
 DEBUG = False
-ALLOWED_HOSTS = [
-    'thomas.nhh.no',
-]
+ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS').split(' ')
 
 INSTALLED_APPS = [
     'experiment.apps.ExperimentConfig',
@@ -81,13 +79,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Database configuration
-POSTGRES_PW = get_env_variable('POSTGRES_PW')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'expmotor',
-        'USER': 'sebastian',
-        'PASSWORD': POSTGRES_PW,
+        'NAME': get_env_variable('POSTGRES_NAME'),
+        'USER': get_env_variable('POSTGRES_USER'),
+        'PASSWORD': get_env_variable('POSTGRES_PW'),
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -141,37 +138,3 @@ SERVER_EMAIL = EMAIL_HOST_USER
 
 # SSL
 SECURE_SSL_REDIRECT = True
-
-# Logging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '{levelname} {asctime} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'info.log'),
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 5,
-            'formatter': 'simple',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-}
