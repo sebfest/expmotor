@@ -8,12 +8,12 @@ from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyDateTime
 
 from experiment.models import Experiment, Session, Registration
-from settings import base
+from settings import local
 
 
 class UserFactory(DjangoModelFactory):
     class Meta:
-        model = base.AUTH_USER_MODEL
+        model = local.AUTH_USER_MODEL
         django_get_or_create = ('username',)
 
     first_name = Faker(
