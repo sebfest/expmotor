@@ -94,6 +94,10 @@ DATABASES = {
     }
 }
 
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda _request: DEBUG
+}
+
 AUTH_USER_MODEL = 'auth.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

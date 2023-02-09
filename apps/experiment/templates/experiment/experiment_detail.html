@@ -49,7 +49,7 @@
                     <td class="text-center">
                                 <span data-toggle="modal" data-target="#linkModal">
                                     <a class="btn btn-info btn-link btn-icon btn-sm list"
-                                       data-toggle="tooltip" data-placement="top" title="Registration link"
+                                       data-toggle="tooltip" data-placement="top" title="Show registration link"
                                        href='#'>
                                           <i class="fa fa-link"></i>
                                     </a>
@@ -58,6 +58,11 @@
                            data-toggle="tooltip" data-placement="top" title="Show all registrations"
                            href={% url 'experiment:registration_list' pk=experiment.pk %}>
                             <i class="fa fa-users"></i>
+                        </a>
+                        <a class="btn btn-danger btn-link btn-icon remove"
+                           data-toggle="tooltip" data-placement="top" title="Download registration list"
+                           href={% url 'experiment:experiment_printout_download' pk=experiment.pk %}>
+                            <i class="fa fa-download"></i>
                         </a>
                         <a class="btn btn-warning btn-link btn-icon edit"
                            data-toggle="tooltip" data-placement="top" title="Edit"

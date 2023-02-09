@@ -35,6 +35,11 @@ urlpatterns = [
         name='experiment_qr_download'
     ),
     path(
+        'experiment/<int:pk>/printout/',
+        views.ExperimentPrintoutDownloadView.as_view(),
+        name='experiment_printout_download'
+    ),
+    path(
         'experiment/<int:pk>/session/add/',
         views.SessionCreateView.as_view(),
         name='session_add'

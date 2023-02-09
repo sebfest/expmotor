@@ -1,11 +1,13 @@
 from io import BytesIO
 
 import qrcode
+import csv
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.http import HttpResponseRedirect, FileResponse
+from django.http import HttpResponseRedirect, FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils.encoding import force_text
@@ -128,6 +130,44 @@ class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View
             filename=file_name,
             content_type=file_content_type,
         )
+        return response
+
+
+class ExperimentPrintoutDownloadView(LoginRequiredMixin, UserPassesTestMixin, View):
+    experiment = None
+
+    def setup(self, request, *args, **kwargs):
+        """Get related experiment."""
+        super().setup(request, *args, **kwargs)
+        self.experiment = get_object_or_404(Experiment, pk=kwargs.get('pk'))
+
+    def test_func(self):
+        """Only experiment owners allowed to download qrcode image."""
+        return True if self.request.user == self.experiment.owner else False
+
+    def get_queryset(self):
+        """Get all registrations for experiment."""
+        return Registration.objects.select_related().filter(session__experiment=self.experiment).order_by('last_name')
+
+    def get(self, request, *args, **kwargs):
+        """Send QrCode as attached image."""
+        file_ext = 'CSV'
+        file_name = f'{self.experiment.name}_participants.{file_ext.lower()}'
+        file_content_type = 'text/csv'
+
+        response = HttpResponse(
+            content_type=file_content_type,
+            headers={'Content-Disposition': f"'attachment; filename={file_name}"},
+        )
+
+        fieldnames = ('session__date', 'session__time', 'first_name', 'last_name', 'phone')
+        object_list = self.get_queryset().order_by('session__date', 'session__time').values_list(*fieldnames)
+
+        writer = csv.writer(response)
+        writer.writerow(fieldnames)
+        for row in object_list:
+            writer.writerow(row)
+
         return response
 
 
