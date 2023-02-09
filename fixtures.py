@@ -1,6 +1,21 @@
 import os
+import sys
+from dotenv import load_dotenv
+
+paths = [
+    os.getcwd(),
+    os.path.join(os.getcwd(), 'apps'),
+]
+
+for index, path in enumerate(paths):
+    if path not in sys.path:
+        sys.path.insert(index, path)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local')
+
+
+load_dotenv()
+
 
 import django
 

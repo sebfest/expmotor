@@ -17,6 +17,6 @@ for index, path in enumerate(paths):
     if path not in sys.path:
         sys.path.insert(index, path)
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings.production'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings.local'
 
 application = get_wsgi_application()

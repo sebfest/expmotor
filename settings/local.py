@@ -1,4 +1,5 @@
 import os
+
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -11,11 +12,12 @@ def get_env_variable(var_name):
         raise ImproperlyConfigured(error_msg)
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
-INTERNAL_IPS = ['127.0.0.1']
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
+INTERNAL_IPS = ['127.0.0.1', '0.0.0.0']
 ALLOWED_HOSTS = INTERNAL_IPS
-SECRET_KEY = get_env_variable('DB_SECRET_KEY')
+
 
 INSTALLED_APPS = [
     'experiment.apps.ExperimentConfig',
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'bootstrap4',
     'bootstrap_datepicker_plus',
+    'django_createsuperuserwithpassword',
     'debug_toolbar',
 ]
 
@@ -85,9 +88,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': get_env_variable('POSTGRES_NAME'),
         'USER': get_env_variable('POSTGRES_USER'),
-        'PASSWORD': get_env_variable('POSTGRES_PW'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'PASSWORD': get_env_variable('POSTGRES_PASSWORD'),
+        'HOST': get_env_variable('POSTGRES_HOST'),
+        'PORT': get_env_variable('POSTGRES_PORT'),
     }
 }
 
@@ -122,7 +125,7 @@ REGISTRATION_ADMINS = ADMINS
 # Django Sites
 SITE_ID = 1
 
-# Email configuration to write on disk
+# Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
 

@@ -12,10 +12,10 @@ def get_env_variable(var_name):
         raise ImproperlyConfigured(error_msg)
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = get_env_variable('DB_SECRET_KEY')
 DEBUG = False
-ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS').split(' ')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
+ALLOWED_HOSTS = get_env_variable('DJANGO_ALLOWED_HOSTS').split(' ')
 
 INSTALLED_APPS = [
     'experiment.apps.ExperimentConfig',
@@ -84,9 +84,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': get_env_variable('POSTGRES_NAME'),
         'USER': get_env_variable('POSTGRES_USER'),
-        'PASSWORD': get_env_variable('POSTGRES_PW'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'PASSWORD': get_env_variable('POSTGRES_PASSWORD'),
+        'HOST': get_env_variable('POSTGRES_HOST'),
+        'PORT': get_env_variable('POSTGRES_PORT'),
     }
 }
 

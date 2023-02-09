@@ -15,7 +15,7 @@ class SessionInline(admin.TabularInline):
         'max_subjects',
         'active_registrations',
     )
-    readonly_fields = ('registrations',)
+    readonly_fields = ('active_registrations',)
 
 
 class ExperimentAdmin(admin.ModelAdmin):

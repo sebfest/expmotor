@@ -17,7 +17,11 @@ from .tokens import account_activation_token
 
 
 @receiver(post_save, sender=Experiment)
-def send_new_experiment_notification_email(sender: Type[Experiment], instance: Experiment, created: bool, **kwargs) -> None:
+def send_new_experiment_notification_email(
+        sender: Type[Experiment],
+        instance: Experiment,
+        created: bool,
+        **kwargs) -> None:
     """Send confirmation email after successful experiment creation."""
     if created:
         context_dict = {
@@ -41,8 +45,12 @@ def send_new_experiment_notification_email(sender: Type[Experiment], instance: E
 
 
 @receiver(post_save, sender=Registration)
-def send_email_confirmation_request(sender: Type[Registration], instance: Registration,
-                                    created: bool, update_fields: Optional[FrozenSet], **kwargs) -> None:
+def send_email_confirmation_request(
+        sender: Type[Registration],
+        instance: Registration,
+        created: bool,
+        update_fields: Optional[FrozenSet],
+        **kwargs) -> None:
     """Send request to conform email after successful creation."""
     if created:
         domain = Site.objects.get_current().domain
@@ -77,8 +85,12 @@ def send_email_confirmation_request(sender: Type[Registration], instance: Regist
 
 
 @receiver(post_save, sender=Registration)
-def send_registration_info(sender: Type[Registration], instance: Registration,
-                           created: bool, update_fields: Optional[FrozenSet], **kwargs) -> None:
+def send_registration_info(
+        sender: Type[Registration],
+        instance: Registration,
+        created: bool,
+        update_fields: Optional[FrozenSet],
+        **kwargs) -> None:
     """Send email with registration info after email confirmation."""
     if not created and update_fields and 'confirmed_email' in update_fields:
         template = Template(instance.session.experiment.final_instructions)
@@ -98,7 +110,7 @@ def send_registration_info(sender: Type[Registration], instance: Registration,
         recipient = instance.email
 
         email = EmailMessage(
-            from_email=sender,
+            from_email=EMAIL_HOST_USER,
             to=[recipient],
             subject=subject,
             body=message,
