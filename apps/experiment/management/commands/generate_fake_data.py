@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.contrib.auth.models import User
 from experiment.factories import ExperimentFactory
 
 
@@ -7,6 +8,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Generating fake data...")
+        admin = User.objects.get(is_superuser=True)
+        ExperimentFactory.create_batch(size=5, manager=admin)
         ExperimentFactory.create_batch(size=5)
         self.stdout.write("...finished")
 
