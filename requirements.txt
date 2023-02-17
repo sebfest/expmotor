@@ -1,4 +1,4 @@
-Django==3.2.16
+Django==3.2.18
 django-bootstrap-datepicker-plus
 django-bootstrap4
 django-registration-redux

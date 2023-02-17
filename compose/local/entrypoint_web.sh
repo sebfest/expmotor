@@ -1,9 +1,5 @@
 #!/bin/bash
 
-set -o errexit
-set -o pipefail
-set -o nounset
-
 wait-for-it $POSTGRES_HOST:$POSTGRES_PORT
 
 python manage.py migrate
