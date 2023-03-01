@@ -160,6 +160,9 @@ class RegistrationUpdateForm(forms.ModelForm):
             err_msg = ValidationError("You cannot activate this registration. The session is full.", code='invalid')
             self.add_error('is_active', err_msg)
 
+    def clean_phone(self):
+        return self.cleaned_data['phone'].strip()
+
 
 class RegistrationForm(forms.ModelForm):
     """Form used by subjects to register for a session."""
