@@ -11,20 +11,20 @@ services:
         source: postgres_data
         target: /var/lib/postgresql/data
     networks:
-      - expmotor
+      - main
     env_file: .env
 
   web:
     build: .
     entrypoint: [ "/app/compose/local/entrypoint_web.sh" ]
     command: gunicorn settings.wsgi:application --bind 0.0.0.0:8000 --reload
-    container_name: web
+    container_name: expmotor_web
     volumes:
       - type: bind
         source: .
         target: /app
     networks:
-      - expmotor
+      - main
     ports:
       - "8000:8000"
     env_file: .env
@@ -35,4 +35,4 @@ volumes:
   postgres_data:
 
 networks:
-  expmotor:
+  main:
