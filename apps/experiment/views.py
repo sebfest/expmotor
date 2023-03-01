@@ -353,6 +353,7 @@ class RegistrationUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
     form_class = RegistrationUpdateForm
     template_name = 'experiment/registration_update.html'
     success_message = "Registration successfully updated."
+    object = None
 
     def test_func(self):
         """Only session owners can update registrations."""
@@ -363,6 +364,17 @@ class RegistrationUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
         kwargs = super().get_form_kwargs()
         kwargs['session'] = get_object_or_404(Session, pk=self.kwargs.get('pk_ses'))
         return kwargs
+
+    def post(self, request, *args, **kwargs):
+        """Add update field for signal dispatch."""
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            registration = form.save(commit=False)
+            registration.save(update_fields=form.changed_data)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_success_url(self):
         """Return to session index."""

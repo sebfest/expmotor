@@ -68,6 +68,7 @@ class SessionUpdateForm(SessionForm):
 
 
 class RegistrationCreateForm(forms.ModelForm):
+    """Form used by admin to create registration."""
     class Meta:
         model = Registration
         fields = [
@@ -113,6 +114,7 @@ class RegistrationCreateForm(forms.ModelForm):
 
 
 class RegistrationUpdateForm(forms.ModelForm):
+    """Form used by admin to change registration."""
     class Meta:
         model = Registration
         fields = [
@@ -160,6 +162,7 @@ class RegistrationUpdateForm(forms.ModelForm):
 
 
 class RegistrationForm(forms.ModelForm):
+    """Form used by subjects to register for a session."""
     link_html = '<a data-toggle="modal" data-target="#exampleModal" href="#">privacy policy</a>'
     consent = forms.BooleanField(
         label=mark_safe(f"I confirm that I have read, consent and agree to ExpMotor's {link_html}."),

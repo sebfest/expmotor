@@ -1,0 +1,28 @@
+{% load i18n %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Your registration for {{ title }} has changed.</title>
+</head>
+
+<body>
+<p>
+    Hi {{ name }},<br>
+    <br>
+    Your have previously registered for {{ title }} using FAIR's "Expmotor". <br>
+    <br>
+    Your registration has been changed. You are now registered for participation on {{ date }}, {{ time }} at {{ place }}.
+    <br>
+    Should you need to cancel, or get in touch with us for some other reason, you can do so by email to {{ email }},
+    or contact {{ manager }} by phone: {{ phone }}.
+    <br>
+    Sincerely,
+    <br>
+    <br>
+    Expmotor Team at FAIR <br>
+    Norwegian School of Economics
+</p>
+</body>
+
+</html>

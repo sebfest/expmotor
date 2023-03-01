@@ -116,3 +116,41 @@ def send_registration_info(
             body=message,
         )
         email.send(fail_silently=True)
+
+
+@receiver(post_save, sender=Registration)
+def send_registration_info_update(
+        sender: Type[Registration],
+        instance: Registration,
+        created: bool,
+        update_fields: Optional[FrozenSet],
+        **kwargs) -> None:
+    """Send email with updated registration info after email registration change."""
+    if not created and update_fields and 'session' in update_fields:
+
+        title = instance.session.experiment.name
+        subject = f'{title}: Your registration has changed.'
+        context_dict = {
+            'name': instance.first_name,
+            'title': title,
+            'place': instance.session.place,
+            'date': instance.session.date,
+            'time': instance.session.time,
+            'manager': instance.session.experiment.manager,
+            'email': instance.session.experiment.email,
+            'phone': instance.session.experiment.phone,
+        }
+        recipient = instance.email
+        html_message = render_to_string('experiment/registration_update_confirmation_email.html', context_dict)
+        message = strip_tags(html_message)
+
+        send_mail(
+            subject=subject,
+            message=message,
+            html_message=html_message,
+            from_email=EMAIL_HOST_USER,
+            recipient_list=[recipient],
+            fail_silently=True,
+        )
+
+
