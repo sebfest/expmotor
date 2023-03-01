@@ -1,3 +1,7 @@
+import logging
+
+
+from datetime import datetime, timedelta
 from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
 from django import forms
 from django.core.exceptions import ValidationError
@@ -7,6 +11,8 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from .models import Registration, Session
+
+logger = logging.getLogger(__name__)
 
 
 class SessionForm(forms.ModelForm):
@@ -184,6 +190,7 @@ class RegistrationForm(forms.ModelForm):
             .prefetch_related() \
             .filter(experiment_id=self.experiment.id)\
             .exclude(is_active=False)\
+            .filter(date__gt=timezone.now())\
             .annotate(free_slots=F('max_subjects') - Count('registrations', filter=active_registrations))\
             .filter(free_slots__gt=0) \
             .order_by('date', 'time')
