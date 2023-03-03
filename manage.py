@@ -3,10 +3,6 @@
 import os
 import sys
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 def main():
     """Run administrative tasks."""
@@ -19,12 +15,6 @@ def main():
     for index, path in enumerate(paths):
         if path not in sys.path:
             sys.path.insert(index, path)
-
-    debug = (os.environ.get('DEBUG') not in {None, '', '0'})
-    if debug:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local')
-    else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.production')
 
     try:
         from django.core.management import execute_from_command_line

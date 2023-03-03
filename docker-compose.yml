@@ -14,11 +14,11 @@ services:
       - main
     env_file: .env
 
-  web:
+  web_dev:
     build: .
     entrypoint: [ "/app/compose/local/entrypoint_web.sh" ]
     command: gunicorn settings.wsgi:application --bind 0.0.0.0:8000 --reload
-    container_name: expmotor_web
+    container_name: expmotor_web_dev
     volumes:
       - type: bind
         source: .

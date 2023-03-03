@@ -26,19 +26,17 @@ RUN pip install --upgrade --quiet pip && pip install --no-cache-dir --quiet -r /
 COPY . /app/
 
 # Alter entrypoint script
-COPY ./compose/local/entrypoint.sh /app/apps/compose/local/entrypoint.sh
-RUN sed -i 's/\r$//g' /app/apps/compose/local/entrypoint.sh
-RUN chmod +x /app/apps/compose/local/entrypoint.sh
+COPY ./compose/local/entrypoint.sh /app/compose/local/entrypoint.sh
+RUN chmod +x /app/compose/local/entrypoint.sh
 
 ##Copy startup script
-COPY ./compose/local/entrypoint_web.sh /app/apps/compose/local/entrypoint_web.sh
-RUN sed -i 's/\r$//g' /app/apps/compose/local/entrypoint_web.sh
-RUN chmod +x /app/apps/compose/local/entrypoint_web.sh
+COPY ./compose/local/entrypoint_web.sh /app/compose/local/entrypoint_web.sh
+RUN chmod +x /app/compose/local/entrypoint_web.sh
 
 # Specify network port
 EXPOSE 8000
 
 # Set entrypoint
-ENTRYPOINT [ "/app/apps/compose/local/entrypoint.sh" ]
+ENTRYPOINT [ "/app/compose/local/entrypoint.sh" ]
 
 

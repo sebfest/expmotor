@@ -110,31 +110,72 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Registration settings
-ADMINS = [('admin', 'admin@expmotor.no')]
-LOGIN_URL = '/expmotor/accounts/login'
-LOGIN_REDIRECT_URL = '/expmotor'
-LOGOUT_REDIRECT_URL = '/expmotor/accounts/login'
-REGISTRATION_OPEN = True
-REGISTRATION_DEFAULT_FROM_EMAIL = 'admin@expmotor.no'
-REGISTRATION_ADMINS = ADMINS
-INCLUDE_REGISTER_URL = False
-INCLUDE_AUTH_URLS = True
-ACCOUNT_ACTIVATION_DAYS = 3
-
-# Sites
-SITE_ID = 1
-
 # Email configuration
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_PORT = '587'
+EMAIL_HOST = get_env_variable('EMAIL_HOST')
+EMAIL_PORT = get_env_variable('EMAIL_PORT')
 EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
 EMAIL_SUBJECT_PREFIX = ''
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 
+# Registration settings
+ACCOUNT_ACTIVATION_DAYS = 3
+ADMINS = [('admin', EMAIL_HOST_USER)]
+INCLUDE_REGISTER_URL = False
+INCLUDE_AUTH_URLS = True
+LOGIN_URL = '/accounts/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login'
+REGISTRATION_OPEN = True
+REGISTRATION_DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+REGISTRATION_ADMINS = ADMINS
+
+# Sites
+SITE_ID = 1
+
 # SSL
-SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = True
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+        },
+        'console_on_not_debug': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': [
+                'console',
+                'mail_admins',
+                'console_on_not_debug',
+            ],
+            'level': 'INFO',
+        },
+    }
+}
