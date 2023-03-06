@@ -5,7 +5,6 @@ django-registration-redux
 factory-boy
 Faker
 gunicorn
-python-dotenv
 qrcode
 whitenoise
 psycopg2
