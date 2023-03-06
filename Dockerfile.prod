@@ -32,8 +32,8 @@ RUN sed -i 's/\r$//g' /app/compose/production/entrypoint.sh
 RUN chmod +x /app/compose/production/entrypoint.sh
 
 # Alter startup script
-RUN sed -i 's/\r$//g' /app/compose/production/entrypoint_web.sh
-RUN chmod +x /app/compose/production/entrypoint_web.sh
+RUN sed -i 's/\r$//g' /app/compose/production/startup_web.sh
+RUN chmod +x /app/compose/production/startup_web.sh
 
 # Change ownership to the app user for all files
 RUN chown -R app:app .
@@ -45,6 +45,6 @@ EXPOSE 8000
 USER app
 
 # Set entrypoint
-ENTRYPOINT [ "/app/compose/producttion/entrypoint.sh" ]
+ENTRYPOINT [ "/app/compose/production/entrypoint.sh" ]
 
 

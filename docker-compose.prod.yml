@@ -18,8 +18,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    entrypoint: [ "/app/compose/production/entrypoint_web.sh" ]
-    command: gunicorn settings.wsgi:application --capture-output --access-logfile /app/logs/access.log --error-logfile /app/logs/error.log --enable-stdio-inheritance --bind 0.0.0.0:8000
+    command: [ "/app/compose/production/startup_web.sh" ]
     container_name: expmotor_web
     networks:
       - main
