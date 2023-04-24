@@ -137,6 +137,12 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'root': {
+        'level': 'DEBUG',
+        'handlers': [
+            'console'
+        ]
+    },
     'formatters': {
         'simple': {
             'format': '{levelname} {asctime} {message}',
@@ -170,12 +176,18 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': [
+                'console',
+                'file'
+            ],
             'level': 'INFO',
             'propagate': True,
         },
         'django.server': {
-            'handlers': ['django.server', 'file'],
+            'handlers': [
+                'django.server',
+                'file'
+            ],
             'level': 'INFO',
             'propagate': False,
         },
