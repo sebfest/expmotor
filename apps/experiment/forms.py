@@ -1,7 +1,5 @@
 import logging
 
-
-from datetime import datetime, timedelta
 from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
 from django import forms
 from django.core.exceptions import ValidationError
@@ -69,6 +67,7 @@ class SessionUpdateForm(SessionForm):
 
 class RegistrationCreateForm(forms.ModelForm):
     """Form used by admin to create registration."""
+
     class Meta:
         model = Registration
         fields = [
@@ -115,6 +114,7 @@ class RegistrationCreateForm(forms.ModelForm):
 
 class RegistrationUpdateForm(forms.ModelForm):
     """Form used by admin to change registration."""
+
     class Meta:
         model = Registration
         fields = [
@@ -192,12 +192,12 @@ class RegistrationForm(forms.ModelForm):
     def get_available_sessions(self):
         """Find available sessions"""
         active_registrations = Q(registrations__is_active=True)
-        valid_sessions = Session.objects\
+        valid_sessions = Session.objects \
             .prefetch_related() \
-            .filter(experiment_id=self.experiment.id)\
-            .exclude(is_active=False)\
-            .filter(date__gt=timezone.now())\
-            .annotate(free_slots=F('max_subjects') - Count('registrations', filter=active_registrations))\
+            .filter(experiment_id=self.experiment.id) \
+            .exclude(is_active=False) \
+            .filter(date__gt=timezone.now()) \
+            .annotate(free_slots=F('max_subjects') - Count('registrations', filter=active_registrations)) \
             .filter(free_slots__gt=0) \
             .order_by('date', 'time')
         return valid_sessions
