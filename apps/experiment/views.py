@@ -80,7 +80,7 @@ class ExperimentUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessa
         return True if self.request.user == self.get_object().owner else False
 
 
-class ExperimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class ExperimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
     model = Experiment
     template_name = 'experiment/confirm_delete.html'
     extra_context = {'typename': 'experiment'}
@@ -90,10 +90,6 @@ class ExperimentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         """Only experiment owners allowed to delete experiment."""
         return True if self.request.user == self.get_object().owner else False
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, self.success_message)
-        return super().delete(request, *args, **kwargs)
 
 
 class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View):
@@ -152,7 +148,7 @@ class ExperimentPrintoutDownloadView(LoginRequiredMixin, UserPassesTestMixin, Vi
     def get(self, request, *args, **kwargs):
         """Send QrCode as attached image."""
         file_ext = 'CSV'
-        file_name = f'{self.experiment.name}_participants.{file_ext.lower()}'
+        file_name = f'{self.experiment.name}_registrations.{file_ext.lower()}'
         file_content_type = 'text/csv'
 
         response = HttpResponse(
@@ -237,7 +233,7 @@ class SessionUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageM
         return self.object.experiment.get_absolute_url()
 
 
-class SessionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class SessionDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
     model = Session
     template_name = 'experiment/confirm_delete.html'
     extra_context = {'typename': 'session'}
@@ -250,11 +246,6 @@ class SessionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         """Return to experiment detail view."""
         return self.object.experiment.get_absolute_url()
-
-    def delete(self, request, *args, **kwargs):
-        """Add delete message."""
-        messages.success(self.request, self.success_message)
-        return super().delete(request, *args, **kwargs)
 
 
 class RegistrationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -389,11 +380,6 @@ class RegistrationDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMes
     def test_func(self):
         """Only owner can delete registration."""
         return True if self.request.user == self.get_object().owner else False
-
-    def delete(self, request, *args, **kwargs):
-        """Add delete message."""
-        messages.success(self.request, self.success_message)
-        return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
         """Return to session index."""
