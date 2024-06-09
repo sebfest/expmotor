@@ -81,7 +81,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': get_env_variable('POSTGRES_NAME'),
         'USER': get_env_variable('POSTGRES_USER'),
         'PASSWORD': get_env_variable('POSTGRES_PASSWORD'),
@@ -98,13 +98,19 @@ LANGUAGE_CODE = 'en-us'
 # Time
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 # Static
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 # Media
 MEDIA_URL = '/media/'

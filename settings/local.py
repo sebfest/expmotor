@@ -85,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': get_env_variable('POSTGRES_NAME'),
         'USER': get_env_variable('POSTGRES_USER'),
         'PASSWORD': get_env_variable('POSTGRES_PASSWORD'),
@@ -105,7 +105,6 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Europe/Oslo'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'

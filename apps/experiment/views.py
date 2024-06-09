@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect, FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.views.generic import DetailView, ListView, UpdateView, CreateView, DeleteView, TemplateView
@@ -436,7 +436,7 @@ class RegistrationActivateView(View):
 
     def get_registration(self):
         """Get registration from encoded uid."""
-        uid_decoded = force_text(urlsafe_base64_decode(self.kwargs.get('uidb64')))
+        uid_decoded = force_str(urlsafe_base64_decode(self.kwargs.get('uidb64')))
         registration = None
         try:
             registration = Registration.objects.get(pk=uid_decoded)

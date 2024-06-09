@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.9
+FROM python:3.11
 
 #Maintainer
 LABEL maintainer="Sebastian Fest <sebastian.fest@nhh.no>"

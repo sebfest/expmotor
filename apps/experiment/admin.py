@@ -18,6 +18,7 @@ class SessionInline(admin.TabularInline):
     readonly_fields = ('active_registrations',)
 
 
+@admin.register(Experiment)
 class ExperimentAdmin(admin.ModelAdmin):
     list_select_related = True
     list_display = (
@@ -89,6 +90,7 @@ class RegistrationInline(admin.TabularInline):
     )
 
 
+@admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
     list_select_related = True
     list_per_page = 20
@@ -130,6 +132,7 @@ class SessionAdmin(admin.ModelAdmin):
         return format_html('{registrations}', registrations=session.active_registrations)
 
 
+@admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
     list_select_related = False
     list_per_page = 20
@@ -169,6 +172,3 @@ class RegistrationAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(Experiment, ExperimentAdmin)
-admin.site.register(Session, SessionAdmin)
-admin.site.register(Registration, RegistrationAdmin)
