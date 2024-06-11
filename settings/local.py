@@ -129,8 +129,7 @@ REGISTRATION_ADMINS = ADMINS
 SITE_ID = 1
 
 # Email configuration
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'messages')
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Logging
 LOGGING = {
