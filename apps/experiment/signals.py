@@ -45,112 +45,105 @@ def send_new_experiment_notification_email(
 
 
 @receiver(post_save, sender=Registration)
-def send_email_confirmation_request(
+def handle_emails_for_registration(
         sender: Type[Registration],
         instance: Registration,
         created: bool,
         update_fields: Optional[FrozenSet],
         **kwargs) -> None:
-    """Send request to conform email after successful creation."""
     if created:
-        domain = Site.objects.get_current().domain
-        path = reverse(
-            'experiment:registration_activate',
-            kwargs={
-                'uidb64': urlsafe_base64_encode(force_bytes(instance.pk)),
-                'token': account_activation_token.make_token(instance),
-            }
-        )
-        url = f'https://{domain}{path}'
+        send_confirmation_request(instance=instance)
+    elif not created and update_fields and 'confirmed_email' in update_fields:
+        send_registration_info(instance=instance)
+    elif not created and update_fields and 'session' in update_fields:
+        send_registration_info_update(instance=instance)
+    else:
+        return
 
-        title = instance.session.experiment.name
-        subject = f'{title}: Please confirm your email'
-        context_dict = {
-            'registration_link': url,
-            'name': instance.first_name,
-            'title': title,
+
+def send_confirmation_request(instance: Registration) -> None:
+    """Send request to conform email after successful creation."""
+    domain = Site.objects.get_current().domain
+    path = reverse(
+        'experiment:registration_activate',
+        kwargs={
+            'uidb64': urlsafe_base64_encode(force_bytes(instance.pk)),
+            'token': account_activation_token.make_token(instance),
         }
-        recipient = instance.email
-        html_message = render_to_string('experiment/registration_pre_conformation_email.html', context_dict)
-        message = strip_tags(html_message)
+    )
+    url = f'https://{domain}{path}'
 
-        send_mail(
-            subject=subject,
-            message=message,
-            html_message=html_message,
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[recipient],
-            fail_silently=True,
-        )
+    title = instance.session.experiment.name
+    subject = f'{title}: Please confirm your email'
+    context_dict = {
+        'registration_link': url,
+        'name': instance.first_name,
+        'title': title,
+    }
+    recipient = instance.email
+    html_message = render_to_string('experiment/registration_pre_confirmation_email.html', context_dict)
+    message = strip_tags(html_message)
+
+    send_mail(
+        subject=subject,
+        message=message,
+        html_message=html_message,
+        from_email=EMAIL_HOST_USER,
+        recipient_list=[recipient],
+        fail_silently=True,
+    )
 
 
-@receiver(post_save, sender=Registration)
-def send_registration_info(
-        sender: Type[Registration],
-        instance: Registration,
-        created: bool,
-        update_fields: Optional[FrozenSet],
-        **kwargs) -> None:
+def send_registration_info(instance: Registration) -> None:
     """Send email with registration info after email confirmation."""
-    if not created and update_fields and 'confirmed_email' in update_fields:
-        template = Template(instance.session.experiment.final_instructions)
-        context_dict = {
-            'place': instance.session.place,
-            'date': instance.session.date,
-            'time': instance.session.time,
-            'manager': instance.session.experiment.manager,
-            'email': instance.session.experiment.email,
-            'phone': instance.session.experiment.phone,
-        }
-        context = Context(context_dict)
+    template = Template(instance.session.experiment.final_instructions)
+    context_dict = {
+        'place': instance.session.place,
+        'date': instance.session.date,
+        'time': instance.session.time,
+        'manager': instance.session.experiment.manager,
+        'email': instance.session.experiment.email,
+        'phone': instance.session.experiment.phone,
+    }
+    context = Context(context_dict)
 
-        title = instance.session.experiment.name
-        subject = f'{title}: Confirmation of experiment participation'
-        message = template.render(context)
-        recipient = instance.email
+    title = instance.session.experiment.name
+    subject = f'{title}: Confirmation of experiment participation'
+    message = template.render(context)
+    recipient = instance.email
 
-        email = EmailMessage(
-            from_email=EMAIL_HOST_USER,
-            to=[recipient],
-            subject=subject,
-            body=message,
-        )
-        email.send(fail_silently=True)
+    email = EmailMessage(
+        from_email=EMAIL_HOST_USER,
+        to=[recipient],
+        subject=subject,
+        body=message,
+    )
+    email.send(fail_silently=True)
 
 
-@receiver(post_save, sender=Registration)
-def send_registration_info_update(
-        sender: Type[Registration],
-        instance: Registration,
-        created: bool,
-        update_fields: Optional[FrozenSet],
-        **kwargs) -> None:
+def send_registration_info_update(instance: Registration) -> None:
     """Send email with updated registration info after email registration change."""
-    if not created and update_fields and 'session' in update_fields:
+    title = instance.session.experiment.name
+    subject = f'{title}: Your registration has changed.'
+    context_dict = {
+        'name': instance.first_name,
+        'title': title,
+        'place': instance.session.place,
+        'date': instance.session.date,
+        'time': instance.session.time,
+        'manager': instance.session.experiment.manager,
+        'email': instance.session.experiment.email,
+        'phone': instance.session.experiment.phone,
+    }
+    recipient = instance.email
+    html_message = render_to_string('experiment/registration_update_confirmation_email.html', context_dict)
+    message = strip_tags(html_message)
 
-        title = instance.session.experiment.name
-        subject = f'{title}: Your registration has changed.'
-        context_dict = {
-            'name': instance.first_name,
-            'title': title,
-            'place': instance.session.place,
-            'date': instance.session.date,
-            'time': instance.session.time,
-            'manager': instance.session.experiment.manager,
-            'email': instance.session.experiment.email,
-            'phone': instance.session.experiment.phone,
-        }
-        recipient = instance.email
-        html_message = render_to_string('experiment/registration_update_confirmation_email.html', context_dict)
-        message = strip_tags(html_message)
-
-        send_mail(
-            subject=subject,
-            message=message,
-            html_message=html_message,
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[recipient],
-            fail_silently=True,
-        )
-
-
+    send_mail(
+        subject=subject,
+        message=message,
+        html_message=html_message,
+        from_email=EMAIL_HOST_USER,
+        recipient_list=[recipient],
+        fail_silently=True,
+    )
