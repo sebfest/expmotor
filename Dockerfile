@@ -8,7 +8,7 @@ LABEL maintainer="Sebastian Fest <sebastian.fest@nhh.no>"
 WORKDIR /app
 
 # Install wait-for-it package
-RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y wait-for-it
+RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y wait-for-it postgresql-client-15
 
 # Python Interpreter Flags
 ENV PYTHONDONTWRITEBYTECODE=1
