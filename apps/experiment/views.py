@@ -46,7 +46,6 @@ class ExperimentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Experiment
     template_name = 'experiment/experiment_create.html'
     success_message = "Experiment successfully created"
-    success_url = reverse_lazy('experiment:experiment_list')
     fields = [
         'name',
         'email',
@@ -60,6 +59,9 @@ class ExperimentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         """Add logged-in user to new experiment."""
         form.instance.manager = self.request.user
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('experiment:experiment_detail', args=(self.object.pk,))
 
 
 class ExperimentUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
