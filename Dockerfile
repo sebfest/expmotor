@@ -17,6 +17,9 @@ ENV PYTHONUNBUFFERED=1
 # Django flags
 ENV DJANGO_SETTINGS_MODULE=settings.local
 
+# PIP flags
+ENV PIP_ROOT_USER_ACTION=ignore
+
 # Dependencies installation
 COPY ./requirements.txt /app/requirements.txt
 COPY ./requirements_dev.txt /app/requirements_dev.txt
