@@ -16,6 +16,7 @@ python manage.py createsuperuserwithpassword \
         --password admin \
         --email admin@example.org \
         --preserve
+python manage.py generate_fake_data
 python manage.py collectstatic --no-input --clear
 gunicorn settings.wsgi:application --bind 0.0.0.0:8000 --reload
 
