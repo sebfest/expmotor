@@ -129,7 +129,7 @@ REGISTRATION_ADMINS = ADMINS
 SITE_ID = 1
 
 # Email configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
 # Logging
 LOGGING = {
