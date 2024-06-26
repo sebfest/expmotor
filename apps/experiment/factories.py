@@ -119,7 +119,7 @@ class SessionFactory(DjangoModelFactory):
     is_active = Faker(
         'boolean', chance_of_getting_true=99
     )
-    participants = RelatedFactoryList(
+    registrations = RelatedFactoryList(
         RegistrationFactory,
         factory_related_name='session',
         size=lambda: random.randint(1, 10),
