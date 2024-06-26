@@ -38,8 +38,16 @@ class SessionForm(forms.ModelForm):
             'max_subjects',
         ]
         widgets = {
-            'date': DatePickerInput(format='%Y-%m-%d'),
-            'time': TimePickerInput(format='%H:%M'),
+            'date': DatePickerInput(
+                options={
+                    "format": 'DD/MM/YYYY',
+                },
+            ),
+            'time': TimePickerInput(
+                options={
+                    "format": 'HH:mm',
+                }
+            ),
         }
 
 
