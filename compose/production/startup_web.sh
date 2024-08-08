@@ -9,6 +9,6 @@ gunicorn settings.wsgi:application \
   --access-logfile /app/logs/access.log \
   --error-logfile /app/logs/error.log \
   --enable-stdio-inheritance \
-  --bind 0.0.0.0:8000 \
+  --bind 0.0.0.0:8000
 
 exec "$@"
