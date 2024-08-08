@@ -101,7 +101,7 @@ USE_I18N = True
 USE_TZ = True
 
 # Static
-STATIC_URL = '/expmotor/static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STORAGES = {
     "default": {
@@ -132,9 +132,9 @@ ACCOUNT_ACTIVATION_DAYS = 3
 ADMINS = [('admin', EMAIL_HOST_USER)]
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
-LOGIN_URL = '/accounts/login'
+LOGIN_URL = '/expmotor/accounts/login'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = '/expmotor/accounts/login'
 REGISTRATION_OPEN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 REGISTRATION_ADMINS = ADMINS
@@ -143,7 +143,7 @@ REGISTRATION_ADMINS = ADMINS
 SITE_ID = 1
 
 # SSL
-# SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = True
 
 # Logging
 LOGGING = {
