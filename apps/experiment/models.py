@@ -102,6 +102,7 @@ class Experiment(AbstractBaseModel):
         verbose_name_plural = _('experiments')
         ordering = ['-created_date']
         get_latest_by = 'activation_date'
+        unique_together = [['manager', 'name']]
 
 
 class Session(AbstractBaseModel):
@@ -225,14 +226,14 @@ class Registration(AbstractBaseModel):
     def validate_unique(self, *args, **kwargs) -> None:
         """Validate duplicate bookings for experiment."""
         super().validate_unique(*args, **kwargs)
-        if 'session' in kwargs['exclude']:
-            return
-        if self.pk is None:
-            if Registration.objects.select_related('session__experiment').filter(
-                    session__experiment__pk=self.session.experiment.pk,
-                    email=self.email,
-            ).exists():
-                raise ValidationError('Your are already registered for this experiment.')
+
+        previous_registration = Registration.objects.select_related('session__experiment').filter(
+            session__experiment__pk=self.session.experiment.pk,
+            email=self.email,
+        )
+
+        if previous_registration.exists():
+            raise ValidationError('Your are already registered for this experiment.')
 
     class Meta:
         ordering = ['created_date']
