@@ -100,20 +100,25 @@ TIME_ZONE = 'Europe/Oslo'
 USE_I18N = True
 USE_TZ = True
 
+#SCRIPT_NAME
+USE_X_FORWARDED_HOST = True
+FORCE_SCRIPT_NAME = '/expmotor'
+SESSION_COOKIE_PATH = '/expmotor'
+
 # Static
-STATIC_URL = '/static/'
+STATIC_URL = FORCE_SCRIPT_NAME + '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
 # Media
-MEDIA_URL = '/media/'
+MEDIA_URL = FORCE_SCRIPT_NAME + '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Email configuration
@@ -132,9 +137,9 @@ ACCOUNT_ACTIVATION_DAYS = 3
 ADMINS = [('admin', EMAIL_HOST_USER)]
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
-LOGIN_URL = '/expmotor/accounts/login'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/expmotor/accounts/login'
+LOGIN_URL = FORCE_SCRIPT_NAME + '/accounts/login'
+LOGIN_REDIRECT_URL = FORCE_SCRIPT_NAME + '/'
+LOGOUT_REDIRECT_URL = FORCE_SCRIPT_NAME + '/accounts/login'
 REGISTRATION_OPEN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 REGISTRATION_ADMINS = ADMINS
@@ -143,7 +148,7 @@ REGISTRATION_ADMINS = ADMINS
 SITE_ID = 1
 
 # SSL
-SECURE_SSL_REDIRECT = True
+#SECURE_SSL_REDIRECT = True
 
 # Logging
 LOGGING = {
