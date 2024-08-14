@@ -102,11 +102,13 @@ USE_TZ = True
 
 #SCRIPT_NAME
 USE_X_FORWARDED_HOST = True
-FORCE_SCRIPT_NAME = '/expmotor'
-SESSION_COOKIE_PATH = '/expmotor'
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+#FORCE_SCRIPT_NAME = '/app'
+#SESSION_COOKIE_PATH = '/app'
 
 # Static
-STATIC_URL = FORCE_SCRIPT_NAME + '/static/'
+WHITENOISE_STATIC_PREFIX = '/static/'
+STATIC_URL = '/app/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STORAGES = {
     "default": {
@@ -118,7 +120,7 @@ STORAGES = {
 }
 
 # Media
-MEDIA_URL = FORCE_SCRIPT_NAME + '/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Email configuration
@@ -137,9 +139,9 @@ ACCOUNT_ACTIVATION_DAYS = 3
 ADMINS = [('admin', EMAIL_HOST_USER)]
 INCLUDE_REGISTER_URL = False
 INCLUDE_AUTH_URLS = True
-LOGIN_URL = FORCE_SCRIPT_NAME + '/accounts/login'
-LOGIN_REDIRECT_URL = FORCE_SCRIPT_NAME + '/'
-LOGOUT_REDIRECT_URL = FORCE_SCRIPT_NAME + '/accounts/login'
+LOGIN_URL = '/app/accounts/login'
+LOGIN_REDIRECT_URL = '/app'
+LOGOUT_REDIRECT_URL = '/app/accounts/login'
 REGISTRATION_OPEN = True
 REGISTRATION_DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 REGISTRATION_ADMINS = ADMINS
