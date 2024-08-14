@@ -16,7 +16,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: [ "/app/compose/production/startup_web.sh" ]
+    command: [ "/expmotor/compose/production/startup_web.sh" ]
     container_name: expmotor_web
     networks:
       - main
