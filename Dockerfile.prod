@@ -5,10 +5,10 @@ FROM python:3.11
 LABEL maintainer="Sebastian Fest <sebastian.fest@nhh.no>"
 
 # Set working directory
-WORKDIR /app
+WORKDIR /expmotor
 
-# Create the app user
-RUN addgroup --system app && adduser --system --group app
+# Create the expmotor user
+RUN addgroup --system expmotor && adduser --system --group expmotor
 
 # Install wait-for-it package
 RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y wait-for-it
@@ -21,30 +21,30 @@ ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=settings.production
 
 # Dependencies installation
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install --upgrade --quiet pip && pip install --no-cache-dir --quiet -r /app/requirements.txt
+COPY ./requirements.txt /expmotor/requirements.txt
+RUN pip install --upgrade --quiet pip && pip install --no-cache-dir --quiet -r /expmotor/requirements.txt
 
 # Copy project
-COPY . /app/
+COPY . /expmotor/
 
 # Alter entrypoint script
-RUN sed -i 's/\r$//g' /app/compose/production/entrypoint.sh
-RUN chmod +x /app/compose/production/entrypoint.sh
+RUN sed -i 's/\r$//g' /expmotor/compose/production/entrypoint.sh
+RUN chmod +x /expmotor/compose/production/entrypoint.sh
 
 # Alter startup script
-RUN sed -i 's/\r$//g' /app/compose/production/startup_web.sh
-RUN chmod +x /app/compose/production/startup_web.sh
+RUN sed -i 's/\r$//g' /expmotor/compose/production/startup_web.sh
+RUN chmod +x /expmotor/compose/production/startup_web.sh
 
-# Change ownership to the app user for all files
-RUN chown -R app:app .
+# Change ownership to the expmotor user for all files
+RUN chown -R expmotor:expmotor .
 
 # Specify network port
 EXPOSE 8000
 
-# Change to the app user
-USER app
+# Change to the expmotor user
+USER expmotor
 
 # Set entrypoint
-ENTRYPOINT [ "/app/compose/production/entrypoint.sh" ]
+ENTRYPOINT [ "/expmotor/compose/production/entrypoint.sh" ]
 
 
