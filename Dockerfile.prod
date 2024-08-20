@@ -25,7 +25,10 @@ COPY ./requirements.txt /expmotor/requirements.txt
 RUN pip install --upgrade --quiet pip && pip install --no-cache-dir --quiet -r /expmotor/requirements.txt
 
 # Copy project
-COPY . /expmotor/
+COPY . /expmotor
+
+# Change ownership to the expmotor user for all files
+RUN chown -R expmotor:expmotor .
 
 # Alter entrypoint script
 RUN sed -i 's/\r$//g' /expmotor/compose/production/entrypoint.sh
@@ -34,9 +37,6 @@ RUN chmod +x /expmotor/compose/production/entrypoint.sh
 # Alter startup script
 RUN sed -i 's/\r$//g' /expmotor/compose/production/startup_web.sh
 RUN chmod +x /expmotor/compose/production/startup_web.sh
-
-# Change ownership to the expmotor user for all files
-RUN chown -R expmotor:expmotor .
 
 # Specify network port
 EXPOSE 8000
