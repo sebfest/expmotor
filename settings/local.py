@@ -16,7 +16,7 @@ def get_env_variable(var_name):
 DEBUG = True
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
-INTERNAL_IPS = ['127.0.0.1', '0.0.0.0']
+INTERNAL_IPS = get_env_variable('DJANGO_ALLOWED_HOSTS').split(' ')
 ALLOWED_HOSTS = INTERNAL_IPS
 
 
