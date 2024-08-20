@@ -1,8 +1,8 @@
+import base64
+import csv
 from io import BytesIO
 
 import qrcode
-import csv
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -40,6 +40,31 @@ class ExperimentDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def test_func(self):
         """Only experiment owners allowed to view experiment."""
         return True if self.request.user == self.get_object().owner else False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        qr_content = self.request.build_absolute_uri(
+            reverse(
+                "experiment:registration_create",
+                args=[self.object.pk]
+            )
+        )
+        qr = qrcode.QRCode()
+        qr.add_data(qr_content)
+        qr.make(fit=True)
+
+        with BytesIO() as buffer:
+            image = qr.make_image(fill='black', back_color='white')
+            image.save(buffer, 'image/png')
+            image_png = buffer.getvalue()
+
+        graphic = base64.b64encode(image_png)
+        graphic = graphic.decode('utf-8')
+
+        context['graphic'] = graphic
+
+        return context
 
 
 class ExperimentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -112,10 +137,15 @@ class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View
         file_name = f'{self.experiment.name}_qr_code.{file_ext.lower()}'
         file_content_type = 'image/png'
 
-        qr_content = self.request.build_absolute_uri().replace('qrcode', 'register')
+        qr_content = self.request.build_absolute_uri(
+            reverse(
+                "experiment:registration_create",
+                args=[self.experiment.pk]
+            )
+        )
         qr = qrcode.QRCode()
         qr.add_data(qr_content)
-        qr.make()
+        qr.make(fit=True)
 
         buffer = BytesIO()
         image = qr.make_image(fill='black', back_color='white')
