@@ -1,8 +1,6 @@
 #!/bin/bash
 
-wait-for-it "$POSTGRES_HOST":"$POSTGRES_PORT"
-
-echo "Collecting sttic files"
+echo "Collecting static files"
 python manage.py collectstatic --no-input --clear
 
 echo "Starting gunicorn"

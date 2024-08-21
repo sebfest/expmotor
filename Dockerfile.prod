@@ -1,5 +1,6 @@
 # Base Image
 FROM python:3.11
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 #Maintainer
 LABEL maintainer="Sebastian Fest <sebastian.fest@nhh.no>"
@@ -10,9 +11,6 @@ WORKDIR /expmotor
 # Create the expmotor user
 RUN addgroup --system expmotor && adduser --system --group expmotor
 
-# Install wait-for-it package
-RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y wait-for-it
-
 # Python Interpreter Flags
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -22,7 +20,7 @@ ENV DJANGO_SETTINGS_MODULE=settings.production
 
 # Dependencies installation
 COPY ./requirements.txt /expmotor/requirements.txt
-RUN pip install --upgrade --quiet pip && pip install --no-cache-dir --quiet -r /expmotor/requirements.txt
+RUN uv pip install --system -r /expmotor/requirements.txt
 
 # Copy project
 COPY . /expmotor
@@ -45,6 +43,6 @@ EXPOSE 8000
 USER expmotor
 
 # Set entrypoint
-ENTRYPOINT [ "/expmotor/compose/production/entrypoint.sh" ]
+ENTRYPOINT ["/expmotor/compose/production/entrypoint.sh"]
 
 

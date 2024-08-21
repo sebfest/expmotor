@@ -1,14 +1,12 @@
 # Base Image
 FROM python:3.11
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 #Maintainer
 LABEL maintainer="Sebastian Fest <sebastian.fest@nhh.no>"
 
 # Set working directory
-WORKDIR /app
-
-# Install wait-for-it package
-RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y wait-for-it postgresql-client-15
+WORKDIR /expmotor
 
 # Python Interpreter Flags
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -17,29 +15,24 @@ ENV PYTHONUNBUFFERED=1
 # Django flags
 ENV DJANGO_SETTINGS_MODULE=settings.local
 
-# PIP flags
-ENV PIP_ROOT_USER_ACTION=ignore
-
 # Dependencies installation
-COPY ./requirements.txt /app/requirements.txt
-COPY ./requirements_dev.txt /app/requirements_dev.txt
-RUN pip install --upgrade --quiet pip && pip install --no-cache-dir --quiet -r /app/requirements_dev.txt
+COPY ./requirements.txt /expmotor/requirements.txt
+COPY ./requirements_dev.txt /expmotor/requirements_dev.txt
+RUN uv pip install --system -r /expmotor/requirements_dev.txt
 
 # Copy project
-COPY . /app/
+COPY . /expmotor
 
 # Alter entrypoint script
-RUN sed -i 's/\r$//g' /app/compose/local/entrypoint.sh
-RUN chmod +x /app/compose/local/entrypoint.sh
+RUN sed -i 's/\r$//g' /expmotor/compose/production/entrypoint.sh
+RUN chmod +x /expmotor/compose/production/entrypoint.sh
 
-# Copy startup script
-RUN sed -i 's/\r$//g' /app/compose/local/startup_web.sh
-RUN chmod +x /app/compose/local/startup_web.sh
+# Alter startup script
+RUN sed -i 's/\r$//g' /expmotor/compose/production/startup_web.sh
+RUN chmod +x /expmotor/compose/production/startup_web.sh
 
 # Specify network port
 EXPOSE 8000
 
 # Set entrypoint
-ENTRYPOINT [ "/app/compose/local/entrypoint.sh" ]
-
-
+ENTRYPOINT ["/expmotor/compose/production/entrypoint.sh"]

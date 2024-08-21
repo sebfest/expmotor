@@ -2,8 +2,14 @@ services:
 
   db:
     image: postgres
-    restart: unless-stopped
+    restart: always
     container_name: expmotor_postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      retries: 3
+      start_period: 30s
+      timeout: 10s
     volumes:
       - type: volume
         source: postgres_data
@@ -14,8 +20,9 @@ services:
 
   web_dev:
     build: .
-    command: [ "/app/compose/local/startup_web.sh" ]
+    command: [ "/expmotor/compose/local/startup_web.sh" ]
     container_name: expmotor_web_dev
+    restart: always
     volumes:
       - type: bind
         source: .
@@ -26,7 +33,8 @@ services:
       - "8000:8000"
     env_file: .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:

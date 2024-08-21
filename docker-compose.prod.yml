@@ -4,6 +4,12 @@ services:
     image: postgres
     restart: always
     container_name: expmotor_postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      retries: 3
+      start_period: 30s
+      timeout: 10s
     volumes:
       - type: volume
         source: postgres_data
@@ -25,7 +31,8 @@ services:
       - "8000:8000"
     env_file: .env.prod
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
