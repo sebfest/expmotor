@@ -16,28 +16,78 @@ services:
         target: /var/lib/postgresql/data
     networks:
       - main
-    env_file: .env
+    env_file: .dev
 
   web_dev:
     build: .
-    command: [ "/expmotor/compose/local/startup_web.sh" ]
+    command: ["/expmotor/compose/local/startup_web.sh"]
     container_name: expmotor_web_dev
     restart: always
     volumes:
       - type: bind
         source: .
-        target: /app
+        target: /expmotor
     networks:
       - main
     ports:
       - "8000:8000"
-    env_file: .env
+    env_file: .dev
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
+
+  redis:
+    image: redis:alpine
+    restart: always
+    container_name: redis
+    volumes:
+      - type: volume
+        source: redis_data
+        target: /data
+    networks:
+      - main
+
+  celery_worker:
+    build: .
+    entrypoint: [ "./compose/local/entrypoint_celery.sh" ]
+    command: celery -A settings worker -l INFO
+    container_name: celery_worker
+    restart: always
+    volumes:
+      - type: bind
+        source: .
+        target: /expmotor
+    networks:
+      - main
+    env_file: .dev
+    depends_on:
+      - db
+      - redis
+      - web_dev
+
+  celery_beat:
+    build: .
+    entrypoint: [ "./compose/local/entrypoint_celery.sh" ]
+    command: celery -A settings beat -l INFO
+    container_name: celery_beat
+    restart: always
+    volumes:
+      - type: bind
+        source: .
+        target: /expmotor
+    networks:
+      - main
+    env_file: .dev
+    depends_on:
+      - db
+      - redis
+      - web_dev
 
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   main:
