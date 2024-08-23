@@ -15,24 +15,27 @@ ENV PYTHONUNBUFFERED=1
 # Django flags
 ENV DJANGO_SETTINGS_MODULE=settings.local
 
+# Install wait-for-it package
+RUN apt update && apt install -y wait-for-it
+
 # Dependencies installation
-COPY ./requirements.txt /expmotor/requirements.txt
-COPY ./requirements_dev.txt /expmotor/requirements_dev.txt
-RUN uv pip install --system -r /expmotor/requirements_dev.txt
+COPY ./requirements/requirements.txt /expmotor/requirements/requirements.txt
+COPY ./requirements/requirements_dev.txt /expmotor/requirements/requirements_dev.txt
+RUN uv pip install --system -r /expmotor/requirements/requirements_dev.txt
 
 # Copy project
 COPY . /expmotor
 
 # Alter entrypoint script
-RUN sed -i 's/\r$//g' /expmotor/compose/production/entrypoint.sh
-RUN chmod +x /expmotor/compose/production/entrypoint.sh
+RUN sed -i 's/\r$//g' /expmotor/compose/local/entrypoint.sh
+RUN chmod +x /expmotor/compose/local/entrypoint.sh
 
 # Alter startup script
-RUN sed -i 's/\r$//g' /expmotor/compose/production/startup_web.sh
-RUN chmod +x /expmotor/compose/production/startup_web.sh
+RUN sed -i 's/\r$//g' /expmotor/compose/local/startup_web.sh
+RUN chmod +x /expmotor/compose/local/startup_web.sh
 
 # Specify network port
 EXPOSE 8000
 
 # Set entrypoint
-ENTRYPOINT ["/expmotor/compose/production/entrypoint.sh"]
+ENTRYPOINT ["/expmotor/compose/local/entrypoint.sh"]
