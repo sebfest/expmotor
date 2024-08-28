@@ -1,7 +1,10 @@
 import os
 import sys
 
+from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
+
+import settings.tasks
 
 
 def get_env_variable(var_name):
@@ -19,7 +22,6 @@ SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
 INTERNAL_IPS = get_env_variable('DJANGO_ALLOWED_HOSTS').split(' ')
 ALLOWED_HOSTS = INTERNAL_IPS
 
-
 INSTALLED_APPS = [
     'experiment.apps.ExperimentConfig',
     'account.apps.AccountConfig',
@@ -34,6 +36,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'bootstrap_datepicker_plus',
     'django_createsuperuserwithpassword',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -200,5 +203,11 @@ LOGGING = {
     },
 }
 
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis://redis:6379"
+CELERY_BROKER_URL = get_env_variable('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = get_env_variable('CELERY_RESULT_BACKEND')
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "settings.tasks.sample_task",
+        "schedule": crontab(minute="*/1"),
+    },
+}

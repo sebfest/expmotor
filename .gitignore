@@ -4,8 +4,8 @@
 *.pyc
 __pycache__
 db.sqlite3
-media
-static
+media/
+static/
 
 # Backup files # 
 *.bak 
@@ -117,5 +117,5 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 /celerybeat-schedule
-/.env
-/.dev
+.env
+.dev

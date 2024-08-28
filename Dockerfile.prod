@@ -18,9 +18,12 @@ ENV PYTHONUNBUFFERED=1
 # Django flags
 ENV DJANGO_SETTINGS_MODULE=settings.production
 
+# Install wait-for-it package
+RUN apt update && apt install -y wait-for-it
+
 # Dependencies installation
-COPY ./requirements.txt /expmotor/requirements.txt
-RUN uv pip install --system -r /expmotor/requirements.txt
+COPY ./requirements/requirements.txt /expmotor/requirements/requirements.txt
+RUN uv pip install --system -r /expmotor/requirements/requirements.txt
 
 # Copy project
 COPY . /expmotor

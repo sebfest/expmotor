@@ -1,5 +1,6 @@
 import os
 
+from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'bootstrap4',
     'bootstrap_datepicker_plus',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -187,3 +189,13 @@ LOGGING = {
         },
     }
 }
+
+CELERY_BROKER_URL = get_env_variable('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = get_env_variable('CELERY_RESULT_BACKEND')
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "settings.tasks.sample_task",
+        "schedule": crontab(minute="*/1"),
+    },
+}
+

@@ -1,9 +1,10 @@
 Django==5.0.7
-celery==5.4.0
-redis==5.0.7
+celery
+redis
 django-bootstrap-datepicker-plus
 django-bootstrap4
 django-registration-redux
+django-celery-beat
 factory-boy
 Faker
 gunicorn
