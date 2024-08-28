@@ -5,7 +5,7 @@ services:
     restart: always
     container_name: expmotor_postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
       retries: 3
       start_period: 30s
@@ -20,7 +20,7 @@ services:
 
   web_dev:
     build: .
-    command: ["/expmotor/compose/local/startup_web.sh"]
+    command: [ "/expmotor/compose/local/startup_web.sh" ]
     container_name: expmotor_web_dev
     restart: always
     volumes:
@@ -41,7 +41,7 @@ services:
   redis:
     image: redis:alpine
     restart: always
-    container_name: redis
+    container_name: expmotor_redis
     volumes:
       - type: volume
         source: redis_data
@@ -53,7 +53,7 @@ services:
     build: .
     entrypoint: [ "./compose/local/entrypoint_celery.sh" ]
     command: celery -A settings worker -l INFO
-    container_name: celery_worker
+    container_name: expmotor_celery_worker
     restart: always
     volumes:
       - type: bind
@@ -70,8 +70,8 @@ services:
   celery_beat:
     build: .
     entrypoint: [ "./compose/local/entrypoint_celery.sh" ]
-    command: celery -A settings beat -l INFO
-    container_name: celery_beat
+    command: celery -A settings beat -l INFO -S django
+    container_name: expmotor_celery_beat
     restart: always
     volumes:
       - type: bind
