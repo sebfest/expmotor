@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=settings.local
 
 # Install wait-for-it package
-RUN apt update && apt install -y wait-for-it
+RUN apt update -qy && apt install -qy wait-for-it
 
 # Dependencies installation
 COPY ./requirements/requirements.txt /expmotor/requirements/requirements.txt
