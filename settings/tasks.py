@@ -1,15 +1,22 @@
-from celery import shared_task
 from celery.utils.log import get_task_logger
-from django.core.management import call_command
+from django.core.mail import EmailMultiAlternatives
 
+from settings.production import EMAIL_HOST_USER
+from .celery import app
 
 logger = get_task_logger(__name__)
 
 
-@shared_task
-def sample_task():
-    logger.info("The sample task just ran.")
+@app.task(name='send_email')
+def send_email(subject: str, message: str, recipient: str, html_message: str | None) -> None:
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=message,
+        from_email=EMAIL_HOST_USER,
+        to=[recipient],
+    )
+    if html_message:
+        email.attach_alternative(html_message, 'text/html')
 
-# @shared_task
-# def send_email_report():
-#     call_command("my_custom_command", )
+    email.send(fail_silently=True)
+    logger.info("Successfully sent email message to %s.", recipient)

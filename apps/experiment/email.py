@@ -1,5 +1,6 @@
+from dataclasses import dataclass
+
 from django.contrib.sites.models import Site
-from django.core.mail import EmailMultiAlternatives
 from django.template import Template, Context
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -7,12 +8,19 @@ from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
 
-from settings.production import EMAIL_HOST_USER
 from .models import Registration
 from .tokens import account_activation_token
 
 
-def send_confirmation_request(instance: Registration) -> None:
+@dataclass
+class Email:
+    subject: str
+    message: str
+    recipient: str
+    html_message: str | None = None
+
+
+def send_confirmation_request(instance: Registration) -> Email:
     """Send request to conform email after successful creation."""
     domain = Site.objects.get_current().domain
     path = reverse(
@@ -35,17 +43,10 @@ def send_confirmation_request(instance: Registration) -> None:
     html_message = render_to_string('experiment/registration_pre_confirmation_email.html', context_dict)
     message = strip_tags(html_message)
 
-    email = EmailMultiAlternatives(
-        subject=subject,
-        body=message,
-        from_email=EMAIL_HOST_USER,
-        to=[recipient],
-    )
-    email.attach_alternative(html_message, 'text/html')
-    email.send(fail_silently=True)
+    return Email(subject, message, recipient, html_message=html_message)
 
 
-def send_registration_info(instance: Registration) -> None:
+def send_registration_info(instance: Registration) -> Email:
     """Send email with registration info after email confirmation."""
     template = Template(instance.session.experiment.final_instructions)
     context_dict = {
@@ -63,16 +64,10 @@ def send_registration_info(instance: Registration) -> None:
     message = template.render(context)
     recipient = instance.email
 
-    email = EmailMultiAlternatives(
-        subject=subject,
-        body=message,
-        from_email=EMAIL_HOST_USER,
-        to=[recipient],
-    )
-    email.send(fail_silently=True)
+    return Email(subject, message, recipient, html_message=None)
 
 
-def send_registration_info_update(instance: Registration) -> None:
+def send_registration_info_update(instance: Registration) -> Email:
     """Send email with updated registration info after email registration change."""
     title = instance.session.experiment.name
     subject = f'{title}: Your registration has changed.'
@@ -90,11 +85,4 @@ def send_registration_info_update(instance: Registration) -> None:
     html_message = render_to_string('experiment/registration_update_confirmation_email.html', context_dict)
     message = strip_tags(html_message)
 
-    email = EmailMultiAlternatives(
-        subject=subject,
-        body=message,
-        from_email=EMAIL_HOST_USER,
-        to=[recipient],
-    )
-    email.attach_alternative(html_message, 'text/html')
-    email.send(fail_silently=True)
+    return Email(subject, message, recipient, html_message=html_message)

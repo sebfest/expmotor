@@ -1,12 +1,11 @@
 from typing import Type, FrozenSet, Optional
 
-from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from settings.production import EMAIL_HOST_USER
+from settings.tasks import send_email
 from .email import send_confirmation_request, send_registration_info, send_registration_info_update
 from .models import Experiment, Registration
 
@@ -29,14 +28,7 @@ def send_new_experiment_notification_email(
         html_message = render_to_string('experiment/experiment_created_confirmation_email.html', context_dict)
         message = strip_tags(html_message)
 
-        send_mail(
-            subject=subject,
-            message=message,
-            html_message=html_message,
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[recipient],
-            fail_silently=True,
-        )
+        send_email.delay(subject, message, recipient, html_message=html_message)
 
 
 @receiver(post_save, sender=Registration)
@@ -47,10 +39,16 @@ def handle_emails_for_registration(
         update_fields: Optional[FrozenSet],
         **kwargs) -> None:
     if created:
-        send_confirmation_request(instance=instance)
-    elif not created and update_fields and 'confirmed_email' in update_fields:
-        send_registration_info(instance=instance)
-    elif not created and update_fields and 'session' in update_fields:
-        send_registration_info_update(instance=instance)
+        generate_email_function = send_confirmation_request
+    elif update_fields:
+        if 'confirmed_email' in update_fields:
+            generate_email_function = send_registration_info
+        elif 'session' in update_fields:
+            generate_email_function = send_registration_info_update
+        else:
+            return
     else:
         return
+
+    email = generate_email_function(instance)
+    send_email.delay(email.subject, email.message, email.recipient, email.html_message)
