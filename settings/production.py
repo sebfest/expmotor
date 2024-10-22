@@ -1,6 +1,5 @@
 import os
 
-from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -194,4 +193,3 @@ CELERY_BROKER_URL = get_env_variable('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = get_env_variable('CELERY_RESULT_BACKEND')
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BEAT_SCHEDULE = {}
-
