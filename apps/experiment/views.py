@@ -56,7 +56,7 @@ class ExperimentDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         with BytesIO() as buffer:
             image = qr.make_image(fill='black', back_color='white')
-            image.save(buffer, 'image/png')
+            image.save(buffer, 'png')
             image_png = buffer.getvalue()
 
         graphic = base64.b64encode(image_png)
@@ -135,7 +135,7 @@ class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View
         """Send QrCode as attached image."""
         file_ext = 'PNG'
         file_name = f'{self.experiment.name}_qr_code.{file_ext.lower()}'
-        file_content_type = 'image/png'
+        file_content_type = 'png'
 
         qr_content = self.request.build_absolute_uri(
             reverse(
