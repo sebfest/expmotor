@@ -8,6 +8,6 @@ django-celery-beat
 factory-boy
 Faker
 gunicorn
-qrcode
+qrcode[pil]
 whitenoise
 psycopg2
