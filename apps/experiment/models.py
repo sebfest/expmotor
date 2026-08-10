@@ -1,20 +1,20 @@
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator, MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
-from django.db.models import Sum, Count, Q
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from settings.local import AUTH_USER_MODEL
 from .basemodels import AbstractBaseModel
 from .constants import defaults
 
 
 class Experiment(AbstractBaseModel):
     manager = models.ForeignKey(
-        AUTH_USER_MODEL,
+        settings.AUTH_USER_MODEL,
         verbose_name=_('manager'),
         related_name='experiments',
         on_delete=models.CASCADE
@@ -57,7 +57,7 @@ class Experiment(AbstractBaseModel):
     )
 
     @property
-    def owner(self) -> AUTH_USER_MODEL:
+    def owner(self):
         """Owner of object"""
         return self.manager
 
@@ -102,7 +102,12 @@ class Experiment(AbstractBaseModel):
         verbose_name_plural = _('experiments')
         ordering = ['-created_date']
         get_latest_by = 'activation_date'
-        unique_together = [['manager', 'name']]
+        constraints = [
+            models.UniqueConstraint(
+                fields=('manager', 'name'),
+                name='experiment_manager_name_unique',
+            ),
+        ]
 
 
 class Session(AbstractBaseModel):
@@ -138,7 +143,7 @@ class Session(AbstractBaseModel):
     )
 
     @property
-    def owner(self) -> AUTH_USER_MODEL:
+    def owner(self):
         """Owner of object"""
         return self.experiment.manager
 
@@ -159,7 +164,7 @@ class Session(AbstractBaseModel):
 
     def __str__(self) -> str:
         if self.date and self.time:
-            return f"{self.date.strftime('%Y-%m-%d')} {self.time.strftime('%H:%M:%S')}"
+            return f"{self.date} {self.time}"
         else:
             return 'Empty session.'
 
@@ -205,7 +210,7 @@ class Registration(AbstractBaseModel):
     )
 
     @property
-    def owner(self) -> AUTH_USER_MODEL:
+    def owner(self):
         """Owner of object"""
         return self.session.experiment.manager
 
@@ -226,14 +231,16 @@ class Registration(AbstractBaseModel):
     def validate_unique(self, *args, **kwargs) -> None:
         """Validate duplicate bookings for experiment."""
         super().validate_unique(*args, **kwargs)
+        if not self.session_id or not self.email:
+            return
 
         previous_registration = Registration.objects.select_related('session__experiment').filter(
             session__experiment__pk=self.session.experiment.pk,
-            email=self.email,
-        )
+            email__iexact=self.email,
+        ).exclude(pk=self.pk)
 
         if previous_registration.exists():
-            raise ValidationError('Your are already registered for this experiment.')
+            raise ValidationError('You are already registered for this experiment.')
 
     class Meta:
         ordering = ['created_date']

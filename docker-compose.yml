@@ -1,11 +1,11 @@
 services:
 
   db:
-    image: postgres
+    image: postgres:17-alpine
     restart: always
     container_name: expmotor_postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 5s
       retries: 3
       start_period: 30s
@@ -16,7 +16,11 @@ services:
         target: /var/lib/postgresql/data
     networks:
       - main
-    env_file: .dev
+    env_file:
+      - path: .env
+        required: false
+      - path: .dev
+        required: false
 
   web_dev:
     build: .
@@ -31,7 +35,11 @@ services:
       - main
     ports:
       - "8000:8000"
-    env_file: .dev
+    env_file:
+      - path: .env
+        required: false
+      - path: .dev
+        required: false
     depends_on:
       db:
         condition: service_healthy
@@ -39,7 +47,7 @@ services:
         condition: service_started
 
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
     restart: always
     container_name: expmotor_redis
     volumes:
@@ -61,7 +69,11 @@ services:
         target: /expmotor
     networks:
       - main
-    env_file: .dev
+    env_file:
+      - path: .env
+        required: false
+      - path: .dev
+        required: false
     depends_on:
       - db
       - redis
@@ -79,7 +91,11 @@ services:
         target: /expmotor
     networks:
       - main
-    env_file: .dev
+    env_file:
+      - path: .env
+        required: false
+      - path: .dev
+        required: false
     depends_on:
       - db
       - redis

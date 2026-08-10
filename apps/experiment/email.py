@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from django.contrib.sites.models import Site
-from django.template import Template, Context
+from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes

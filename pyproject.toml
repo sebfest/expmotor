@@ -1,0 +1,21 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "settings.test"
+testpaths = ["apps"]
+pythonpath = ["apps"]
+addopts = "--strict-markers"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["apps"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["account", "experiment"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"apps/experiment/migrations/*.py" = ["E501"]
+"settings/*.py" = ["F403", "F405"]

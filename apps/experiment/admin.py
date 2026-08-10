@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Experiment, Session, Registration
+from .models import Experiment, Registration, Session
 
 
 class SessionInline(admin.TabularInline):

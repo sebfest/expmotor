@@ -4,7 +4,7 @@ from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.db.models import F, Count, Q
+from django.db.models import Count, F, Q
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
@@ -26,7 +26,7 @@ class SessionForm(forms.ModelForm):
     def get_min_subjects_validator(self):
         """Return validator to not allow fewer slots than registered subjects"""
         min_value = self.instance.active_registrations
-        message = f'The maximum number of registrations must be larger than {min_value}'
+        message = f'The maximum number of registrations must be at least {min_value}'
         return MinValueValidator(limit_value=min_value, message=message)
 
     class Meta:
@@ -55,7 +55,9 @@ class SessionCreateForm(SessionForm):
 
     def clean_date(self):
         """Ensure new session instances are in the future."""
-        session_date = self.cleaned_data['date']
+        session_date = self.cleaned_data.get('date')
+        if session_date is None:
+            return session_date
         today = timezone.now().date()
 
         if session_date <= today:
@@ -108,8 +110,11 @@ class RegistrationCreateForm(forms.ModelForm):
     def clean(self):
         """Check if session is full."""
         cleaned_data = super().clean()
-        session_is_full = cleaned_data['session'].is_full
-        active_registration = cleaned_data['is_active']
+        session = cleaned_data.get('session')
+        if session is None:
+            return cleaned_data
+        session_is_full = session.is_full
+        active_registration = cleaned_data.get('is_active', False)
 
         if session_is_full and active_registration:
             err_msg = ValidationError(
@@ -145,7 +150,6 @@ class RegistrationUpdateForm(forms.ModelForm):
         """Find available sessions."""
         active_registrations = Q(registrations__is_active=True)
         available_sessions = Session.objects \
-            .prefetch_related() \
             .filter(experiment_id=self.session.experiment.id) \
             .annotate(free_slots=F('max_subjects') - Count('registrations', filter=active_registrations)) \
             .filter(free_slots__gte=0) \
@@ -155,8 +159,11 @@ class RegistrationUpdateForm(forms.ModelForm):
     def clean(self):
         """Check if registration can be updated."""
         cleaned_data = super().clean()
-        session_is_full = cleaned_data['session'].is_full
-        active_registration = cleaned_data['is_active']
+        session = cleaned_data.get('session')
+        if session is None:
+            return cleaned_data
+        session_is_full = session.is_full
+        active_registration = cleaned_data.get('is_active', False)
         is_activated = 'is_active' in self.changed_data and active_registration
         changed_session = 'session' in self.changed_data
 
@@ -201,10 +208,9 @@ class RegistrationForm(forms.ModelForm):
         """Find available sessions"""
         active_registrations = Q(registrations__is_active=True)
         valid_sessions = Session.objects \
-            .prefetch_related() \
             .filter(experiment_id=self.experiment.id) \
             .exclude(is_active=False) \
-            .filter(date__gt=timezone.now()) \
+            .filter(date__gt=timezone.localdate()) \
             .annotate(free_slots=F('max_subjects') - Count('registrations', filter=active_registrations)) \
             .filter(free_slots__gt=0) \
             .order_by('date', 'time')

@@ -1,0 +1,18 @@
+# Copy this file to .dev for local Docker development.
+DJANGO_SECRET_KEY=replace-with-a-long-random-development-secret
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 web_dev
+
+POSTGRES_DB=expmotor
+POSTGRES_NAME=expmotor
+POSTGRES_USER=expmotor
+POSTGRES_PASSWORD=expmotor
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+EMAIL_HOST_USER=admin@example.org
+EMAIL_HOST_PASSWORD=
+EMAIL_HOST=localhost
+EMAIL_PORT=25

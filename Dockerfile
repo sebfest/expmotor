@@ -1,6 +1,6 @@
 # Base Image
-FROM python:3.11
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+FROM python:3.13-slim
+COPY --from=ghcr.io/astral-sh/uv:0.12.3 /uv /bin/uv
 
 #Maintainer
 LABEL maintainer="Sebastian Fest <sebastian.fest@nhh.no>"
@@ -16,7 +16,9 @@ ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=settings.local
 
 # Install wait-for-it package
-RUN apt update -qy && apt install -qy wait-for-it
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends wait-for-it \
+    && rm -rf /var/lib/apt/lists/*
 
 # Dependencies installation
 COPY ./requirements/requirements.txt /expmotor/requirements/requirements.txt

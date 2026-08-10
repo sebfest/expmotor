@@ -1,19 +1,19 @@
 import datetime
 import random
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.text import slugify
-from factory import LazyAttribute, SubFactory, Faker, RelatedFactoryList, Iterator
+from factory import Faker, Iterator, LazyAttribute, RelatedFactoryList, SubFactory
 from factory.django import DjangoModelFactory
-from factory.fuzzy import FuzzyDateTime
+from factory.fuzzy import FuzzyDate, FuzzyDateTime
 
-from experiment.models import Experiment, Session, Registration
-from settings import local
+from experiment.models import Experiment, Registration, Session
 
 
 class UserFactory(DjangoModelFactory):
     class Meta:
-        model = local.AUTH_USER_MODEL
+        model = get_user_model()
         django_get_or_create = ('username',)
 
     first_name = Faker(
@@ -75,9 +75,7 @@ class RegistrationFactory(DjangoModelFactory):
         'boolean',
         chance_of_getting_true=95
     )
-    created_date = FuzzyDateTime(
-        timezone.now() - datetime.timedelta(days=random.randint(5, 356))
-    )
+    created_date = FuzzyDateTime(timezone.now() - datetime.timedelta(days=356), timezone.now())
     modified_date = LazyAttribute(
         lambda obj: obj.created_date + datetime.timedelta(days=random.randint(1, 4))
     )
@@ -94,12 +92,12 @@ class SessionFactory(DjangoModelFactory):
     experiment = Iterator(
         Experiment.objects.all()
     )
-    date = FuzzyDateTime(
-        timezone.now(),
-        timezone.now() + datetime.timedelta(days=random.randint(5, 30))
+    date = FuzzyDate(
+        timezone.localdate(),
+        timezone.localdate() + datetime.timedelta(days=random.randint(5, 30)),
     )
     time = LazyAttribute(
-        lambda obj: obj.date.replace(microsecond=0, second=0, minute=0)
+        lambda obj: datetime.time(hour=random.choice((9, 12, 15)), minute=0)
     )
     place = Faker(
         'address',
@@ -149,9 +147,7 @@ class ExperimentFactory(DjangoModelFactory):
         'random_number',
         digits=8,
     )
-    created_date = FuzzyDateTime(
-        timezone.now() - datetime.timedelta(days=random.randint(5, 356))
-    )
+    created_date = FuzzyDateTime(timezone.now() - datetime.timedelta(days=356), timezone.now())
     modified_date = LazyAttribute(
         lambda obj: obj.created_date + datetime.timedelta(days=random.randint(1, 4))
     )
@@ -159,7 +155,7 @@ class ExperimentFactory(DjangoModelFactory):
         'boolean',
         chance_of_getting_true=99
     )
-    session = RelatedFactoryList(
+    sessions = RelatedFactoryList(
         SessionFactory,
         factory_related_name='experiment',
         size=10

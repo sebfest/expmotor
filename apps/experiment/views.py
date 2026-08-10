@@ -1,4 +1,5 @@
 import base64
+import binascii
 import csv
 from io import BytesIO
 
@@ -7,17 +8,29 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.http import HttpResponseRedirect, FileResponse, HttpResponse
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
-from django.views.generic import DetailView, ListView, UpdateView, CreateView, DeleteView, TemplateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
-from .forms import RegistrationForm, SessionCreateForm, SessionUpdateForm, \
-    RegistrationCreateForm, RegistrationUpdateForm
-from .models import Experiment, Session, Registration
+from .forms import (
+    RegistrationCreateForm,
+    RegistrationForm,
+    RegistrationUpdateForm,
+    SessionCreateForm,
+    SessionUpdateForm,
+)
+from .models import Experiment, Registration, Session
 from .tokens import account_activation_token
 
 
@@ -185,7 +198,7 @@ class ExperimentPrintoutDownloadView(LoginRequiredMixin, UserPassesTestMixin, Vi
 
         response = HttpResponse(
             content_type=file_content_type,
-            headers={'Content-Disposition': f"'attachment; filename={file_name}"},
+            headers={'Content-Disposition': f'attachment; filename="{file_name}"'},
         )
 
         fieldnames = ('session__date', 'session__time', 'first_name', 'last_name', 'phone')
@@ -329,12 +342,15 @@ class RegistrationSearchView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         """Filter search results."""
-        query = self.request.GET.get("q")
-        object_list = Registration.objects.select_related().filter(
-            Q(session__experiment__manager=self.request.user),
-            Q(first_name__icontains=query) | Q(last_name__icontains=query)
-        )
-        return object_list
+        query = self.request.GET.get("q", "").strip()
+        object_list = Registration.objects.select_related(
+            'session__experiment'
+        ).filter(session__experiment__manager=self.request.user)
+        if query:
+            object_list = object_list.filter(
+                Q(first_name__icontains=query) | Q(last_name__icontains=query)
+            )
+        return object_list.order_by('last_name', 'first_name')
 
 
 class RegistrationCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
@@ -454,24 +470,26 @@ class RegistrationActivateView(View):
 
     def get_registration(self):
         """Get registration from encoded uid."""
-        uid_decoded = force_str(urlsafe_base64_decode(self.kwargs.get('uidb64')))
-        registration = None
         try:
-            registration = Registration.objects.get(pk=uid_decoded)
+            uid_decoded = force_str(urlsafe_base64_decode(self.kwargs.get('uidb64')))
+        except (TypeError, ValueError, OverflowError, binascii.Error):
+            return None
+        try:
+            return Registration.objects.get(pk=uid_decoded)
         except Registration.DoesNotExist:
-            pass
+            return None
         except Registration.MultipleObjectsReturned:
-            pass
-        finally:
-            return registration
+            return None
 
     def check_token(self, registration):
         """Check if token is valid"""
-        is_valid_token = account_activation_token.check_token(
-            registration,
-            self.kwargs.get('token')
+        return bool(
+            registration
+            and account_activation_token.check_token(
+                registration,
+                self.kwargs.get('token'),
+            )
         )
-        return is_valid_token
 
     def get(self, request, *args, **kwargs):
         """Find registration and update confirmed_email field."""

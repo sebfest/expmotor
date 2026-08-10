@@ -1,11 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import get_user
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy, reverse
-from django.views.generic import DetailView, UpdateView, DeleteView, TemplateView
-
+from django.urls import reverse, reverse_lazy
+from django.views.generic import DeleteView, DetailView, TemplateView, UpdateView
 from registration.backends.admin_approval.views import RegistrationView
 
 from .forms import UserRegisterForm

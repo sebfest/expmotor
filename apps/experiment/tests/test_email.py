@@ -1,25 +1,45 @@
+from datetime import date, time
+
+from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
 
-from experiment.factories import ExperimentFactory, SessionFactory, RegistrationFactory
-from experiment.models import Session
+from experiment.models import Experiment, Registration, Session
+
 
 class EmailTest(TestCase):
     name = 'experiment_name'
 
     @classmethod
     def setUpTestData(cls):
-        experiment = ExperimentFactory(name=cls.name, session=None)
-        SessionFactory(experiment=experiment, registrations=None)
-        print("setUpTestData: Run once to set up non-modified data for all class methods.")
+        user = get_user_model().objects.create_user(
+            username='email-manager', password='password', email='manager@example.com'
+        )
+        cls.experiment = Experiment.objects.create(
+            manager=user,
+            name=cls.name,
+            title='Experiment',
+            email='researcher@example.com',
+            phone='12345678',
+        )
+        cls.session = Session.objects.create(
+            experiment=cls.experiment,
+            date=date(2030, 1, 1),
+            time=time(12, 0),
+            place='Lab',
+            max_subjects=2,
+        )
 
     def test_send_email(self):
-        session = Session.objects.get(experiment__name=self.name)
-        self.assertEqual(len(mail.outbox), 0)
-        registration = RegistrationFactory(session=session)
+        mail.outbox.clear()
+        registration = Registration.objects.create(
+            session=self.session,
+            first_name='Ada',
+            last_name='Lovelace',
+            phone='12345678',
+            email='ada@example.com',
+        )
         self.assertEqual(len(mail.outbox), 1)
 
-        email = mail.outbox[0]
-        print(email)
         self.assertEqual(mail.outbox[0].subject, f'{self.name}: Please confirm your email')
         self.assertEqual(mail.outbox[0].to[0], registration.email)

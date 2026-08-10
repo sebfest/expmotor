@@ -6,5 +6,4 @@ class ExperimentConfig(AppConfig):
     verbose = 'Experiment'
 
     def ready(self):
-        import experiment.signals
-
+        from . import signals  # noqa: F401

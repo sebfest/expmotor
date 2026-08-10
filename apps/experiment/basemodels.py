@@ -49,7 +49,16 @@ class AbstractBaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         self.clean()
-        super(AbstractBaseModel, self).save(*args, **kwargs)
+        update_fields = kwargs.get('update_fields')
+        if update_fields is not None:
+            # clean() can update these fields. Include them so partial saves do
+            # not silently discard activation or modified timestamps.
+            kwargs['update_fields'] = set(update_fields) | {
+                'activation_date',
+                'modified_date',
+                'slug',
+            }
+        super().save(*args, **kwargs)
 
     class Meta:
         abstract = True

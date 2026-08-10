@@ -1,18 +1,16 @@
-from typing import Type, FrozenSet, Optional
-
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
 from settings.tasks import send_email
+
 from .email import send_confirmation_request, send_registration_info, send_registration_info_update
 from .models import Experiment, Registration
 
 
 @receiver(post_save, sender=Experiment)
 def send_new_experiment_notification_email(
-        sender: Type[Experiment],
+        sender: type[Experiment],
         instance: Experiment,
         created: bool,
         **kwargs) -> None:
@@ -33,10 +31,10 @@ def send_new_experiment_notification_email(
 
 @receiver(post_save, sender=Registration)
 def handle_emails_for_registration(
-        sender: Type[Registration],
+        sender: type[Registration],
         instance: Registration,
         created: bool,
-        update_fields: Optional[FrozenSet],
+        update_fields: frozenset | None,
         **kwargs) -> None:
     if created:
         generate_email_function = send_confirmation_request
