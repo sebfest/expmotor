@@ -32,6 +32,7 @@ dev = [
 
 [tool.uv]
 package = false
+required-version = "==0.12.3"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "settings.test"

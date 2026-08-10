@@ -1,0 +1,48 @@
+name: Django CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: django-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test Django application
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_SETTINGS_MODULE: settings.test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked dependencies
+        run: uv sync --locked
+
+      - name: Run Django checks
+        run: |
+          uv run python manage.py check
+          uv run python manage.py makemigrations --check --dry-run
+
+      - name: Run tests
+        run: uv run python manage.py test --noinput
+
+      - name: Run Ruff
+        run: uv run ruff check .
