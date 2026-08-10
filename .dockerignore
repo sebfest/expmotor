@@ -3,11 +3,9 @@
 .env
 .idea/
 Dockerfile
-README.md
 docker-compose.yml
 __pycache__
+.venv/
 static/
 media/
-
-
 

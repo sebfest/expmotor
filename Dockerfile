@@ -21,9 +21,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Dependencies installation
-COPY ./requirements/requirements.txt /expmotor/requirements/requirements.txt
-COPY ./requirements/requirements_dev.txt /expmotor/requirements/requirements_dev.txt
-RUN uv pip install --system -r /expmotor/requirements/requirements_dev.txt
+COPY pyproject.toml uv.lock README.md ./
+RUN uv sync --locked
+ENV PATH="/expmotor/.venv/bin:$PATH"
 
 # Copy project
 COPY . /expmotor

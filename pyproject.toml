@@ -1,3 +1,38 @@
+[project]
+name = "expmotor"
+version = "0.1.0"
+description = "Registration software for recruiting participants in scientific experiments."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "Django==5.2.17",
+    "celery==5.6.3",
+    "django-bootstrap-datepicker-plus==6.0.0",
+    "django-bootstrap4==26.1",
+    "django-celery-beat==2.9.0",
+    "django-registration-redux==2.13",
+    "gunicorn==26.0.0",
+    "psycopg[binary]==3.3.4",
+    "qrcode[pil]==8.2",
+    "redis==8.1.0",
+    "whitenoise==6.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "django-createsuperuserwithpassword==2.0.0",
+    "django-debug-toolbar==7.1.0",
+    "django-upgrade==1.31.1",
+    "factory-boy==3.3.3",
+    "Faker==40.36.0",
+    "pytest==9.1.1",
+    "pytest-django==4.14.0",
+    "ruff==0.16.2",
+]
+
+[tool.uv]
+package = false
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "settings.test"
 testpaths = ["apps"]
