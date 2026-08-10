@@ -135,7 +135,7 @@ class ExperimentQrcodeDownloadView(LoginRequiredMixin, UserPassesTestMixin, View
         """Send QrCode as attached image."""
         file_ext = 'PNG'
         file_name = f'{self.experiment.name}_qr_code.{file_ext.lower()}'
-        file_content_type = 'png'
+        file_content_type = 'image/png'
 
         qr_content = self.request.build_absolute_uri(
             reverse(
