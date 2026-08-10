@@ -31,6 +31,9 @@ services:
       - type: bind
         source: .
         target: /expmotor
+      - type: volume
+        source: expmotor_venv
+        target: /expmotor/.venv
     networks:
       - main
     ports:
@@ -67,6 +70,9 @@ services:
       - type: bind
         source: .
         target: /expmotor
+      - type: volume
+        source: expmotor_venv
+        target: /expmotor/.venv
     networks:
       - main
     env_file:
@@ -89,6 +95,9 @@ services:
       - type: bind
         source: .
         target: /expmotor
+      - type: volume
+        source: expmotor_venv
+        target: /expmotor/.venv
     networks:
       - main
     env_file:
@@ -104,6 +113,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  expmotor_venv:
 
 networks:
   main:
